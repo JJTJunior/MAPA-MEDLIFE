@@ -1,0 +1,15 @@
+const xlsx = require('xlsx');
+const path = require('path');
+
+const filePath = path.join(__dirname, 'MAPA_CIRURGICO_MEDLIFE.xlsx');
+const workbook = xlsx.readFile(filePath);
+
+const sheetName = '052026';
+const sheet = workbook.Sheets[sheetName];
+const data = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+
+console.log(`\n--- Sheet: ${sheetName} ---`);
+console.log('Total Rows:', data.length);
+data.slice(0, 15).forEach((row, index) => {
+  console.log(`Row ${index}:`, row);
+});

@@ -1,0 +1,701 @@
+Created At: 2026-07-28T15:39:44Z
+Completed At: 2026-07-28T15:40:17Z
+The following changes were made by the multi_replace_file_content tool to: c:\MAPA MEDLIFE\frontend\src\components\SurgeryDetails.jsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -810,691 +810,6 @@
+                       fontSize: '0.8rem',
+                       fontWeight: '600',
+                       boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+-                      minWidth: '120px'
+-                    }}
+-                  >
+-                    <Edit size={14} /> Editar Anexos
+-                  </button>
+-                  <button
+-                    type="button"
+-                    onClick={(e) => {
+-                      e.stopPropagation();
+-                      setShowDeleteIcons(false);
+-                    }}
+-                    style={{
+-                      backgroundColor: '#3b82f6',
+-                      color: '#fff',
+-                      padding: '8px 12px',
+-                      borderRadius: '6px',
+-                      border: 'none',
+-                      cursor: 'pointer',
+-                      display: 'flex',
+-                      alignItems: 'center',
+-                      justifyContent: 'center',
+-                      gap: '6px',
+-                      fontSize: '0.8rem',
+-                      fontWeight: '600',
+-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+-                      minWidth: '120px'
+-                    }}
+-                  >
+-                    <Save size={14} /> Salvar Anexos
+-                  </button>
+-                </>
+-              )}
+-            {(isEditable && isFieldEditable('attachment_url')) && (
+-              <div id="details-attachment-menu-container" style={{ position: 'relative', display: 'inline-block' }}>
+-                <button
+-                  type="button"
+-                  disabled={uploading}
+-                  onClick={(e) => {
+-                    e.stopPropagation();
+-                    setShowAttachmentDropdown(!showAttachmentDropdown);
+-                  }}
+-                  style={{
+-                    backgroundColor: '#10b981',
+-                    color: '#fff',
+-                    padding: '8px 12px',
+-                    borderRadius: '6px',
+-                    border: 'none',
+-                    cursor: uploading ? 'not-allowed' : 'pointer',
+-                    display: 'flex',
+-                    alignItems: 'center',
+-                    justifyContent: 'center',
+-                    gap: '6px',
+-                    fontSize: '0.8rem',
+-                    fontWeight: '600',
+-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+-                    opacity: uploading ? 0.7 : 1,
+-                    minWidth: '120px'
+-                  }}
+-                >
+-                  <Upload size={14} /> {uploading ? 'Enviando...' : 'Inserir Anexos'}
+-                </button>
+-
+-                {showAttachmentDropdown && (
+-                  <>
+-                    <div 
+-                      onClick={(e) => {
+-                        e.stopPropagation();
+-                        setShowAttachmentDropdown(false);
+-                      }} 
+-                      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }} 
+-                    />
+-                    <div 
+-                      className="details-dropdown-menu"
+-                      style={{
+-                        position: 'absolute',
+-                        top: '100%',
+-                        right: 0,
+-                        marginTop: '8px',
+-                        backgroundColor: '#fff',
+-                        border: '1px solid var(--border-color)',
+-                        borderRadius: '8px',
+-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+-                        zIndex: 1000,
+-                        minWidth: '200px',
+-                        overflow: 'hidden'
+-                      }}
+-                    >
+-                      <button
+-                        type="button"
+-                        onClick={(e) => {
+-                          e.stopPropagation();
+-                          setShowAttachmentDropdown(false);
+-                          const el = document.getElementById('camera-input-details');
+-                          if (el) el.click();
+-                        }}
+-                        style={{
+-                          background: 'none',
+-                          border: 'none',
+-                          padding: '10px 12px',
+-                          textAlign: 'left',
+-                          cursor: 'pointer',
+-                          fontSize: '0.85rem',
+-                          color: 'var(--text-primary, #0f172a)',
+-                          borderRadius: '6px',
+-                          display: 'flex',
+-                          alignItems: 'center',
+-                          gap: '8px',
+-                          transition: 'background-color 0.2s',
+-                        }}
+-                      >
+-                        📷 Câmera (Tirar Foto)
+-                      </button>
+-                      <button
+-                        type="button"
+-                        onClick={(e) => {
+-                          e.stopPropagation();
+-                          setShowAttachmentDropdown(false);
+-                          const el = document.getElementById('gallery-input-details');
+-                          if (el) el.click();
+-                        }}
+-                        style={{
+-                          background: 'none',
+-                          border: 'none',
+-                          padding: '10px 12px',
+-                          textAlign: 'left',
+-                          cursor: 'pointer',
+-                          fontSize: '0.85rem',
+-                          color: 'var(--text-primary, #0f172a)',
+-                          borderRadius: '6px',
+-                          display: 'flex',
+-                          alignItems: 'center',
+-                          gap: '8px',
+-                          transition: 'background-color 0.2s',
+-                        }}
+-                      >
+-                        🖼️ Galeria (Escolher Imagem)
+-                      </button>
+-                      <button
+-                        type="button"
+-                        onClick={(e) => {
+-                          e.stopPropagation();
+-                          setShowAttachmentDropdown(false);
+-                          const el = document.getElementById('file-input-details');
+-                          if (el) el.click();
+-                        }}
+-                        style={{
+-                          background: 'none',
+-                          border: 'none',
+-                          padding: '10px 12px',
+-                          textAlign: 'left',
+-                          cursor: 'pointer',
+-                          fontSize: '0.85rem',
+-                          color: 'var(--text-primary, #0f172a)',
+-                          borderRadius: '6px',
+-                          display: 'flex',
+-                          alignItems: 'center',
+-                          gap: '8px',
+-                          transition: 'background-color 0.2s',
+-                        }}
+-                      >
+-                        <FileText size={18} color="#ef4444" style={{ flexShrink: 0 }} /> Arquivos (Somente PDF)
+-                      </button>
+-                      <button
+-                        type="button"
+-                        onClick={(e) => {
+-                          e.stopPropagation();
+-                          setShowAttachmentDropdown(false);
+-                          const el = document.querySelector('.paste-dropzone');
+-                          if (el) {
+-                            el.focus();
+-                            alert("Área de anexos focada! Pressione Ctrl+V no teclado para colar o print.");
+-                          }
+-                        }}
+-                        style={{
+-                          background: 'none',
+-                          border: 'none',
+-                          padding: '10px 12px',
+-                          textAlign: 'left',
+-                          cursor: 'pointer',
+-                          fontSize: '0.85rem',
+-                          color: 'var(--text-primary, #0f172a)',
+-                          borderRadius: '6px',
+-                          display: 'flex',
+-                          alignItems: 'center',
+-                          gap: '8px',
+-                          transition: 'background-color 0.2s',
+-                        }}
+-                      >
+-                        📋 Print (Ctrl+V)
+-                      </button>
+-                    </div>
+-                  </>
+-                )}
+-              </div>
+-            )}
+-            </div>
+-          </h3>
+-
+-          {/* Hidden Inputs for details page */}
+-          {(isEditable && isFieldEditable('attachment_url')) && (
+-            <>
+-              <input 
+-                type="file" 
+-                id="camera-input-details" 
+-                accept="image/*" 
+-                capture="environment" 
+-                style={{ display: 'none' }} 
+-                onChange={handleCameraSelect} 
+-              />
+-              <input 
+-                type="file" 
+-                id="gallery-input-details" 
+-                accept="image/*" 
+-                style={{ display: 'none' }} 
+-                onChange={handleGallerySelect} 
+-              />
+-              <input 
+-                type="file" 
+-                id="file-input-details" 
+-                accept=".pdf,application/pdf" 
+-                multiple={false}
+-                style={{ display: 'none' }} 
+-                onChange={handleFileDocumentSelect} 
+-              />
+-            </>
+-          )}
+-
+-          {(() => {
+-            const allAttachmentUrls = (localSurgery.medical_request_urls && localSurgery.medical_request_urls.length > 0)
+-              ? localSurgery.medical_request_urls
+-              : (localSurgery.attachment_url ? [localSurgery.attachment_url] : []);
+-            
+-            if (allAttachmentUrls.length === 0) {
+-              return <p style={{ color: 'var(--text-muted, #94a3b8)', fontStyle: 'italic', margin: '8px 0' }}>Nenhum anexo de solicitação ou autorização.</p>;
+-            }
+-
+-            return (
+-              <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+-                {allAttachmentUrls.map((item, idx) => {
+-                  const { url, name } = parsePrintUrl(item);
+-                  return (
+-                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+-                    <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+-                      {isDocumentFile(url) ? (
+-                        <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+-                          {url.toLowerCase().includes('.pdf') ? (
+-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+-                              <FileText size={40} style={{ color: '#ef4444' }} />
+-                              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
+-                            </div>
+-                          ) : (
+-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+-                              <FileText size={40} style={{ color: '#3b82f6' }} />
+-                              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
+-                            </div>
+-                          )}
+-                        </a>
+-                      ) : (
+-                        <a href={url} target="_blank" rel="noopener noreferrer">
+-                          <img 
+-                            src={url} 
+-                            alt={name || `Solicitacao ${idx + 1}`} 
+-                            style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
+-                          />
+-                        </a>
+-                      )}
+-                      {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons && (
+-                        <button 
+-                          type="button" 
+-                          onClick={(e) => {
+-                            e.stopPropagation();
+-                            e.preventDefault();
+-                            removeMedicalRequestUrl(item);
+-                          }}
+-                          style={{
+-                            position: 'absolute',
+-                            top: '4px',
+-                            right: '4px',
+-                            background: 'rgba(239, 68, 68, 0.9)',
+-                            color: '#fff',
+-                            border: 'none',
+-                            borderRadius: '50%',
+-                            width: '22px',
+-                            height: '22px',
+-                            display: 'flex',
+-                            alignItems: 'center',
+-                            justifyContent: 'center',
+-                            cursor: 'pointer',
+-                            fontSize: '13px',
+-                            lineHeight: '1',
+-                            fontWeight: 'bold',
+-                            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+-                            zIndex: 10
+-                          }}
+-                          title="Remover anexo"
+-                        >
+-                          ×
+-                        </button>
+-                      )}
+-                    </div>
+-                    {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons ? (
+-                      <input
+-                        type="text"
+-                        key={`${idx}-${name}`}
+-                        defaultValue={name}
+-                        onBlur={(e) => {
+-                          const newName = e.target.value;
+-                          if (newName !== name) {
+-                            handleUpdateFileName(idx, newName, url);
+-                          }
+-                        }}
+-                        placeholder="Identificação..."
+-                        style={{
+-                          width: '120px',
+-                          fontSize: '0.75rem',
+-                          padding: '4px 6px',
+-                          border: '1px solid var(--border-color, #e2e8f0)',
+-                          borderRadius: '6px',
+-                          textAlign: 'center',
+-                          marginTop: '4px'
+-                        }}
+-                      />
+-                    ) : (
+-                      name && (
+-                        <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+-                          {name}
+-                        </span>
+-                      )
+-                    )}
+-                  </div>
+-                );
+-              })}
+-              </div>
+-            );
+-          })()}
+-        </div>
+-
+-        {/* Anexos de Comanda / Documentação Cirúrgica */}
+-        <div 
+-          className={`detail-section ${(isEditable && isFieldEditable('comanda_urls')) ? 'paste-dropzone' : ''}`} 
+-          onPaste={(isEditable && isFieldEditable('comanda_urls')) ? handlePasteComandaImages : undefined}
+-          onFocus={(isEditable && isFieldEditable('comanda_urls')) ? () => setIsDropzoneFocused2(true) : undefined}
+-          onBlur={(isEditable && isFieldEditable('comanda_urls')) ? () => setIsDropzoneFocused2(false) : undefined}
+-          tabIndex={(isEditable && isFieldEditable('comanda_urls')) ? 0 : undefined}
+-          style={{ 
+-            marginTop: '24px', 
+-            display: 'flex', 
+-            flexDirection: 'column', 
+-            gap: '16px',
+-            outline: 'none',
+-            border: (isEditable && isFieldEditable('comanda_urls') && isDropzoneFocused2) ? '2px dashed var(--primary-color, #10b981)' : ((isEditable && isFieldEditable('comanda_urls')) ? '1px dashed var(--border-color, #cbd5e1)' : '1px solid var(--border-color, #e2e8f0)'),
+-            borderRadius: '8px',
+-            padding: isDropzoneFocused2 ? '12px' : '0px',
+-            boxShadow: isDropzoneFocused2 ? '0 0 0 3px rgba(16, 185, 129, 0.15)' : 'none',
+-            transition: 'all 0.2s'
+-          }}
+-        >
+-          <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
+-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+-              <ImageIcon size={20} /> ANEXO 2 - Comanda / Documentação Cirúrgica
+-            </div>
+-            
+-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+-              {(isEditable && isFieldEditable('edit_attachments_2_button')) && (
+-                <>
+-                  <button
+-                    type="button"
+-                    onClick={(e) => {
+-                      e.stopPropagation();
+-                      setShowDeleteIconsComanda(true);
+-                    }}
+-                    style={{
+-                      backgroundColor: '#f59e0b',
+-                      color: '#fff',
+-                      padding: '8px 12px',
+-                      borderRadius: '6px',
+-                      border: 'none',
+-                      cursor: 'pointer',
+-                      display: 'flex',
+-                      alignItems: 'center',
+-                      justifyContent: 'center',
+-                      gap: '6px',
+-                      fontSize: '0.8rem',
+-                      fontWeight: '600',
+-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+-                      minWidth: '120px'
+-                    }}
+-                  >
+-                    <Edit size={14} /> Editar Anexos
+-                  </button>
+-                  <button
+-                    type="button"
+-                    onClick={(e) => {
+-                      e.stopPropagation();
+-                      setShowDeleteIconsComanda(false);
+-                    }}
+-                    style={{
+-                      backgroundColor: '#3b82f6',
+-                      color: '#fff',
+-                      padding: '8px 12px',
+-                      borderRadius: '6px',
+-                      border: 'none',
+-                      cursor: 'pointer',
+-                      display: 'flex',
+-                      alignItems: 'center',
+-                      justifyContent: 'center',
+-                      gap: '6px',
+-                      fontSize: '0.8rem',
+-                      fontWeight: '600',
+-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+-                      minWidth: '120px'
+-                    }}
+-                  >
+-                    <Save size={14} /> Salvar Anexos
+-                  </button>
+-                </>
+-              )}
+-            {(isEditable && isFieldEditable('comanda_urls')) && (
+-              <div id="details-comanda-menu-container" style={{ position: 'relative', display: 'inline-block' }}>
+-                <button
+-                  type="button"
+-                  disabled={uploadingComanda}
+-                  onClick={(e) => {
+-                    e.stopPropagation();
+-                    setShowComandaDropdown(!showComandaDropdown);
+-                  }}
+-                  style={{
+-                    backgroundColor: '#10b981',
+-                    color: '#fff',
+-                    padding: '8px 12px',
+-                    borderRadius: '6px',
+-                    border: 'none',
+-                    cursor: uploadingComanda ? 'not-allowed' : 'pointer',
+-                    display: 'flex',
+-                    alignItems: 'center',
+-                    justifyContent: 'center',
+-                    gap: '6px',
+-                    fontSize: '0.8rem',
+-                    fontWeight: '600',
+-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+-                    opacity: uploadingComanda ? 0.7 : 1,
+-                    minWidth: '120px'
+-                  }}
+-                >
+-                  <Upload size={14} /> {uploadingComanda ? 'Enviando...' : 'Inserir Anexos'}
+-                </button>
+-
+-                {showComandaDropdown && (
+-                  <>
+-                    <div 
+-                      onClick={(e) => {
+-                        e.stopPropagation();
+-                        setShowComandaDropdown(false);
+-                      }} 
+-                      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }} 
+-                    />
+-                    <div 
+-                      className="details-dropdown-menu"
+-                    >
+-                      <button
+-                        type="button"
+-                        onClick={(e) => {
+-                          e.stopPropagation();
+-                          setShowComandaDropdown(false);
+-                          const el = document.getElementById('camera-input-comanda-details');
+-                          if (el) el.click();
+-                        }}
+-                        style={{
+-                          background: 'none',
+-                          border: 'none',
+-                          padding: '10px 12px',
+-                          textAlign: 'left',
+-                          cursor: 'pointer',
+-                          fontSize: '0.85rem',
+-                          color: 'var(--text-primary, #0f172a)',
+-                          borderRadius: '6px',
+-                          display: 'flex',
+-                          alignItems: 'center',
+-                          gap: '8px',
+-                          transition: 'background-color 0.2s',
+-                        }}
+-                      >
+-                        📷 Câmera (Tirar Foto)
+-                      </button>
+-                      <button
+-                        type="button"
+-                        onClick={(e) => {
+-                          e.stopPropagation();
+-                          setShowComandaDropdown(false);
+-                          const el = document.getElementById('gallery-input-comanda-details');
+-                          if (el) el.click();
+-                        }}
+-                        style={{
+-                          background: 'none',
+-                          border: 'none',
+-                          padding: '10px 12px',
+-                          textAlign: 'left',
+-                          cursor: 'pointer',
+-                          fontSize: '0.85rem',
+-                          color: 'var(--text-primary, #0f172a)',
+-                          borderRadius: '6px',
+-                          display: 'flex',
+-                          alignItems: 'center',
+-                          gap: '8px',
+-                          transition: 'background-color 0.2s',
+-                        }}
+-                      >
+-                        🖼️ Galeria (Escolher Imagem)
+-                      </button>
+-                      <button
+-                        type="button"
+-                        onClick={(e) => {
+-                          e.stopPropagation();
+-                          setShowComandaDropdown(false);
+-                          const el = document.getElementById('file-input-comanda-details');
+-                          if (el) el.click();
+-                        }}
+-                        style={{
+-                          background: 'none',
+-                          border: 'none',
+-                          padding: '10px 12px',
+-                          textAlign: 'left',
+-                          cursor: 'pointer',
+-                          fontSize: '0.85rem',
+-                          color: 'var(--text-primary, #0f172a)',
+-                          borderRadius: '6px',
+-                          display: 'flex',
+-                          alignItems: 'center',
+-                          gap: '8px',
+-                          transition: 'background-color 0.2s',
+-                        }}
+-                      >
+-                        <FileText size={18} color="#ef4444" style={{ flexShrink: 0 }} /> Arquivos (Somente PDF)
+-                      </button>
+-                      <button
+-                        type="button"
+-                        onClick={(e) => {
+-                          e.stopPropagation();
+-                          setShowComandaDropdown(false);
+-                          const el = document.querySelector('.paste-dropzone');
+-                          if (el) {
+-                            el.focus();
+-                            alert("Área de anexos focada! Pressione Ctrl+V no teclado para colar o print.");
+-                          }
+-                        }}
+-                        style={{
+-                          background: 'none',
+-                          border: 'none',
+-                          padding: '10px 12px',
+-                          textAlign: 'left',
+-                          cursor: 'pointer',
+-                          fontSize: '0.85rem',
+-                          color: 'var(--text-primary, #0f172a)',
+-                          borderRadius: '6px',
+-                          display: 'flex',
+-                          alignItems: 'center',
+-                          gap: '8px',
+-                          transition: 'background-color 0.2s',
+-                        }}
+-                      >
+-                        📋 Print (Ctrl+V)
+-                      </button>
+-                    </div>
+-                  </>
+-                )}
+-              </div>
+-            )}
+-            </div>
+-          </h3>
+-
+-          {/* Hidden Inputs for details page */}
+-          {(isEditable && isFieldEditable('comanda_urls')) && (
+-            <>
+-              <input 
+-                type="file" 
+-                id="camera-input-comanda-details" 
+-                accept="image/*" 
+-                capture="environment" 
+-                style={{ display: 'none' }} 
+-                onChange={handleCameraComandaSelect} 
+-              />
+-              <input 
+-                type="file" 
+-                id="gallery-input-comanda-details" 
+-                accept="image/*" 
+-                style={{ display: 'none' }} 
+-                onChange={handleGalleryComandaSelect} 
+-              />
+-              <input 
+-                type="file" 
+-                id="file-input-comanda-details" 
+-                accept=".pdf,application/pdf" 
+-                multiple={false}
+-                style={{ display: 'none' }} 
+-                onChange={handleFileDocumentComandaSelect} 
+-              />
+-            </>
+-          )}
+-
+-          {(() => {
+-            const allAttachmentUrls = (localSurgery.comanda_urls && localSurgery.comanda_urls.length > 0)
+-              ? localSurgery.comanda_urls
+-              : [];
+-            
+-            if (allAttachmentUrls.length === 0) {
+-              return <p style={{ color: 'var(--text-muted, #94a3b8)', fontStyle: 'italic', margin: '8px 0' }}>Nenhum anexo de comanda ou documentação.</p>;
+-            }
+-
+-            return (
+-              <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
+-                {allAttachmentUrls.map((item, idx) => {
+-                  const { url, name } = parsePrintUrl(item);
+-                  return (
+-                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+-                    <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+-                      {isDocumentFile(url) ? (
+-                        <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+-                          {url.toLowerCase().includes('.pdf') ? (
+-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+-                              <FileText size={40} style={{ color: '#ef4444' }} />
+-                              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
+-                            </div>
+-                          ) : (
+-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+-                              <FileText size={40} style={{ color: '#3b82f6' }} />
+-                              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
+-                            </div>
+-                          )}
+-                        </a>
+-                      ) : (
+-                        <a href={url} target="_blank" rel="noopener noreferrer">
+-                          <img 
+-                            src={url} 
+-                            alt={name || `Solicitacao ${idx + 1}`} 
+-                            style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
+-                          />
+-                        </a>
+-                      )}
+-                      {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda && (
+-                        <button 
+-                          type="button" 
+-                          onClick={(e) => {
+-                            e.stopPropagation();
+-                            e.preventDefault();
+-                            removeComandaUrl(item);
+-                          }}
+-                          style={{
+-                            position: 'absolute',
+-                            top: '4px',
+-                            right: '4px',
+-                            background: 'rgba(239, 68, 68, 0.9)',
+-                            color: '#fff',
+-                            border: 'none',
+-                            borderRadius: '50%',
+-                            width: '22px',
+-                            height: '22px',
+-                            display: 'flex',
+-                            alignItems: 'center',
+-                            justifyContent: 'center',
+-                            cursor: 'pointer',
+-                            fontSize: '13px',
+-                            lineHeight: '1',
+-                            fontWeight: 'bold',
+-                            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+-                            zIndex: 10
+-                          }}
+-                          title="Remover anexo"
+-                        >
+-                          ×
+-                        </button>
+-                      )}
+-                    </div>
+-                    {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda ? (
+-                      <input
+-                        type="text"
+-                        key={`${idx}-${name}`}
+-                        defaultValue={name}
+-                        onBlur={(e) => {
+-                          const newName = e.target.value;
+-                          if (newName !== name) {
+-                            handleUpdateComandaFileName(idx, newName, url);
+-                          }
+-                        }}
+-                        placeholder="Identificação..."
+-                        style={{
+                           width: '120px',
+                           fontSize: '0.75rem',
+                           padding: '4px 6px',
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
+
+We did our best to apply changes despite some inaccuracies. Double check if the edit applied is what you intended.
