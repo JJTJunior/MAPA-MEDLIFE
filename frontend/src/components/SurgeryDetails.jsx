@@ -1123,7 +1123,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons ? (
                       <input
                         type="text"
-                        key={`${idx}-${name}`}
+                        key={`${idx}`}
                         value={name || ''}
                         onChange={(e) => {
                           const newName = e.target.value;
@@ -1505,7 +1505,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda ? (
                       <input
                         type="text"
-                        key={`${idx}-${name}`}
+                        key={`${idx}`}
                         value={name || ''}
                         onChange={(e) => {
                           const newName = e.target.value;
