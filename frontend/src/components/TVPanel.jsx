@@ -240,6 +240,8 @@ export default function TVPanel({ user, onBack }) {
     if (s.includes('urgência') || s.includes('urgencia')) return 'tv-row-purple';
     if (s.includes('aguardando') || s.includes('autorização') || s.includes('autorizacao')) return 'tv-row-yellow';
     if (s.includes('eletiva')) return 'tv-row-gray';
+    if (s.includes('finalizada')) return 'tv-row-teal';
+    if (s.includes('material retornado')) return 'tv-row-pink';
     return 'tv-row-default';
   };
 

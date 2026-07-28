@@ -1457,6 +1457,8 @@ h1, h2, h3, h4, h5, h6 {
 .tv-row-blue { background-color: #2563eb; }
 .tv-row-purple { background-color: #9333ea; }
 .tv-row-gray { background-color: #4b5563; }
+.tv-row-teal { background-color: #0f766e; }
+.tv-row-pink { background-color: #be185d; }
 .tv-row-default { background-color: #374151; }
 
 .tv-table tr:hover {
