@@ -344,7 +344,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
         query = query.ilike('carater', caraterFilter.trim());
       }
       if (missingAnexo2Filter) {
-        query = query.eq('comanda_urls', '{}');
+        query = query.eq('comanda_urls', '{}').not('status', 'ilike', 'SUSPENSA');
       }
 
       // 5. Filtro de Data Inicial e Final

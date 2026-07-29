@@ -308,7 +308,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         buildQuery('Separado para entregar'),
         buildQuery('Finalizada'),
         buildQueryUnfiltered('Material retornado'),
-        buildQuery().eq('comanda_urls', '{}'),
+        buildQuery().eq('comanda_urls', '{}').not('status', 'ilike', 'SUSPENSA'),
         qCharts,
         supabase.from('on_call').select('*').order('start_date', { ascending: true }),
         supabase.from('funcionarios').select('*'),
