@@ -240,7 +240,10 @@ export default function SettingsPage({ user, onBack }) {
 
   const handleEditClick = (item) => {
     setEditingId(item.id);
-    const rawName = item.name || '';
+    let rawName = item.name || '';
+    if (rawName.includes('(INATIVO)')) {
+      rawName = rawName.replace(' (INATIVO)', '').replace('(INATIVO)', '').trim();
+    }
     if (activeTab === 'status' && rawName.includes('|')) {
       const parts = rawName.split('|');
       setEditIcon(parts[0]);
@@ -300,6 +303,10 @@ export default function SettingsPage({ user, onBack }) {
       if (activeTab === 'status') {
         finalName = `${editIcon}|${finalName}`;
       }
+      
+      const originalItem = items.find(i => i.id === id);
+      const isInactive = (originalItem?.name || '').includes('(INATIVO)');
+
       let updateData = { name: finalName };
       if (activeTab === 'funcionarios') {
         updateData.color = editColor;
@@ -307,9 +314,14 @@ export default function SettingsPage({ user, onBack }) {
       if (activeTab === 'medicos' && editCrm.trim()) {
         updateData.name = `${finalName}|CRM:${editCrm.trim()}`;
       }
+      
+      if (isInactive) {
+        updateData.name = `${updateData.name} (INATIVO)`;
+      }
 
       if (activeTab === 'carater') {
-        const updated = items.map(item => item.id === id ? { ...item, name: finalName } : item);
+        const finalCaraterName = updateData.name;
+        const updated = items.map(item => item.id === id ? { ...item, name: finalCaraterName } : item);
         localStorage.setItem('carater_list', JSON.stringify(updated));
         supabase.from('carater').update(updateData).eq('id', id).then(() => {}).catch(() => {});
         setEditingId(null);
@@ -517,6 +529,10 @@ export default function SettingsPage({ user, onBack }) {
               </div>
               
               <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid var(--border-glass)', overflowY: 'auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 20px', borderBottom: '1px solid var(--border-glass)', fontWeight: '600', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  <span>Nome</span>
+                  <span>Ações</span>
+                </div>
                 {loading ? (
                   <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Carregando...</div>
                 ) : filteredItems.length === 0 ? (
@@ -526,10 +542,16 @@ export default function SettingsPage({ user, onBack }) {
                 ) : (
                   filteredItems.map((item, index) => {
                     const rawItemName = item.name || '';
-                    const itemName = activeTab === 'status' && rawItemName.includes('|') 
-                      ? rawItemName.split('|')[1] 
-                      : (activeTab === 'medicos' && rawItemName.includes('|CRM:') ? rawItemName.split('|CRM:')[0] : rawItemName);
-                    const itemCrm = activeTab === 'medicos' && rawItemName.includes('|CRM:') ? rawItemName.split('|CRM:')[1] : null;
+                    const isInactive = rawItemName.includes('(INATIVO)');
+                    let baseName = rawItemName;
+                    if (isInactive) {
+                      baseName = baseName.replace(' (INATIVO)', '').replace('(INATIVO)', '').trim();
+                    }
+
+                    const itemName = activeTab === 'status' && baseName.includes('|') 
+                      ? baseName.split('|')[1] 
+                      : (activeTab === 'medicos' && baseName.includes('|CRM:') ? baseName.split('|CRM:')[0] : baseName);
+                    const itemCrm = activeTab === 'medicos' && baseName.includes('|CRM:') ? baseName.split('|CRM:')[1] : null;
 
                     return (
                     <div key={item.id} style={{ 
@@ -539,7 +561,8 @@ export default function SettingsPage({ user, onBack }) {
                       padding: '16px 20px',
                       borderBottom: index < filteredItems.length - 1 ? '1px solid var(--border-glass)' : 'none',
                       transition: 'background 0.2s',
-                      backgroundColor: 'transparent'
+                      backgroundColor: 'transparent',
+                      opacity: isInactive ? 0.5 : 1
                     }}
                     onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.02)'}
                     onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
@@ -638,6 +661,7 @@ export default function SettingsPage({ user, onBack }) {
                             ) : (
                               itemName
                             )}
+                            {isInactive && <span style={{ marginLeft: '8px', fontSize: '0.75rem', color: '#ef4444' }}>(Inativo)</span>}
                           </span>
                           {activeTab === 'medicos' && itemCrm && (
                             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: '10px', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>CRM: {itemCrm}</span>
