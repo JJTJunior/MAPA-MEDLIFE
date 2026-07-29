@@ -417,7 +417,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         topHospitals: sortAndSlice(hospitalCounts),
         topDoctors: sortAndSlice(doctorCounts),
         topVendors: Object.values(vendorStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 5),
-        topInstrumentalists: Object.values(instrumentalistStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 5),
+        topInstrumentalists: Object.values(instrumentalistStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 10),
         topInsurances: sortAndSlice(insuranceCounts),
         topSurgeryTypes: sortAndSlice(surgeryTypeCounts),
         topCaraters: sortAndSlice(caraterCounts),
@@ -929,7 +929,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       {/* PERFORMANCE DE INSTRUMENTADORES (BAR CHART) */}
       <div className="glass-card" style={{ marginTop: '24px', padding: '20px' }}>
         <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <Award size={20} style={{ color: '#34d399' }} /> Performance de Instrumentadores (Top 5)
+          <Award size={20} style={{ color: '#34d399' }} /> Performance de Instrumentadores (Top 10)
         </h3>
         <div style={{ width: '100%', height: 300 }}>
           {stats.topInstrumentalists && stats.topInstrumentalists.length > 0 ? (
