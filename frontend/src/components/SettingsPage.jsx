@@ -177,17 +177,18 @@ export default function SettingsPage({ user, onBack }) {
 
   const handleEditClick = (item) => {
     setEditingId(item.id);
-    if (activeTab === 'status' && item.name.includes('|')) {
-      const parts = item.name.split('|');
+    const rawName = item.name || '';
+    if (activeTab === 'status' && rawName.includes('|')) {
+      const parts = rawName.split('|');
       setEditIcon(parts[0]);
       setEditValue(parts[1]);
-    } else if (activeTab === 'medicos' && item.name.includes('|CRM:')) {
-      const parts = item.name.split('|CRM:');
+    } else if (activeTab === 'medicos' && rawName.includes('|CRM:')) {
+      const parts = rawName.split('|CRM:');
       setEditValue(parts[0]);
       setEditCrm(parts[1]);
       setEditIcon('⚪');
     } else {
-      setEditValue(item.name);
+      setEditValue(rawName);
       setEditIcon('⚪');
       if (activeTab === 'funcionarios') setEditColor(item.color || '#3b82f6');
       if (activeTab === 'medicos') setEditCrm('');
@@ -232,17 +233,16 @@ export default function SettingsPage({ user, onBack }) {
   };
 
   const filteredItems = items.filter(item => {
-    let itemName = item.name;
-    if (activeTab === 'status' && item.name.includes('|')) itemName = item.name.split('|')[1];
-    else if (activeTab === 'medicos' && item.name.includes('|CRM:')) itemName = item.name.split('|CRM:')[0];
+    const rawItemName = item.name || '';
+    let itemName = rawItemName;
+    if (activeTab === 'status' && rawItemName.includes('|')) itemName = rawItemName.split('|')[1];
+    else if (activeTab === 'medicos' && rawItemName.includes('|CRM:')) itemName = rawItemName.split('|CRM:')[0];
     return itemName.toLowerCase().includes(searchTerm.toLowerCase());
   }).sort((a, b) => {
-    let nameA = a.name;
-    let nameB = b.name;
-    if (activeTab === 'status' && a.name.includes('|')) nameA = a.name.split('|')[1];
-    else if (activeTab === 'medicos' && a.name.includes('|CRM:')) nameA = a.name.split('|CRM:')[0];
-    if (activeTab === 'status' && b.name.includes('|')) nameB = b.name.split('|')[1];
-    else if (activeTab === 'medicos' && b.name.includes('|CRM:')) nameB = b.name.split('|CRM:')[0];
+    let nameA = (a.name || '').includes('|') ? (a.name.split('|')[1] || a.name) : (a.name || '');
+    if (activeTab === 'medicos' && (a.name || '').includes('|CRM:')) nameA = a.name.split('|CRM:')[0];
+    let nameB = (b.name || '').includes('|') ? (b.name.split('|')[1] || b.name) : (b.name || '');
+    if (activeTab === 'medicos' && (b.name || '').includes('|CRM:')) nameB = b.name.split('|CRM:')[0];
     return nameA.localeCompare(nameB);
   });
 
