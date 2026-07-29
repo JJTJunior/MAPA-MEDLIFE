@@ -155,7 +155,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
     { icon: '🟢', name: 'MATERIAL ENTREGUE' },
     { icon: '🟡', name: 'EM SEPARACAO' },
     { icon: '🟠', name: 'SEPARADO PARA ENTREGA' },
-    { icon: '🟣', name: 'AGUARDANDO AUTORIZACAO' },
+    { icon: '🟣', name: 'AUTORIZADAS' },
     { icon: '🔵', name: 'URGENCIA' },
     { icon: '🔴', name: 'SUSPENSA' }
   ]);
@@ -276,7 +276,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
         setStatusList(fetchedStatuses);
       } else {
         const fallbackStatuses = [
-          { icon: '🟡', name: 'AGUARDANDO AUTORIZACAO' },
+          { icon: '🟡', name: 'AUTORIZADAS' },
           { icon: '⚪', name: 'ELETIVA' },
           { icon: '🔵', name: 'EM SEPARACAO' },
           { icon: '🟢', name: 'MATERIAL ENTREGUE' },

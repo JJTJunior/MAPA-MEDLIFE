@@ -302,7 +302,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         buildQuery(),
         buildQuery('Material entregue'),
         buildQuery('Suspensa'),
-        buildQueryUnfiltered('AGUARDANDO AUTORIZACAO'),
+        buildQueryUnfiltered('AUTORIZADAS'),
         buildQuery('EM SEPARACAO'),
         buildQuery('AGENDADA'),
         buildQuery('Separado para entregar'),
@@ -645,14 +645,14 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           <span className="kpi-footer">Cirurgias canceladas/adiadas</span>
         </div>
 
-        {/* KPI: Aguardando Autorização */}
-        <div className="kpi-card glass-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => handleNavigate({ status: 'AGUARDANDO AUTORIZACAO' }, true)} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+        {/* KPI: Autorizadas */}
+        <div className="kpi-card glass-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => handleNavigate({ status: 'AUTORIZADAS' }, true)} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span className="kpi-title">Aguardando Autorização</span>
+            <span className="kpi-title">Autorizadas</span>
             <AlertCircle size={20} style={{ color: '#eab308' }} />
           </div>
           <div className="kpi-value" style={{ color: '#facc15' }}>{stats.pendingAuth}</div>
-          <span className="kpi-footer">Aguardando liberação</span>
+          <span className="kpi-footer">Cirurgias autorizadas</span>
         </div>
 
         {/* KPI: Total Agendado */}

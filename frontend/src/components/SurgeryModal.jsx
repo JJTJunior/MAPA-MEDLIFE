@@ -171,7 +171,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     { name: 'Material entregue' },
     { name: 'Em separação' },
     { name: 'Separado para entrega' },
-    { name: 'Aguardando autorização' },
+    { name: 'Autorizadas' },
     { name: 'Urgência' },
     { name: 'Suspensa' }
   ]);
@@ -226,7 +226,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
         setStatusList(fetchedStatuses);
       } else {
         const fallbackStatuses = [
-          { icon: '🟡', name: 'AGUARDANDO AUTORIZAÇÃO' },
+          { icon: '🟡', name: 'AUTORIZADAS' },
           { icon: '⚪', name: 'ELETIVA' },
           { icon: '🔵', name: 'EM SEPARAÇÃO' },
           { icon: '🟢', name: 'MATERIAL ENTREGUE' },
