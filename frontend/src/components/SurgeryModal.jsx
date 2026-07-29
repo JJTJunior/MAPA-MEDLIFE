@@ -1549,7 +1549,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {(pendingAttachment.isComanda === 'equipment' ? [
-                'MAT. ESTERIL', 'CAIXA', 'EQUIPAMENTO', 'COMPROVANTE'
+                'MAT. ESTERIL', 'CAIXA', 'EQUIPAMENTO', 'COMPROVANTE DE ENTREGA'
               ] : pendingAttachment.isComanda ? [
                 'Comanda', 'Documentação', 'Prontuário', 'Exame'
               ] : [

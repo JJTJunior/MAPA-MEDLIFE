@@ -2133,7 +2133,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   Anexo 3 · Descartáveis / Implantes / Instrumentais / Equipamentos
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
-                  imagem de descartáveis, implantes, instrumentais e equipamentos
+                  imagem de descartáveis, implantes, instrumentais, equipamentos e comprovante de entrega
                 </div>
               </div>
             </div>
@@ -2194,7 +2194,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
                     <EyeOff size={24} style={{ color: 'var(--text-secondary, #94a3b8)', opacity: 0.7 }} />
                     <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
-                      Nenhum anexo de descartáveis, implantes, instrumentais ou equipamentos enviado.
+                      Nenhum anexo de descartáveis, implantes, instrumentais, equipamentos ou comprovante de entrega enviado.
                     </span>
                   </div>
                 );
@@ -2915,7 +2915,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {(pendingAttachment.isComanda === 'equipment' ? [
-                'MAT. ESTERIL', 'CAIXA', 'EQUIPAMENTO', 'COMPROVANTE'
+                'MAT. ESTERIL', 'CAIXA', 'EQUIPAMENTO', 'COMPROVANTE DE ENTREGA'
               ] : pendingAttachment.isComanda ? [
                 'Comanda', 'Documentação', 'Prontuário', 'Exame'
               ] : [
