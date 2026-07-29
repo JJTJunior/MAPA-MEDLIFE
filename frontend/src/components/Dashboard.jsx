@@ -896,6 +896,18 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             <div className="chart-bar-list">
               {stats.topSurgeryTypes.map((item, idx) => {
                 const isSelected = exportModalState.isOpen && exportModalState.surgeryType === item.name;
+                const nameUpper = item.name.toUpperCase();
+                const getBarColor = () => {
+                  if (nameUpper.includes('ORTOPEDIA') || nameUpper.includes('ORTOPÉDICA')) return 'linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%)';
+                  if (nameUpper.includes('BUCO')) return 'linear-gradient(90deg, #06b6d4 0%, #0891b2 100%)';
+                  return 'linear-gradient(90deg, #ec4899 0%, #be185d 100%)';
+                };
+                const getSelectColor = () => {
+                  if (nameUpper.includes('ORTOPEDIA') || nameUpper.includes('ORTOPÉDICA')) return { bg: 'rgba(139, 92, 246, 0.1)', shadow: 'rgba(139, 92, 246, 0.15)', border: 'rgba(139, 92, 246, 0.3)' };
+                  if (nameUpper.includes('BUCO')) return { bg: 'rgba(6, 182, 212, 0.1)', shadow: 'rgba(6, 182, 212, 0.15)', border: 'rgba(6, 182, 212, 0.3)' };
+                  return { bg: 'rgba(236, 72, 153, 0.1)', shadow: 'rgba(236, 72, 153, 0.15)', border: 'rgba(236, 72, 153, 0.3)' };
+                };
+                const selColors = getSelectColor();
                 return (
                   <div 
                     key={idx} 
@@ -905,9 +917,9 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
                       padding: '8px',
                       borderRadius: '8px',
                       transition: 'all 0.2s ease',
-                      backgroundColor: isSelected ? 'rgba(236, 72, 153, 0.1)' : 'transparent',
-                      boxShadow: isSelected ? '0 4px 12px rgba(236, 72, 153, 0.15)' : 'none',
-                      border: isSelected ? '1px solid rgba(236, 72, 153, 0.3)' : '1px solid transparent'
+                      backgroundColor: isSelected ? selColors.bg : 'transparent',
+                      boxShadow: isSelected ? `0 4px 12px ${selColors.shadow}` : 'none',
+                      border: isSelected ? `1px solid ${selColors.border}` : '1px solid transparent'
                     }} 
                     onClick={() => setExportModalState({ isOpen: true, surgeryType: item.name })}
                   >
@@ -917,7 +929,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
                         className="chart-bar-progress-fill" 
                         style={{ 
                           width: `${(item.count / maxSurgeryTypeCount) * 100}%`,
-                          background: 'linear-gradient(90deg, #ec4899 0%, #be185d 100%)' 
+                          background: getBarColor() 
                         }}
                       ></div>
                     </div>
