@@ -413,7 +413,14 @@ export default function SettingsPage({ user, onBack }) {
                     Nenhum registro encontrado.
                   </div>
                 ) : (
-                  filteredItems.map((item, index) => (
+                  filteredItems.map((item, index) => {
+                    const rawItemName = item.name || '';
+                    const itemName = activeTab === 'status' && rawItemName.includes('|') 
+                      ? rawItemName.split('|')[1] 
+                      : (activeTab === 'medicos' && rawItemName.includes('|CRM:') ? rawItemName.split('|CRM:')[0] : rawItemName);
+                    const itemCrm = activeTab === 'medicos' && rawItemName.includes('|CRM:') ? rawItemName.split('|CRM:')[1] : null;
+
+                    return (
                     <div key={item.id} style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
@@ -573,7 +580,7 @@ export default function SettingsPage({ user, onBack }) {
                         )}
                       </div>
                     </div>
-                  ))
+                  )})
                 )}
               </div>
             </div>
