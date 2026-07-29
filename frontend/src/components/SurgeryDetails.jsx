@@ -544,7 +544,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     if (s.includes('separado') || s.includes('entrega')) return 'status-ready';
     if (s.includes('urgência') || s.includes('urgencia')) return 'status-urgent';
     if (s.includes('agendada')) return 'status-urgent';
-    if (s.includes('aguardando') || s.includes('autorização') || s.includes('autorizacao')) return 'status-pending';
+    if (s.includes('aguardando') || s.includes('autorização') || s.includes('autorizacao') || s.includes('autorizada')) return 'status-pending';
     return 'status-default';
   };
 
@@ -555,7 +555,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     if (s.includes('em separação') || s.includes('separacao') || s.includes('separação')) return '🔵';
     if (s.includes('separado') || s.includes('entrega')) return '🟠';
     if (s.includes('urgência') || s.includes('urgencia')) return '🟣';
-    if (s.includes('aguardando') || s.includes('autorização') || s.includes('autorizacao')) return '🟡';
+    if (s.includes('aguardando') || s.includes('autorização') || s.includes('autorizacao') || s.includes('autorizada')) return '🟡';
     if (s.includes('eletiva')) return '⚪';
     return '⚪';
   };
