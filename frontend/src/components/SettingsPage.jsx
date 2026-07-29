@@ -99,12 +99,31 @@ export default function SettingsPage({ user, onBack }) {
       if (activeTab === 'status' && rawName.includes('|')) {
         return rawName.split('|')[1].toUpperCase() === baseName;
       }
+      if (activeTab === 'medicos' && rawName.includes('|CRM:')) {
+        return rawName.split('|CRM:')[0].toUpperCase() === baseName;
+      }
       return rawName.toUpperCase() === baseName;
     });
 
     if (isDuplicate) {
-      alert('Cadastro já existente');
+      alert('Já existe um cadastro com esse nome.');
       return;
+    }
+
+    if (activeTab === 'medicos' && newItemCrm.trim()) {
+      const crmToValidate = newItemCrm.trim();
+      const isCrmDuplicate = items.some(item => {
+        const rawName = item.name || '';
+        if (rawName.includes('|CRM:')) {
+          return rawName.split('|CRM:')[1] === crmToValidate;
+        }
+        return false;
+      });
+
+      if (isCrmDuplicate) {
+        alert('Este CRM já está cadastrado para outro médico.');
+        return;
+      }
     }
 
     setIsSubmitting(true);
@@ -198,8 +217,41 @@ export default function SettingsPage({ user, onBack }) {
 
   const handleSaveEdit = async (id) => {
     if (!editValue.trim()) return;
+
+    let baseName = editValue.trim().toUpperCase();
+
+    const isDuplicateName = items.some(item => {
+      if (item.id === id) return false;
+      const rawName = item.name || '';
+      if (activeTab === 'status' && rawName.includes('|')) return rawName.split('|')[1].toUpperCase() === baseName;
+      if (activeTab === 'medicos' && rawName.includes('|CRM:')) return rawName.split('|CRM:')[0].toUpperCase() === baseName;
+      return rawName.toUpperCase() === baseName;
+    });
+
+    if (isDuplicateName) {
+      alert('Já existe outro cadastro com esse nome.');
+      return;
+    }
+
+    if (activeTab === 'medicos' && editCrm.trim()) {
+      const crmToValidate = editCrm.trim();
+      const isCrmDuplicate = items.some(item => {
+        if (item.id === id) return false;
+        const rawName = item.name || '';
+        if (rawName.includes('|CRM:')) {
+          return rawName.split('|CRM:')[1] === crmToValidate;
+        }
+        return false;
+      });
+
+      if (isCrmDuplicate) {
+        alert('Este CRM já está cadastrado para outro médico.');
+        return;
+      }
+    }
+
     try {
-      let finalName = editValue.trim().toUpperCase();
+      let finalName = baseName;
       if (activeTab === 'status') {
         finalName = `${editIcon}|${finalName}`;
       }
