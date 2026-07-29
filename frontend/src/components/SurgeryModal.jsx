@@ -725,14 +725,51 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
 
             <div className="form-group">
               <label className="form-label">Hora da Cirurgia</label>
-              <input
-                type="time"
-                name="time"
-                className="form-input"
-                disabled={!isFieldEditable('time')}
-                value={formData.time}
-                onChange={handleChange}
-              />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <select
+                  className="form-input"
+                  style={{ flex: 1, padding: '12px 8px' }}
+                  disabled={!isFieldEditable('time')}
+                  value={formData.time ? formData.time.split(':')[0] : ''}
+                  onChange={(e) => {
+                    const h = e.target.value;
+                    if (!h) {
+                      handleChange({ target: { name: 'time', value: '' } });
+                    } else {
+                      const m = (formData.time && formData.time.split(':')[1]) ? formData.time.split(':')[1] : '00';
+                      handleChange({ target: { name: 'time', value: `${h}:${m}` } });
+                    }
+                  }}
+                >
+                  <option value="">Hora</option>
+                  {Array.from({ length: 24 }).map((_, i) => {
+                    const h = i.toString().padStart(2, '0');
+                    return <option key={h} value={h}>{h}</option>;
+                  })}
+                </select>
+                <span style={{ display: 'flex', alignItems: 'center', fontWeight: 'bold' }}>:</span>
+                <select
+                  className="form-input"
+                  style={{ flex: 1, padding: '12px 8px' }}
+                  disabled={!isFieldEditable('time')}
+                  value={formData.time ? formData.time.split(':')[1] : ''}
+                  onChange={(e) => {
+                    const m = e.target.value;
+                    const h = (formData.time && formData.time.split(':')[0]) ? formData.time.split(':')[0] : '00';
+                    if (!m && !formData.time?.split(':')[0]) {
+                      handleChange({ target: { name: 'time', value: '' } });
+                    } else {
+                      handleChange({ target: { name: 'time', value: `${h}:${m || '00'}` } });
+                    }
+                  }}
+                >
+                  <option value="">Min</option>
+                  {Array.from({ length: 60 }).map((_, i) => {
+                    const m = i.toString().padStart(2, '0');
+                    return <option key={m} value={m}>{m}</option>;
+                  })}
+                </select>
+              </div>
             </div>
 
             <div className="form-group">
