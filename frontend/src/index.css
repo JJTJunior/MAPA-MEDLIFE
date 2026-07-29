@@ -1099,6 +1099,10 @@ h1, h2, h3, h4, h5, h6 {
     width: 100% !important;
   }
   
+  .form-input {
+    font-size: 16px !important;
+  }
+  
   .checklist-grid {
     grid-template-columns: 1fr 1fr !important;
   }
