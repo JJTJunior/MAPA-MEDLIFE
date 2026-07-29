@@ -95,10 +95,11 @@ export default function SettingsPage({ user, onBack }) {
     let baseName = newItemName.trim().toUpperCase();
     
     const isDuplicate = items.some(item => {
-      if (activeTab === 'status' && item.name.includes('|')) {
-        return item.name.split('|')[1].toUpperCase() === baseName;
+      const rawName = item.name || '';
+      if (activeTab === 'status' && rawName.includes('|')) {
+        return rawName.split('|')[1].toUpperCase() === baseName;
       }
-      return item.name.toUpperCase() === baseName;
+      return rawName.toUpperCase() === baseName;
     });
 
     if (isDuplicate) {
@@ -511,9 +512,9 @@ export default function SettingsPage({ user, onBack }) {
                             {activeTab === 'funcionarios' && (
                               <div style={{ width: '16px', height: '16px', borderRadius: '50%', backgroundColor: item.color || '#3b82f6', marginRight: '10px' }}></div>
                             )}
-                            {activeTab === 'status' && item.name.includes('|') ? (
+                            {activeTab === 'status' && rawItemName.includes('|') ? (
                               <>
-                                <span style={{ marginRight: '10px', fontSize: '1.2rem' }}>{item.name.split('|')[0]}</span>
+                                <span style={{ marginRight: '10px', fontSize: '1.2rem' }}>{rawItemName.split('|')[0]}</span>
                                 {itemName}
                               </>
                             ) : (
