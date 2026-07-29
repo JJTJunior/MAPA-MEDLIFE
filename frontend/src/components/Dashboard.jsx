@@ -50,7 +50,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
     inSeparation: 0,
     missingAnexo2: 0,
     topHospitals: [],
-    topDoctors: [],
+    topDoctorsOrtopedia: [],
+    topDoctorsBuco: [],
     topVendors: [],
     topInstrumentalists: [],
     topInsurances: [],
@@ -319,12 +320,29 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
 
       // Processar agregações locais
       const hospitalCounts = {};
-      const doctorCounts = {};
+      const doctorOrtopediaCounts = {};
+      const doctorBucoCounts = {};
       const vendorStatsMap = {};
       const instrumentalistStatsMap = {};
       const insuranceCounts = {};
       const surgeryTypeCounts = {};
       const caraterCounts = {};
+
+      // Map doctors to specialty if surgery_type is specified on any of their surgeries
+      const docSpecialtyMap = {};
+      if (recentRows) {
+        recentRows.forEach(row => {
+          if (row.doctor && row.surgery_type) {
+            const doc = row.doctor.trim().toUpperCase();
+            const st = row.surgery_type.toUpperCase();
+            if (st.includes('ORTOPEDIA') || st.includes('ORTOPÉDICA')) {
+              docSpecialtyMap[doc] = 'ORTOPEDIA';
+            } else if (st.includes('BUCO')) {
+              docSpecialtyMap[doc] = 'BUCOMAXILO';
+            }
+          }
+        });
+      }
 
       // Prepare last 6 months chart data
       const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -345,7 +363,22 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       if (recentRows) {
         recentRows.forEach(row => {
           if (row.hospital) hospitalCounts[row.hospital] = (hospitalCounts[row.hospital] || 0) + 1;
-          if (row.doctor) doctorCounts[row.doctor] = (doctorCounts[row.doctor] || 0) + 1;
+          
+          if (row.doctor) {
+            const doc = row.doctor.trim();
+            const docKey = doc.toUpperCase();
+            const st = (row.surgery_type || '').toUpperCase();
+            let spec = null;
+            if (st.includes('ORTOPEDIA') || st.includes('ORTOPÉDICA')) spec = 'ORTOPEDIA';
+            else if (st.includes('BUCO')) spec = 'BUCOMAXILO';
+            else spec = docSpecialtyMap[docKey];
+
+            if (spec === 'ORTOPEDIA') {
+              doctorOrtopediaCounts[doc] = (doctorOrtopediaCounts[doc] || 0) + 1;
+            } else if (spec === 'BUCOMAXILO') {
+              doctorBucoCounts[doc] = (doctorBucoCounts[doc] || 0) + 1;
+            }
+          }
           
           if (row.salesperson) {
             const vp = row.salesperson;
@@ -419,7 +452,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         materialRetornado: materialRetornadoRes.count || 0,
         missingAnexo2: missingAnexo2Res.count || 0,
         topHospitals: sortAndSlice(hospitalCounts),
-        topDoctors: sortAndSlice(doctorCounts),
+        topDoctorsOrtopedia: sortAndSlice(doctorOrtopediaCounts),
+        topDoctorsBuco: sortAndSlice(doctorBucoCounts),
         topVendors: Object.values(vendorStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 5),
         topInstrumentalists: Object.values(instrumentalistStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 10),
         topInsurances: sortAndSlice(insuranceCounts),
@@ -486,7 +520,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
 
   // Encontrar o maior valor para normalizar os progress bars das estatísticas
   const maxHospitalCount = stats.topHospitals[0]?.count || 1;
-  const maxDoctorCount = stats.topDoctors[0]?.count || 1;
+  const maxDoctorOrtopediaCount = (stats.topDoctorsOrtopedia && stats.topDoctorsOrtopedia[0]?.count) || 1;
+  const maxDoctorBucoCount = (stats.topDoctorsBuco && stats.topDoctorsBuco[0]?.count) || 1;
   const maxInsuranceCount = stats.topInsurances[0]?.count || 1;
   const maxSurgeryTypeCount = stats.topSurgeryTypes[0]?.count || 1;
   const maxCaraterCount = (stats.topCaraters && stats.topCaraters[0]?.count) || 1;
@@ -667,7 +702,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       </div>
 
       {/* CHARTS / ANALYTICS SECTION */}
-      <div className="charts-row three-cols">
+      <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
         {/* Top Hospitais */}
         <div className="glass-card chart-container-card">
           <h3 className="chart-title">Hospitais Mais Atendidos (Recentes)</h3>
@@ -694,20 +729,46 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           )}
         </div>
 
-        {/* Top Médicos */}
+        {/* Top Médicos - Ortopedia */}
         <div className="glass-card chart-container-card">
-          <h3 className="chart-title">Top Médicos</h3>
-          {stats.topDoctors.length > 0 ? (
+          <h3 className="chart-title">Top Médicos - Ortopedia</h3>
+          {stats.topDoctorsOrtopedia && stats.topDoctorsOrtopedia.length > 0 ? (
             <div className="chart-bar-list">
-              {stats.topDoctors.map((item, idx) => (
-                <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name })}>
+              {stats.topDoctorsOrtopedia.map((item, idx) => (
+                <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name, surgery_type: 'ORTOPEDIA' })}>
                   <span className="chart-bar-label" title={item.name}>{item.name}</span>
                   <div className="chart-bar-progress-bg">
                     <div 
                       className="chart-bar-progress-fill" 
                       style={{ 
-                        width: `${(item.count / maxDoctorCount) * 100}%`,
+                        width: `${(item.count / maxDoctorOrtopediaCount) * 100}%`,
                         background: 'linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%)' 
+                      }}
+                    ></div>
+                  </div>
+                  <span className="chart-bar-value">{item.count}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
+          )}
+        </div>
+
+        {/* Top Médicos - Bucomaxilo */}
+        <div className="glass-card chart-container-card">
+          <h3 className="chart-title">Top Médicos - Bucomaxilo</h3>
+          {stats.topDoctorsBuco && stats.topDoctorsBuco.length > 0 ? (
+            <div className="chart-bar-list">
+              {stats.topDoctorsBuco.map((item, idx) => (
+                <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name, surgery_type: 'BUCOMAXILO' })}>
+                  <span className="chart-bar-label" title={item.name}>{item.name}</span>
+                  <div className="chart-bar-progress-bg">
+                    <div 
+                      className="chart-bar-progress-fill" 
+                      style={{ 
+                        width: `${(item.count / maxDoctorBucoCount) * 100}%`,
+                        background: 'linear-gradient(90deg, #06b6d4 0%, #0891b2 100%)' 
                       }}
                     ></div>
                   </div>
