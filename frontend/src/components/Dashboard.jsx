@@ -253,6 +253,17 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         return q;
       };
 
+      const buildQueryUnfiltered = (status) => {
+        let q = supabase.from('surgeries').select('*', { count: 'exact', head: true });
+        
+        if (user?.role === 'Instrumentador' || user?.role === 'Vendedor') {
+          q = q.or(`instrumentalist1.eq."${user.name}",instrumentalist2.eq."${user.name}",salesperson.eq."${user.name}"`);
+        }
+        
+        if (status) q = q.ilike('status', status);
+        return q;
+      };
+
       let qCharts = supabase.from('surgeries').select('*').order('date', { ascending: false }).limit(2000);
       if (startDate) qCharts = qCharts.gte('date', startDate);
       if (endDate) qCharts = qCharts.lte('date', endDate);
@@ -288,7 +299,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         buildQuery(),
         buildQuery('Material entregue'),
         buildQuery('Suspensa'),
-        buildQuery('AGUARDANDO AUTORIZACAO'),
+        buildQueryUnfiltered('AGUARDANDO AUTORIZACAO'),
         buildQuery('EM SEPARACAO'),
         buildQuery('AGENDADA'),
         buildQuery('Separado para entregar'),
