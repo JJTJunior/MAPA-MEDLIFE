@@ -40,6 +40,10 @@
   --status-urgent-bg: rgba(147, 51, 234, 0.12);
   --status-urgent-border: rgba(147, 51, 234, 0.3);
   --status-urgent-text: #c084fc;
+  
+  --status-returned-bg: rgba(99, 102, 241, 0.12);
+  --status-returned-border: rgba(99, 102, 241, 0.3);
+  --status-returned-text: #6366f1;
 
   --status-pending-bg: rgba(234, 179, 8, 0.12);
   --status-pending-border: rgba(234, 179, 8, 0.3);
@@ -669,6 +673,12 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--status-urgent-bg);
   border: 1px solid var(--status-urgent-border);
   color: var(--status-urgent-text);
+}
+
+.status-returned {
+  background: var(--status-returned-bg);
+  border: 1px solid var(--status-returned-border);
+  color: var(--status-returned-text);
 }
 
 .status-pending {
