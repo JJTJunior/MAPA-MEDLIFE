@@ -99,6 +99,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const [attachmentNameError, setAttachmentNameError] = useState('');
   const [uploadProgress, setUploadProgress] = useState(null);
   const [pendingDeleteAttachment, setPendingDeleteAttachment] = useState(null);
+  const [showEquipmentDropdown, setShowEquipmentDropdown] = useState(false);
+  const [showDeleteIconsEquipment, setShowDeleteIconsEquipment] = useState(false);
+  const [isDropzoneFocused3, setIsDropzoneFocused3] = useState(false);
 
   useEffect(() => {
     setLocalSurgery(surgery);
@@ -243,7 +246,11 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const requestAttachmentName = (files, shouldCompress, isComanda) => {
     const fileList = Array.isArray(files) ? files : Array.from(files);
     if (!fileList || fileList.length === 0) return;
-    setAttachmentNameInput(isComanda ? 'Comanda' : 'Solicitação');
+    let defaultTitle = 'Solicitação';
+    if (isComanda === 'equipment') defaultTitle = 'Descartáveis / Implantes / Instrumentais / Equipamentos';
+    else if (isComanda) defaultTitle = 'Comanda';
+
+    setAttachmentNameInput(defaultTitle);
     setAttachmentNameError('');
     setPendingAttachment({ files: fileList, shouldCompress, isComanda });
   };
@@ -393,19 +400,19 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   };
 
   
-  const handleCameraComandaSelect = (e) => {
+  const handleCameraEquipmentSelect = (e) => {
     const files = e.target.files;
-    if (files && files.length > 0) requestAttachmentName(files, true, true);
+    if (files && files.length > 0) requestAttachmentName(files, true, 'equipment');
     e.target.value = '';
   };
 
-  const handleGalleryComandaSelect = (e) => {
+  const handleGalleryEquipmentSelect = (e) => {
     const files = e.target.files;
-    if (files && files.length > 0) requestAttachmentName(files, true, true);
+    if (files && files.length > 0) requestAttachmentName(files, true, 'equipment');
     e.target.value = '';
   };
 
-  const handleFileDocumentComandaSelect = (e) => {
+  const handleFileDocumentEquipmentSelect = (e) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
     const pdfs = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
@@ -414,18 +421,116 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
       e.target.value = '';
       return;
     }
-    requestAttachmentName(pdfs, false, true);
+    requestAttachmentName(pdfs, false, 'equipment');
     e.target.value = '';
   };
 
-  const handlePasteComandaImages = async (e) => {
+  const handlePasteEquipmentImages = async (e) => {
     const items = e.clipboardData?.items;
     if (!items) return;
     for (const item of items) {
       if (item.type.indexOf('image') !== -1) {
         const file = item.getAsFile();
-        if (file) await uploadAndAddComandaFile(file, true);
+        if (file) await requestAttachmentName([file], true, 'equipment');
       }
+    }
+  };
+
+  const processEquipmentBatchUpload = async (files, shouldCompress, baseName) => {
+    setUploadingComanda(true);
+    setUploadProgress({
+      current: 0,
+      total: files.length,
+      fileName: baseName,
+      percent: 5,
+      status: `Preparando ${files.length} arquivo(s)...`,
+      isDone: false
+    });
+
+    try {
+      const newValuesToStore = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const displayName = files.length > 1 ? `${baseName} (${i + 1})` : baseName;
+        const currentPercent = Math.round((i / files.length) * 85) + 5;
+
+        setUploadProgress({
+          current: i + 1,
+          total: files.length,
+          fileName: displayName,
+          percent: currentPercent,
+          status: `Enviando arquivo ${i + 1} de ${files.length}...`,
+          isDone: false
+        });
+
+        let fileToUpload = file;
+        if (shouldCompress && file.type.startsWith('image/')) {
+          fileToUpload = await compressImage(file);
+        }
+
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileName = `equipment_${Date.now()}_${Math.floor(Math.random() * 100000)}_${i}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('attachments')
+          .upload(fileName, fileToUpload);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('attachments')
+          .getPublicUrl(fileName);
+
+        const valueToStore = displayName ? `[ANEXO_3]|||${publicUrl}|||${displayName}` : `[ANEXO_3]|||${publicUrl}`;
+        newValuesToStore.push(valueToStore);
+      }
+
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Atualizando registro...',
+        percent: 95,
+        status: 'Salvando alterações no prontuário...',
+        isDone: false
+      });
+
+      setLocalSurgery(prev => {
+        const existingUrls = prev.comanda_urls || [];
+        const updatedUrls = [...existingUrls, ...newValuesToStore];
+
+        supabase.from('surgeries')
+          .update({ comanda_urls: updatedUrls })
+          .eq('id', prev.id)
+          .then(({ error }) => {
+            if (error) console.error('Erro ao atualizar banco:', error);
+          });
+
+        return {
+          ...prev,
+          comanda_urls: updatedUrls
+        };
+      });
+
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Concluído!',
+        percent: 100,
+        status: 'Todos os anexos foram enviados com sucesso!',
+        isDone: true
+      });
+
+      setTimeout(() => {
+        setUploadProgress(null);
+      }, 1200);
+
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao fazer upload dos anexos: ' + err.message);
+      setUploadProgress(null);
+    } finally {
+      setUploadingComanda(false);
     }
   };
 
@@ -541,7 +646,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     setPendingAttachment(null);
     setAttachmentNameError('');
 
-    if (item.isComanda) {
+    if (item.isComanda === 'equipment') {
+      await processEquipmentBatchUpload(item.files, item.shouldCompress, nameToUse);
+    } else if (item.isComanda) {
       await processComandaBatchUpload(item.files, item.shouldCompress, nameToUse);
     } else {
       await processMedicalRequestBatchUpload(item.files, item.shouldCompress, nameToUse);
@@ -1497,7 +1604,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
             <div>
               {(() => {
-                const hasFiles = (localSurgery.comanda_urls && localSurgery.comanda_urls.length > 0) || !!localSurgery.comanda_url;
+                const comandaFiles = (localSurgery.comanda_urls || []).filter(url => !url.startsWith('[ANEXO_3]|||'));
+                const hasFiles = comandaFiles.length > 0 || !!localSurgery.comanda_url;
                 return hasFiles ? (
                   <span style={{
                     backgroundColor: 'rgba(16, 185, 129, 0.12)',
@@ -1885,8 +1993,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               </div>
             )}
           </div>
-
-          {/* Hidden Inputs for details page */}
           {(isEditable && isFieldEditable('comanda_urls')) && (
             <>
               <input 
@@ -1908,13 +2014,481 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               <input 
                 type="file" 
                 id="file-input-comanda-details" 
-                accept=".pdf,application/pdf" 
+                accept=".pdf,application/pdf"
                 multiple
                 style={{ display: 'none' }} 
                 onChange={handleFileDocumentComandaSelect} 
               />
             </>
           )}
+        </div>
+
+        {/* Hidden Inputs for equipment */}
+        {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && (
+          <>
+            <input 
+              type="file" 
+              id="camera-input-equipment-details" 
+              accept="image/*" 
+              capture="environment" 
+              style={{ display: 'none' }} 
+              onChange={handleCameraEquipmentSelect} 
+            />
+            <input 
+              type="file" 
+              id="gallery-input-equipment-details" 
+              accept="image/*" 
+              multiple
+              style={{ display: 'none' }} 
+              onChange={handleGalleryEquipmentSelect} 
+            />
+            <input 
+              type="file" 
+              id="file-input-equipment-details" 
+              accept=".pdf,application/pdf"
+              multiple
+              style={{ display: 'none' }} 
+              onChange={handleFileDocumentEquipmentSelect} 
+            />
+          </>
+        )}
+
+        {/* ANEXO 3 - DESCARTÁVEIS / IMPLANTES / INSTRUMENTAIS / EQUIPAMENTOS */}
+        <div 
+          tabIndex={0}
+          onFocus={() => setIsDropzoneFocused3(true)}
+          onBlur={() => setIsDropzoneFocused3(false)}
+          onPaste={handlePasteEquipmentImages}
+          style={{
+            backgroundColor: 'var(--card-bg, #ffffff)',
+            borderRadius: '16px',
+            border: '1px solid var(--border-color, #e2e8f0)',
+            padding: '24px',
+            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px',
+            outline: 'none',
+            marginTop: '20px'
+          }}
+        >
+          {/* Header Section */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(99, 102, 241, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#6366f1',
+                flexShrink: 0
+              }}>
+                <Briefcase size={20} />
+              </div>
+              <div>
+                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, #0f172a)' }}>
+                  Anexo 3 · Descartáveis / Implantes / Instrumentais / Equipamentos
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
+                  Documentação de descartáveis, implantes, instrumentais e equipamentos
+                </div>
+              </div>
+            </div>
+
+            <div>
+              {(() => {
+                const equipmentFiles = (localSurgery.comanda_urls || []).filter(url => url.startsWith('[ANEXO_3]|||'));
+                return equipmentFiles.length > 0 ? (
+                  <span style={{
+                    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                    color: '#059669',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    fontSize: '0.78rem',
+                    fontWeight: '600'
+                  }}>
+                    Anexado
+                  </span>
+                ) : (
+                  <span style={{
+                    backgroundColor: '#fef3c7',
+                    color: '#d97706',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    fontSize: '0.78rem',
+                    fontWeight: '600'
+                  }}>
+                    Pendente
+                  </span>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* Dropzone Container */}
+          <div style={{
+            border: (isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls')) && isDropzoneFocused3) 
+              ? '2px dashed #6366f1' 
+              : '1px dashed var(--border-color, #cbd5e1)',
+            borderRadius: '10px',
+            padding: '24px 16px',
+            backgroundColor: 'var(--bg-secondary, #f8fafc)',
+            minHeight: '90px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            outline: 'none',
+            transition: 'all 0.2s',
+            boxShadow: (isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls')) && isDropzoneFocused3) ? '0 0 0 3px rgba(99, 102, 241, 0.15)' : 'none'
+          }}>
+            {(() => {
+              const allEquipmentRaw = (localSurgery.comanda_urls || []).filter(url => url.startsWith('[ANEXO_3]|||'));
+              
+              if (allEquipmentRaw.length === 0) {
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
+                    <EyeOff size={24} style={{ color: 'var(--text-secondary, #94a3b8)', opacity: 0.7 }} />
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
+                      Nenhum anexo de descartáveis, implantes, instrumentais ou equipamentos enviado.
+                    </span>
+                  </div>
+                );
+              }
+
+              return (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', width: '100%' }}>
+                  {allEquipmentRaw.map((rawItem, idx) => {
+                    const cleanItem = rawItem.replace('[ANEXO_3]|||', '');
+                    const { url, name } = parsePrintUrl(cleanItem);
+                    return (
+                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                        {isDocumentFile(url) ? (
+                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '100px', height: '100px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', textDecoration: 'none' }}>
+                            {url.toLowerCase().includes('.pdf') ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <FileText size={32} style={{ color: '#ef4444' }} />
+                                <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <FileText size={32} style={{ color: '#3b82f6' }} />
+                                <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
+                              </div>
+                            )}
+                          </a>
+                        ) : (
+                          <a href={url} target="_blank" rel="noopener noreferrer">
+                            <img 
+                              src={url} 
+                              alt={name || `Equipamento ${idx + 1}`} 
+                              style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
+                            />
+                          </a>
+                        )}
+                        {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && showDeleteIconsEquipment && (
+                          <button 
+                            type="button" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              setPendingDeleteAttachment({ item: rawItem, isComanda: true });
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: '4px',
+                              right: '4px',
+                              background: 'rgba(239, 68, 68, 0.9)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '22px',
+                              height: '22px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '13px',
+                              lineHeight: '1',
+                              fontWeight: 'bold',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                              zIndex: 10
+                            }}
+                            title="Remover anexo"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+
+                      {showDeleteIconsEquipment ? (
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={(e) => {
+                            const newName = e.target.value;
+                            const updatedUrls = [...(localSurgery.comanda_urls || [])];
+                            const realIdx = updatedUrls.indexOf(rawItem);
+                            if (realIdx !== -1) {
+                              updatedUrls[realIdx] = newName ? `[ANEXO_3]|||${url}|||${newName.trim()}` : `[ANEXO_3]|||${url}`;
+                              setLocalSurgery(prev => ({ ...prev, comanda_urls: updatedUrls }));
+                            }
+                          }}
+                          placeholder="Identificação..."
+                          style={{
+                            fontSize: '0.78rem',
+                            padding: '4px 8px',
+                            borderRadius: '4px',
+                            border: '1px solid var(--border-color, #cbd5e1)',
+                            width: '110px',
+                            textAlign: 'center'
+                          }}
+                        />
+                      ) : (
+                        name && (
+                          <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '140px' }}>
+                            {name}
+                          </span>
+                        )
+                      )}
+                    </div>
+                    );
+                  })}
+                </div>
+              );
+            })()}
+
+            {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && (
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', fontWeight: '500', marginTop: '4px' }}>
+                Selecione uma opção abaixo ou **clique aqui e aperte Ctrl+V** para colar anexos
+              </span>
+            )}
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', flexWrap: 'wrap' }}>
+            {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteIconsEquipment(!showDeleteIconsEquipment)}
+                  style={{
+                    backgroundColor: showDeleteIconsEquipment ? '#f1f5f9' : '#ffffff',
+                    color: '#334155',
+                    border: '1px solid #cbd5e1',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Edit size={15} /> Editar anexos
+                </button>
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    setShowDeleteIconsEquipment(false);
+                    try {
+                      await supabase.from('surgeries').update({
+                        comanda_urls: localSurgery.comanda_urls
+                      }).eq('id', localSurgery.id);
+                    } catch (err) {
+                      console.error(err);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#334155',
+                    border: '1px solid #cbd5e1',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Save size={15} /> Salvar anexos
+                </button>
+              </>
+            )}
+            {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && (
+              <div id="details-equipment-menu-container" style={{ position: 'relative', display: 'inline-block' }}>
+                <button
+                  type="button"
+                  disabled={uploadingComanda}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowEquipmentDropdown(!showEquipmentDropdown);
+                  }}
+                  style={{
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff',
+                    padding: '8px 18px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    cursor: uploadingComanda ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)',
+                    opacity: uploadingComanda ? 0.7 : 1,
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Upload size={15} /> {uploadingComanda ? 'Enviando...' : 'Inserir anexos'}
+                </button>
+
+                {showEquipmentDropdown && (
+                  <>
+                    <div 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowEquipmentDropdown(false);
+                      }} 
+                      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999 }} 
+                    />
+                    <div 
+                      className="details-dropdown-menu"
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        marginTop: '8px',
+                        backgroundColor: '#fff',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        zIndex: 1000,
+                        minWidth: '200px',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowEquipmentDropdown(false);
+                          const el = document.getElementById('camera-input-equipment-details');
+                          if (el) el.click();
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          padding: '10px 12px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          color: 'var(--text-primary, #0f172a)',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          transition: 'background-color 0.2s',
+                        }}
+                      >
+                        📷 Câmera (Tirar Foto)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowEquipmentDropdown(false);
+                          const el = document.getElementById('gallery-input-equipment-details');
+                          if (el) el.click();
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          padding: '10px 12px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          color: 'var(--text-primary, #0f172a)',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          transition: 'background-color 0.2s',
+                        }}
+                      >
+                        🖼️ Galeria (Escolher Imagem)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowEquipmentDropdown(false);
+                          const el = document.getElementById('file-input-equipment-details');
+                          if (el) el.click();
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          padding: '10px 12px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          color: 'var(--text-primary, #0f172a)',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          transition: 'background-color 0.2s',
+                        }}
+                      >
+                        <FileText size={18} color="#ef4444" style={{ flexShrink: 0 }} /> Arquivos (Somente PDF)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePrintOptionClick('equipment');
+                        }}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          padding: '10px 12px',
+                          textAlign: 'left',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          color: 'var(--text-primary, #0f172a)',
+                          borderRadius: '6px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          transition: 'background-color 0.2s',
+                        }}
+                      >
+                        📋 Print (Ctrl+V)
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Observações */}

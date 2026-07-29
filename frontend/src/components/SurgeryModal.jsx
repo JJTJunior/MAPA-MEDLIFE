@@ -405,7 +405,11 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
   const requestAttachmentName = (files, shouldCompress, isComanda) => {
     const fileList = Array.isArray(files) ? files : Array.from(files);
     if (!fileList || fileList.length === 0) return;
-    setAttachmentNameInput(isComanda ? 'Comanda' : 'Solicitação');
+    let defaultTitle = 'Solicitação';
+    if (isComanda === 'equipment') defaultTitle = 'Descartáveis / Implantes / Instrumentais / Equipamentos';
+    else if (isComanda) defaultTitle = 'Comanda';
+
+    setAttachmentNameInput(defaultTitle);
     setAttachmentNameError('');
     setPendingAttachment({ files: fileList, shouldCompress, isComanda });
   };
@@ -495,6 +499,83 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     requestAttachmentName([file], shouldCompress, true);
   };
 
+  const processEquipmentBatchUpload = async (files, shouldCompress, baseName) => {
+    setLoading(true);
+    setUploadProgress({
+      current: 0,
+      total: files.length,
+      fileName: baseName,
+      percent: 5,
+      status: `Preparando ${files.length} arquivo(s)...`,
+      isDone: false
+    });
+
+    try {
+      const newValuesToStore = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const displayName = files.length > 1 ? `${baseName} (${i + 1})` : baseName;
+        const currentPercent = Math.round((i / files.length) * 85) + 5;
+
+        setUploadProgress({
+          current: i + 1,
+          total: files.length,
+          fileName: displayName,
+          percent: currentPercent,
+          status: `Enviando arquivo ${i + 1} de ${files.length}...`,
+          isDone: false
+        });
+
+        let fileToUpload = file;
+        if (shouldCompress && file.type.startsWith('image/')) {
+          fileToUpload = await compressImage(file);
+        }
+
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileName = `equipment_${Date.now()}_${Math.floor(Math.random() * 100000)}_${i}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('attachments')
+          .upload(fileName, fileToUpload);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('attachments')
+          .getPublicUrl(fileName);
+
+        const valueToStore = displayName ? `[ANEXO_3]|||${publicUrl}|||${displayName}` : `[ANEXO_3]|||${publicUrl}`;
+        newValuesToStore.push(valueToStore);
+      }
+
+      setFormData(prev => ({
+        ...prev,
+        comanda_urls: [...(prev.comanda_urls || []), ...newValuesToStore]
+      }));
+
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Concluído!',
+        percent: 100,
+        status: 'Todos os anexos foram enviados com sucesso!',
+        isDone: true
+      });
+
+      setTimeout(() => {
+        setUploadProgress(null);
+      }, 1200);
+
+    } catch (err) {
+      console.error(err);
+      alert('Erro ao fazer upload dos anexos: ' + err.message);
+      setUploadProgress(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const processComandaBatchUpload = async (files, shouldCompress, baseName) => {
     setUploadingComanda(true);
     setUploadProgress({
@@ -582,7 +663,9 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     setPendingAttachment(null);
     setAttachmentNameError('');
 
-    if (item.isComanda) {
+    if (item.isComanda === 'equipment') {
+      await processEquipmentBatchUpload(item.files, item.shouldCompress, nameToUse);
+    } else if (item.isComanda) {
       await processComandaBatchUpload(item.files, item.shouldCompress, nameToUse);
     } else {
       await processMedicalRequestBatchUpload(item.files, item.shouldCompress, nameToUse);
@@ -1464,10 +1547,13 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
             </p>
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {(pendingAttachment.isComanda 
-                ? ['Comanda', 'Documentação', 'Prontuário', 'Exame']
-                : ['Solicitação', 'Autorização', 'Pedido Médico', 'Laudo']
-              ).map(chip => (
+              {(pendingAttachment.isComanda === 'equipment' ? [
+                'Descartáveis', 'Implantes', 'Instrumentais', 'Equipamentos', 'Relatório Técnico'
+              ] : pendingAttachment.isComanda ? [
+                'Comanda', 'Folha de Sala', 'Relatório Cirúrgico', 'Recibo de Entrega', 'Comprovante'
+              ] : [
+                'Solicitação', 'Autorização', 'Pedido Médico', 'Guia de Convênio', 'Orçamento'
+              ]).map((chip) => (
                 <button
                   key={chip}
                   type="button"
