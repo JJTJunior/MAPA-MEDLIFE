@@ -197,7 +197,7 @@ export default function SettingsPage({ user, onBack }) {
       await fetchItems();
     } catch (err) {
       console.error(`Erro ao remover de ${activeTab}:`, err);
-      alert(err.message || 'Não foi possível excluir. Pode ser que o item já esteja em uso no sistema.');
+      alert(`Erro: ${err.message || 'Desconhecido'} (Código: ${err.code || 'N/A'}). Se o problema persistir, atualize a página e tente novamente.`);
     }
   };
 
