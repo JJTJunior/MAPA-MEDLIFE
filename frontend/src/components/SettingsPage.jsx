@@ -38,6 +38,7 @@ export default function SettingsPage({ user, onBack }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [errorMsg, setErrorMsg] = useState('');
   const [editValue, setEditValue] = useState('');
   const [editCrm, setEditCrm] = useState('');
   const [editIcon, setEditIcon] = useState('⚪');
@@ -107,7 +108,7 @@ export default function SettingsPage({ user, onBack }) {
     });
 
     if (isDuplicate) {
-      alert('Já existe um cadastro com esse nome.');
+      setErrorMsg('Já existe um cadastro com esse nome.');
       return;
     }
 
@@ -122,11 +123,12 @@ export default function SettingsPage({ user, onBack }) {
       });
 
       if (isCrmDuplicate) {
-        alert('Este CRM já está cadastrado para outro médico.');
+        setErrorMsg('Este CRM já está cadastrado para outro médico.');
         return;
       }
     }
 
+    setErrorMsg('');
     setIsSubmitting(true);
     try {
       const table = activeTab;
@@ -164,7 +166,7 @@ export default function SettingsPage({ user, onBack }) {
       await fetchItems();
     } catch (err) {
       console.error(`Erro ao adicionar em ${activeTab}:`, err);
-      alert('Não foi possível adicionar. Verifique o console.');
+      setErrorMsg('Não foi possível adicionar. Verifique o console.');
     } finally {
       setIsSubmitting(false);
     }
@@ -198,7 +200,7 @@ export default function SettingsPage({ user, onBack }) {
       await fetchItems();
     } catch (err) {
       console.error(`Erro ao remover de ${activeTab}:`, err);
-      alert(`Erro: ${err.message || 'Desconhecido'} (Código: ${err.code || 'N/A'}). Se o problema persistir, atualize a página e tente novamente.`);
+      setErrorMsg(`Erro: ${err.message || 'Desconhecido'} (Código: ${err.code || 'N/A'}). Se o problema persistir, atualize a página e tente novamente.`);
     } finally {
       setDeletingId(null);
     }
@@ -238,7 +240,7 @@ export default function SettingsPage({ user, onBack }) {
     });
 
     if (isDuplicateName) {
-      alert('Já existe outro cadastro com esse nome.');
+      setErrorMsg('Já existe outro cadastro com esse nome.');
       return;
     }
 
@@ -254,10 +256,12 @@ export default function SettingsPage({ user, onBack }) {
       });
 
       if (isCrmDuplicate) {
-        alert('Este CRM já está cadastrado para outro médico.');
+        setErrorMsg('Este CRM já está cadastrado para outro médico.');
         return;
       }
     }
+
+    setErrorMsg('');
 
     try {
       let finalName = baseName;
@@ -290,7 +294,7 @@ export default function SettingsPage({ user, onBack }) {
       await fetchItems();
     } catch (err) {
       console.error(`Erro ao editar em ${activeTab}:`, err);
-      alert('Não foi possível editar.');
+      setErrorMsg('Não foi possível editar.');
     }
   };
 
@@ -342,7 +346,10 @@ export default function SettingsPage({ user, onBack }) {
                 key={tab.id}
                 type="button"
                 className={`settings-menu-btn ${activeTab === tab.id ? 'active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setErrorMsg('');
+                }}
               >
                 {tab.icon}
                 {tab.label}
@@ -430,17 +437,27 @@ export default function SettingsPage({ user, onBack }) {
                     style={{ width: '120px' }}
                   />
                 )}
-                <button 
-                  type="submit" 
-                  className="btn-primary" 
-                  style={{ width: 'auto', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '5px' }}
-                  disabled={isSubmitting}
-                >
-                  <Plus size={18} />
-                  Adicionar
-                </button>
-              </form>
-            </div>
+                  <button 
+                    type="submit" 
+                    className="btn-primary" 
+                    disabled={isSubmitting}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <Plus size={18} />
+                    Adicionar
+                  </button>
+                </form>
+              </div>
+              
+              {errorMsg && (
+                <div style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', padding: '12px 16px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontWeight: '500' }}>{errorMsg}</span>
+                  <button type="button" onClick={() => setErrorMsg('')} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                    <X size={16} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
           {activeTab === 'usuarios' ? (
