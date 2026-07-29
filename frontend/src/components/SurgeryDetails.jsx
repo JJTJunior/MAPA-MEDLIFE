@@ -94,6 +94,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const [showDeleteIconsComanda, setShowDeleteIconsComanda] = useState(false);
   const [isSharingWhatsApp, setIsSharingWhatsApp] = useState(false);
   const [shareModalData, setShareModalData] = useState(null);
+  const [pendingAttachment, setPendingAttachment] = useState(null);
+  const [attachmentNameInput, setAttachmentNameInput] = useState('');
+  const [attachmentNameError, setAttachmentNameError] = useState('');
 
   useEffect(() => {
     setLocalSurgery(surgery);
@@ -238,16 +241,17 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     };
   }, [isDropzoneFocused2, localSurgery]);
 
-  const uploadAndAddFile = async (file, shouldCompress = false) => {
-    let displayName = prompt("É OBRIGATÓRIO informar a identificação para este anexo (ex: Solicitação, Autorização):");
-    if (displayName === null) return;
-    while (!displayName || !displayName.trim()) {
-      alert("A identificação do anexo é OBRIGATÓRIA!");
-      displayName = prompt("Por favor, digite a identificação para este anexo (ex: Solicitação, Autorização):");
-      if (displayName === null) return;
-    }
-    const printName = displayName.trim();
+  const requestAttachmentName = (file, shouldCompress, isComanda) => {
+    setAttachmentNameInput(isComanda ? 'Comanda' : 'Solicitação');
+    setAttachmentNameError('');
+    setPendingAttachment({ file, shouldCompress, isComanda });
+  };
 
+  const uploadAndAddFile = (file, shouldCompress = false) => {
+    requestAttachmentName(file, shouldCompress, false);
+  };
+
+  const processMedicalRequestUpload = async (file, shouldCompress, printName) => {
     setUploading(true);
     try {
       let fileToUpload = file;
@@ -284,7 +288,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         attachment_url: firstAttachmentUrl
       }));
 
-      alert('SALVO COM SUCESSO');
     } catch (err) {
       console.error(err);
       alert('Erro ao fazer upload da imagem: ' + err.message);
@@ -365,15 +368,11 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
       }
     }
   };
-  const uploadAndAddComandaFile = async (file, shouldCompress = false) => {
-    let displayName = prompt("É OBRIGATÓRIO informar a identificação para este anexo (ex: Comanda, Documentação):");
-    if (displayName === null) return;
-    while (!displayName || !displayName.trim()) {
-      alert("A identificação do anexo é OBRIGATÓRIA!");
-      displayName = prompt("Por favor, digite a identificação para este anexo (ex: Comanda, Documentação):");
-      if (displayName === null) return;
-    }
-    const printName = displayName.trim();
+  const uploadAndAddComandaFile = (file, shouldCompress = false) => {
+    requestAttachmentName(file, shouldCompress, true);
+  };
+
+  const processComandaUpload = async (file, shouldCompress, printName) => {
     setUploadingComanda(true);
     try {
       let fileToUpload = file;
@@ -392,12 +391,28 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         .eq('id', localSurgery.id);
       if (updateError) throw updateError;
       setLocalSurgery(prev => ({ ...prev, comanda_urls: updatedUrls }));
-      alert('SALVO COM SUCESSO');
     } catch (err) {
       console.error(err);
       alert('Erro ao fazer upload da imagem: ' + err.message);
     } finally {
       setUploadingComanda(false);
+    }
+  };
+
+  const handleConfirmAttachmentName = async () => {
+    if (!attachmentNameInput || !attachmentNameInput.trim()) {
+      setAttachmentNameError('A identificação do anexo é OBRIGATÓRIA!');
+      return;
+    }
+    const nameToUse = attachmentNameInput.trim();
+    const item = pendingAttachment;
+    setPendingAttachment(null);
+    setAttachmentNameError('');
+
+    if (item.isComanda) {
+      await processComandaUpload(item.file, item.shouldCompress, nameToUse);
+    } else {
+      await processMedicalRequestUpload(item.file, item.shouldCompress, nameToUse);
     }
   };
   const removeComandaUrl = async (itemToRemove) => {
@@ -2099,6 +2114,158 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   </div>
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Customizado de Identificação do Anexo */}
+      {pendingAttachment && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            padding: '24px',
+            maxWidth: '440px',
+            width: '90%',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#2563eb'
+              }}>
+                <FileText size={20} />
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+                Identificar Anexo (Obrigatório)
+              </h3>
+            </div>
+
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: '1.4' }}>
+              Informe o nome ou escolha uma opção rápida para identificar este arquivo:
+            </p>
+
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {(pendingAttachment.isComanda 
+                ? ['Comanda', 'Documentação', 'Prontuário', 'Exame']
+                : ['Solicitação', 'Autorização', 'Pedido Médico', 'Laudo']
+              ).map(chip => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => {
+                    setAttachmentNameInput(chip);
+                    setAttachmentNameError('');
+                  }}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '20px',
+                    border: '1px solid #cbd5e1',
+                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : '#f8fafc',
+                    color: attachmentNameInput === chip ? '#ffffff' : '#334155',
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    fontWeight: 500,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+
+            <div>
+              <input
+                type="text"
+                autoFocus
+                value={attachmentNameInput}
+                onChange={(e) => {
+                  setAttachmentNameInput(e.target.value);
+                  setAttachmentNameError('');
+                }}
+                placeholder="Ex: Solicitação, Autorização, Comanda..."
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid #cbd5e1',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleConfirmAttachmentName();
+                  }
+                }}
+              />
+              {attachmentNameError && (
+                <div style={{ color: '#ef4444', fontSize: '0.8rem', fontWeight: 500, marginTop: '4px' }}>
+                  {attachmentNameError}
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setPendingAttachment(null);
+                  setAttachmentNameError('');
+                }}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  backgroundColor: '#f8fafc',
+                  color: '#475569',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 500
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmAttachmentName}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#2563eb',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)'
+                }}
+              >
+                Confirmar e Anexar
+              </button>
             </div>
           </div>
         </div>
