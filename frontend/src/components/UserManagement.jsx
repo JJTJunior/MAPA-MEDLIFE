@@ -201,7 +201,6 @@ export default function UserManagement({ currentUser }) {
   };
 
   const handleToggleActive = async (userId, currentStatus) => {
-    if (!window.confirm(`Deseja realmente ${currentStatus ? 'inativar' : 'ativar'} este usuário?`)) return;
     try {
       const { error } = await supabase
         .from('user_profiles')

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../supabaseClient';
-import { X, Settings, Users, Stethoscope, Building2, UserPlus, Tag, Plus, Trash2, ShieldAlert, Activity, FileText, Hash, List, Edit2, Save, Search, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { X, Settings, Users, Stethoscope, Building2, UserPlus, Tag, Plus, Trash2, ShieldAlert, Activity, FileText, Hash, List, Edit2, Save, Search, ArrowLeft, Eye, EyeOff, UserX, UserCheck } from 'lucide-react';
 import UserManagement from './UserManagement';
 import AuditLogs from './AuditLogs';
 
@@ -695,11 +695,11 @@ export default function SettingsPage({ user, onBack }) {
                               <button 
                                 type="button" 
                                 className="btn-icon" 
-                                style={{ color: (item.name || '').includes('(INATIVO)') ? '#9ca3af' : '#10b981' }}
+                                style={{ color: !(item.name || '').includes('(INATIVO)') ? '#ef4444' : '#10b981' }}
                                 onClick={() => handleToggleActive(item)}
-                                title={(item.name || '').includes('(INATIVO)') ? "Reativar cadastro" : "Inativar cadastro"}
+                                title={!(item.name || '').includes('(INATIVO)') ? "Inativar" : "Ativar"}
                               >
-                                {(item.name || '').includes('(INATIVO)') ? <EyeOff size={18} /> : <Eye size={18} />}
+                                {!(item.name || '').includes('(INATIVO)') ? <UserX size={18} /> : <UserCheck size={18} />}
                               </button>
                             )}
                             <button 
