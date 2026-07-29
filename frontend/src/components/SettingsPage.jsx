@@ -361,7 +361,8 @@ export default function SettingsPage({ user, onBack }) {
         {/* Main Content Area */}
         <div className="settings-content glass-card">
           {activeTab !== 'usuarios' && activeTab !== 'logs' && (
-            <div style={{ marginBottom: '25px' }}>
+            <>
+              <div style={{ marginBottom: '25px' }}>
               <form onSubmit={handleAdd} style={{ display: 'flex', gap: '10px' }}>
                 {activeTab === 'status' && (
                   <select
