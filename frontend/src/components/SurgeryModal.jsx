@@ -414,11 +414,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
   const requestAttachmentName = (files, shouldCompress, isComanda) => {
     const fileList = Array.isArray(files) ? files : Array.from(files);
     if (!fileList || fileList.length === 0) return;
-    let defaultTitle = 'Solicitação';
-    if (isComanda === 'equipment') defaultTitle = 'Descartáveis / Implantes / Instrumentais / Equipamentos';
-    else if (isComanda) defaultTitle = 'Comanda';
-
-    setAttachmentNameInput(defaultTitle);
+    setAttachmentNameInput('');
     setAttachmentNameError('');
     setPendingAttachment({ files: fileList, shouldCompress, isComanda });
   };
@@ -1553,11 +1549,11 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {(pendingAttachment.isComanda === 'equipment' ? [
-                'Descartáveis', 'Implantes', 'Instrumentais', 'Equipamentos', 'Relatório Técnico'
+                'MAT. ESTERIL', 'CAIXA', 'EQUIPAMENTO', 'COMPROVANTE'
               ] : pendingAttachment.isComanda ? [
-                'Comanda', 'Folha de Sala', 'Relatório Cirúrgico', 'Recibo de Entrega', 'Comprovante'
+                'Comanda', 'Documentação', 'Prontuário', 'Exame'
               ] : [
-                'Solicitação', 'Autorização', 'Pedido Médico', 'Guia de Convênio', 'Orçamento'
+                'Solicitação', 'Autorização', 'Pedido Médico', 'Laudo'
               ]).map((chip) => (
                 <button
                   key={chip}

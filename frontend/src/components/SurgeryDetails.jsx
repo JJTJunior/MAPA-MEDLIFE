@@ -288,11 +288,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const requestAttachmentName = (files, shouldCompress, isComanda) => {
     const fileList = Array.isArray(files) ? files : Array.from(files);
     if (!fileList || fileList.length === 0) return;
-    let defaultTitle = 'Solicitação';
-    if (isComanda === 'equipment') defaultTitle = 'Descartáveis / Implantes / Instrumentais / Equipamentos';
-    else if (isComanda) defaultTitle = 'Comanda';
-
-    setAttachmentNameInput(defaultTitle);
+    setAttachmentNameInput('');
     setAttachmentNameError('');
     setPendingAttachment({ files: fileList, shouldCompress, isComanda });
   };
@@ -2918,10 +2914,13 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             </p>
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {(pendingAttachment.isComanda 
-                ? ['Comanda', 'Documentação', 'Prontuário', 'Exame']
-                : ['Solicitação', 'Autorização', 'Pedido Médico', 'Laudo']
-              ).map(chip => (
+              {(pendingAttachment.isComanda === 'equipment' ? [
+                'MAT. ESTERIL', 'CAIXA', 'EQUIPAMENTO', 'COMPROVANTE'
+              ] : pendingAttachment.isComanda ? [
+                'Comanda', 'Documentação', 'Prontuário', 'Exame'
+              ] : [
+                'Solicitação', 'Autorização', 'Pedido Médico', 'Laudo'
+              ]).map(chip => (
                 <button
                   key={chip}
                   type="button"
