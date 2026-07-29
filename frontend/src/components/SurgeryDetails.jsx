@@ -139,32 +139,29 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   // Lê a URL do anexo direto da nova coluna do banco de dados
   let attachedImageUrl = localSurgery.attachment_url || null;
 
-  const handleCameraSelect = async (e) => {
+  const handleCameraSelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) {
-      await uploadAndAddFile(file, true);
-    }
+    if (files && files.length > 0) requestAttachmentName(files, true, false);
+    e.target.value = '';
   };
 
-  const handleGallerySelect = async (e) => {
+  const handleGallerySelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) {
-      await uploadAndAddFile(file, true);
-    }
+    if (files && files.length > 0) requestAttachmentName(files, true, false);
+    e.target.value = '';
   };
 
-  const handleFileDocumentSelect = async (e) => {
+  const handleFileDocumentSelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) {
-      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        alert("Formato não permitido! Por favor, anexe apenas arquivos PDF.");
-        continue;
-      }
-      await uploadAndAddFile(file, false);
+    if (!files || files.length === 0) return;
+    const pdfs = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+    if (pdfs.length === 0) {
+      alert("Formato não permitido! Por favor, anexe apenas arquivos PDF.");
+      e.target.value = '';
+      return;
     }
+    requestAttachmentName(pdfs, false, false);
+    e.target.value = '';
   };
 
   const handlePasteImages = async (e) => {
@@ -241,14 +238,16 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     };
   }, [isDropzoneFocused2, localSurgery]);
 
-  const requestAttachmentName = (file, shouldCompress, isComanda) => {
+  const requestAttachmentName = (files, shouldCompress, isComanda) => {
+    const fileList = Array.isArray(files) ? files : Array.from(files);
+    if (!fileList || fileList.length === 0) return;
     setAttachmentNameInput(isComanda ? 'Comanda' : 'Solicitação');
     setAttachmentNameError('');
-    setPendingAttachment({ file, shouldCompress, isComanda });
+    setPendingAttachment({ files: fileList, shouldCompress, isComanda });
   };
 
   const uploadAndAddFile = (file, shouldCompress = false) => {
-    requestAttachmentName(file, shouldCompress, false);
+    requestAttachmentName([file], shouldCompress, false);
   };
 
   const processMedicalRequestUpload = async (file, shouldCompress, printName) => {
@@ -337,27 +336,31 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   };
 
   
-  const handleCameraComandaSelect = async (e) => {
+  const handleCameraComandaSelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) { await uploadAndAddComandaFile(file, true); }
+    if (files && files.length > 0) requestAttachmentName(files, true, true);
+    e.target.value = '';
   };
-  const handleGalleryComandaSelect = async (e) => {
+
+  const handleGalleryComandaSelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) { await uploadAndAddComandaFile(file, true); }
+    if (files && files.length > 0) requestAttachmentName(files, true, true);
+    e.target.value = '';
   };
-  const handleFileDocumentComandaSelect = async (e) => {
+
+  const handleFileDocumentComandaSelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) {
-      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        alert("Formato não permitido! Por favor, anexe apenas arquivos PDF.");
-        continue;
-      }
-      await uploadAndAddComandaFile(file, false);
+    if (!files || files.length === 0) return;
+    const pdfs = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+    if (pdfs.length === 0) {
+      alert("Formato não permitido! Por favor, anexe apenas arquivos PDF.");
+      e.target.value = '';
+      return;
     }
+    requestAttachmentName(pdfs, false, true);
+    e.target.value = '';
   };
+
   const handlePasteComandaImages = async (e) => {
     const items = e.clipboardData?.items;
     if (!items) return;
@@ -368,8 +371,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
       }
     }
   };
+
   const uploadAndAddComandaFile = (file, shouldCompress = false) => {
-    requestAttachmentName(file, shouldCompress, true);
+    requestAttachmentName([file], shouldCompress, true);
   };
 
   const processComandaUpload = async (file, shouldCompress, printName) => {
@@ -409,10 +413,15 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     setPendingAttachment(null);
     setAttachmentNameError('');
 
-    if (item.isComanda) {
-      await processComandaUpload(item.file, item.shouldCompress, nameToUse);
-    } else {
-      await processMedicalRequestUpload(item.file, item.shouldCompress, nameToUse);
+    const fileList = item.files || [];
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const displayName = fileList.length > 1 ? `${nameToUse} (${i + 1})` : nameToUse;
+      if (item.isComanda) {
+        await processComandaUpload(file, item.shouldCompress, displayName);
+      } else {
+        await processMedicalRequestUpload(file, item.shouldCompress, displayName);
+      }
     }
   };
   const removeComandaUrl = async (itemToRemove) => {
@@ -1300,6 +1309,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 type="file" 
                 id="gallery-input-details" 
                 accept="image/*" 
+                multiple
                 style={{ display: 'none' }} 
                 onChange={handleGallerySelect} 
               />
@@ -1307,7 +1317,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 type="file" 
                 id="file-input-details" 
                 accept=".pdf,application/pdf" 
-                multiple={false}
+                multiple
                 style={{ display: 'none' }} 
                 onChange={handleFileDocumentSelect} 
               />
@@ -1768,6 +1778,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 type="file" 
                 id="gallery-input-comanda-details" 
                 accept="image/*" 
+                multiple
                 style={{ display: 'none' }} 
                 onChange={handleGalleryComandaSelect} 
               />
@@ -1775,7 +1786,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 type="file" 
                 id="file-input-comanda-details" 
                 accept=".pdf,application/pdf" 
-                multiple={false}
+                multiple
                 style={{ display: 'none' }} 
                 onChange={handleFileDocumentComandaSelect} 
               />
@@ -2159,12 +2170,14 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 <FileText size={20} />
               </div>
               <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
-                Identificar Anexo (Obrigatório)
+                Identificar Anexo{pendingAttachment.files.length > 1 ? `s (${pendingAttachment.files.length} arquivos)` : ''} (Obrigatório)
               </h3>
             </div>
 
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: '1.4' }}>
-              Informe o nome ou escolha uma opção rápida para identificar este arquivo:
+              {pendingAttachment.files.length > 1 
+                ? `Informe o nome base para identificar os ${pendingAttachment.files.length} arquivos selecionados:`
+                : 'Informe o nome ou escolha uma opção rápida para identificar este arquivo:'}
             </p>
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>

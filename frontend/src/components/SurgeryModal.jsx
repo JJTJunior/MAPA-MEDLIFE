@@ -375,42 +375,41 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
   };
 
 
-  const handleCameraSelect = async (e) => {
+  const handleCameraSelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) {
-      await uploadAndAddFile(file, true);
-    }
+    if (files && files.length > 0) requestAttachmentName(files, true, false);
+    e.target.value = '';
   };
 
-  const handleGallerySelect = async (e) => {
+  const handleGallerySelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) {
-      await uploadAndAddFile(file, true);
-    }
+    if (files && files.length > 0) requestAttachmentName(files, true, false);
+    e.target.value = '';
   };
 
-  const handleFileDocumentSelect = async (e) => {
+  const handleFileDocumentSelect = (e) => {
     const files = e.target.files;
-    if (!files) return;
-    for (const file of files) {
-      if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        alert("Formato não permitido! Por favor, anexe apenas arquivos PDF.");
-        continue;
-      }
-      await uploadAndAddFile(file, false);
+    if (!files || files.length === 0) return;
+    const pdfs = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+    if (pdfs.length === 0) {
+      alert("Formato não permitido! Por favor, anexe apenas arquivos PDF.");
+      e.target.value = '';
+      return;
     }
+    requestAttachmentName(pdfs, false, false);
+    e.target.value = '';
   };
 
-  const requestAttachmentName = (file, shouldCompress, isComanda) => {
+  const requestAttachmentName = (files, shouldCompress, isComanda) => {
+    const fileList = Array.isArray(files) ? files : Array.from(files);
+    if (!fileList || fileList.length === 0) return;
     setAttachmentNameInput(isComanda ? 'Comanda' : 'Solicitação');
     setAttachmentNameError('');
-    setPendingAttachment({ file, shouldCompress, isComanda });
+    setPendingAttachment({ files: fileList, shouldCompress, isComanda });
   };
 
   const uploadAndAddFile = (file, shouldCompress = false) => {
-    requestAttachmentName(file, shouldCompress, false);
+    requestAttachmentName([file], shouldCompress, false);
   };
 
   const processMedicalRequestUpload = async (file, shouldCompress, printName) => {
@@ -450,7 +449,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
   };
 
   const uploadAndAddComandaFile = (file, shouldCompress = false) => {
-    requestAttachmentName(file, shouldCompress, true);
+    requestAttachmentName([file], shouldCompress, true);
   };
 
   const processComandaUpload = async (file, shouldCompress, printName) => {
@@ -488,10 +487,15 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     setPendingAttachment(null);
     setAttachmentNameError('');
 
-    if (item.isComanda) {
-      await processComandaUpload(item.file, item.shouldCompress, nameToUse);
-    } else {
-      await processMedicalRequestUpload(item.file, item.shouldCompress, nameToUse);
+    const fileList = item.files || [];
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      const displayName = fileList.length > 1 ? `${nameToUse} (${i + 1})` : nameToUse;
+      if (item.isComanda) {
+        await processComandaUpload(file, item.shouldCompress, displayName);
+      } else {
+        await processMedicalRequestUpload(file, item.shouldCompress, displayName);
+      }
     }
   };
   const removeComandaUrl = (urlToRemove) => {
@@ -1129,6 +1133,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                   type="file" 
                   id="gallery-input" 
                   accept="image/*" 
+                  multiple
                   style={{ display: 'none' }} 
                   onChange={handleGallerySelect} 
                 />
@@ -1136,6 +1141,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                   type="file" 
                   id="file-input" 
                   accept=".pdf,application/pdf"
+                  multiple
                   style={{ display: 'none' }} 
                   onChange={handleFileDocumentSelect} 
                 />
@@ -1357,12 +1363,14 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 <FileText size={20} />
               </div>
               <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
-                Identificar Anexo (Obrigatório)
+                Identificar Anexo{pendingAttachment.files.length > 1 ? `s (${pendingAttachment.files.length} arquivos)` : ''} (Obrigatório)
               </h3>
             </div>
 
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: '1.4' }}>
-              Informe o nome ou escolha uma opção rápida para identificar este arquivo:
+              {pendingAttachment.files.length > 1 
+                ? `Informe o nome base para identificar os ${pendingAttachment.files.length} arquivos selecionados:`
+                : 'Informe o nome ou escolha uma opção rápida para identificar este arquivo:'}
             </p>
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
