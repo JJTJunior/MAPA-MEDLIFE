@@ -193,7 +193,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
         setInstrumentalist1Options(options);
         setInstrumentalist2Options(options);
       }
-      if (medRes.data) setDoctorOptions(medRes.data.map(i => i.name).filter(Boolean));
+      if (medRes.data) setDoctorOptions(medRes.data.map(i => i.name ? i.name.split('|CRM:')[0] : '').filter(Boolean));
       if (hospRes.data) setHospitalOptions(hospRes.data.map(i => i.name).filter(Boolean));
       if (vendRes.data) setSalespersonOptions(vendRes.data.map(i => i.name).filter(Boolean));
       if (surRes.data) setSurgeryTypeOptions(surRes.data.map(i => i.name).filter(Boolean));

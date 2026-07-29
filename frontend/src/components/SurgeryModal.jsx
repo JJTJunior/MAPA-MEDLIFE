@@ -240,7 +240,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
       
       const medicosData = medicosRes?.data;
       if (medicosData) {
-        const uniqueMedicos = medicosData.map(item => item.name).filter(Boolean);
+        const uniqueMedicos = medicosData.map(item => item.name ? item.name.split('|CRM:')[0] : '').filter(Boolean);
         setMedicosList(uniqueMedicos);
       }
     } catch (err) {
