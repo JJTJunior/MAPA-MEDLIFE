@@ -620,7 +620,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             <Calendar size={20} style={{ color: '#3b82f6' }} />
           </div>
           <div className="kpi-value">{stats.total}</div>
-          <span className="kpi-footer">Cirurgias registradas no histórico</span>
+          <span className="kpi-footer">Cirurgias registradas no geral</span>
         </div>
       </div>
 
