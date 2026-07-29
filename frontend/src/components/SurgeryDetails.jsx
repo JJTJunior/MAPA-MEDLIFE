@@ -76,13 +76,7 @@ const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) =
 };
 
 export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user }) {
-  const [localSurgery, setLocalSurgery] = useState(surgery);
-  
-  useEffect(() => {
-    if (onUpdate && localSurgery) {
-      onUpdate(localSurgery);
-    }
-  }, [localSurgery, onUpdate]);
+  const [localSurgery, setLocalSurgery] = useState(surgery || {});
 
   const [uploading, setUploading] = useState(false);
   const [uploadingComanda, setUploadingComanda] = useState(false);
@@ -330,11 +324,13 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             if (error) console.error('Erro ao atualizar banco:', error);
           });
 
-        return {
+        const nextObj = {
           ...prev,
           medical_request_urls: updatedUrls,
           attachment_url: firstAttachmentUrl
         };
+        if (onUpdate) onUpdate(nextObj);
+        return nextObj;
       });
 
       setUploadProgress({
@@ -608,10 +604,12 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             if (error) console.error('Erro ao atualizar banco:', error);
           });
 
-        return {
+        const nextObj = {
           ...prev,
           comanda_urls: updatedUrls
         };
+        if (onUpdate) onUpdate(nextObj);
+        return nextObj;
       });
 
       setUploadProgress({
