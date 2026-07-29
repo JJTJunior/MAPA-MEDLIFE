@@ -163,6 +163,31 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     e.target.value = '';
   };
 
+  const handleCameraComandaSelect = (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) requestAttachmentName(files, true, true);
+    e.target.value = '';
+  };
+
+  const handleGalleryComandaSelect = (e) => {
+    const files = e.target.files;
+    if (files && files.length > 0) requestAttachmentName(files, true, true);
+    e.target.value = '';
+  };
+
+  const handleFileDocumentComandaSelect = (e) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const pdfs = Array.from(files).filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
+    if (pdfs.length === 0) {
+      alert("Formato não permitido! Por favor, anexe apenas arquivos PDF.");
+      e.target.value = '';
+      return;
+    }
+    requestAttachmentName(pdfs, false, true);
+    e.target.value = '';
+  };
+
   const handlePasteImages = async (e) => {
     const items = e.clipboardData?.items;
     if (!items) return;
