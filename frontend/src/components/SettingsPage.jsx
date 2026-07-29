@@ -118,8 +118,8 @@ export default function SettingsPage({ user, onBack }) {
       let insertData = { name: finalName };
       if (activeTab === 'funcionarios') {
         insertData.color = selectedColor;
-      } else if (activeTab === 'medicos') {
-        insertData.crm = newItemCrm.trim() || null;
+      } else if (activeTab === 'medicos' && newItemCrm.trim()) {
+        insertData.name = `${finalName}|CRM:${newItemCrm.trim()}`;
       }
 
       if (activeTab === 'carater') {
@@ -181,11 +181,16 @@ export default function SettingsPage({ user, onBack }) {
       const parts = item.name.split('|');
       setEditIcon(parts[0]);
       setEditValue(parts[1]);
+    } else if (activeTab === 'medicos' && item.name.includes('|CRM:')) {
+      const parts = item.name.split('|CRM:');
+      setEditValue(parts[0]);
+      setEditCrm(parts[1]);
+      setEditIcon('⚪');
     } else {
       setEditValue(item.name);
       setEditIcon('⚪');
       if (activeTab === 'funcionarios') setEditColor(item.color || '#3b82f6');
-      if (activeTab === 'medicos') setEditCrm(item.crm || '');
+      if (activeTab === 'medicos') setEditCrm('');
     }
   };
 
@@ -200,8 +205,8 @@ export default function SettingsPage({ user, onBack }) {
       if (activeTab === 'funcionarios') {
         updateData.color = editColor;
       }
-      if (activeTab === 'medicos') {
-        updateData.crm = editCrm.trim() || null;
+      if (activeTab === 'medicos' && editCrm.trim()) {
+        updateData.name = `${finalName}|CRM:${editCrm.trim()}`;
       }
 
       if (activeTab === 'carater') {
@@ -227,13 +232,17 @@ export default function SettingsPage({ user, onBack }) {
   };
 
   const filteredItems = items.filter(item => {
-    const itemName = activeTab === 'status' && item.name.includes('|') 
-      ? item.name.split('|')[1] 
-      : item.name;
+    let itemName = item.name;
+    if (activeTab === 'status' && item.name.includes('|')) itemName = item.name.split('|')[1];
+    else if (activeTab === 'medicos' && item.name.includes('|CRM:')) itemName = item.name.split('|CRM:')[0];
     return itemName.toLowerCase().includes(searchTerm.toLowerCase());
   }).sort((a, b) => {
-    const nameA = activeTab === 'status' && a.name.includes('|') ? a.name.split('|')[1] : a.name;
-    const nameB = activeTab === 'status' && b.name.includes('|') ? b.name.split('|')[1] : b.name;
+    let nameA = a.name;
+    let nameB = b.name;
+    if (activeTab === 'status' && a.name.includes('|')) nameA = a.name.split('|')[1];
+    else if (activeTab === 'medicos' && a.name.includes('|CRM:')) nameA = a.name.split('|CRM:')[0];
+    if (activeTab === 'status' && b.name.includes('|')) nameB = b.name.split('|')[1];
+    else if (activeTab === 'medicos' && b.name.includes('|CRM:')) nameB = b.name.split('|CRM:')[0];
     return nameA.localeCompare(nameB);
   });
 
@@ -505,14 +514,14 @@ export default function SettingsPage({ user, onBack }) {
                             {activeTab === 'status' && item.name.includes('|') ? (
                               <>
                                 <span style={{ marginRight: '10px', fontSize: '1.2rem' }}>{item.name.split('|')[0]}</span>
-                                {item.name.split('|')[1]}
+                                {itemName}
                               </>
                             ) : (
-                              item.name
+                              itemName
                             )}
                           </span>
-                          {activeTab === 'medicos' && item.crm && (
-                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: '10px', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>CRM: {item.crm}</span>
+                          {activeTab === 'medicos' && itemCrm && (
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: '10px', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>CRM: {itemCrm}</span>
                           )}
                         </div>
                       )}
