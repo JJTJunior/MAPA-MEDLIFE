@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Clock, MapPin, User, FileText, CheckCircle, Activity, Briefcase, Calendar, Image as ImageIcon, Upload, Trash2, MessageCircle, Paperclip, Share2, X, Edit, Save } from 'lucide-react';
+import { ArrowLeft, Clock, MapPin, User, FileText, CheckCircle, Activity, Briefcase, Calendar, Image as ImageIcon, Upload, Trash2, MessageCircle, Paperclip, Share2, X, Edit, Save, EyeOff, ClipboardList } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
 const parsePrintUrl = (item) => {
@@ -765,7 +765,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
         {/* Anexos de Solicitação Médica / Autorização */}
         <div 
-          className={`detail-section ${(isEditable && isFieldEditable('attachment_url')) ? 'paste-dropzone' : ''}`} 
+          className={`attachment-card-container ${(isEditable && isFieldEditable('attachment_url')) ? 'paste-dropzone' : ''}`} 
           onPaste={(isEditable && isFieldEditable('attachment_url')) ? handlePasteImages : undefined}
           onFocus={(isEditable && isFieldEditable('attachment_url')) ? () => setIsDropzoneFocused1(true) : undefined}
           onBlur={(isEditable && isFieldEditable('attachment_url')) ? () => setIsDropzoneFocused1(false) : undefined}
@@ -776,83 +776,271 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             flexDirection: 'column', 
             gap: '16px',
             outline: 'none',
-            border: (isEditable && isFieldEditable('attachment_url') && isDropzoneFocused1) ? '2px dashed var(--primary-color, #10b981)' : ((isEditable && isFieldEditable('attachment_url')) ? '1px dashed var(--border-color, #cbd5e1)' : '1px solid var(--border-color, #e2e8f0)'),
-            borderRadius: '8px',
-            padding: isDropzoneFocused1 ? '12px' : '0px',
-            boxShadow: isDropzoneFocused1 ? '0 0 0 3px rgba(16, 185, 129, 0.15)' : 'none',
+            border: '1px solid var(--border-color, #e2e8f0)',
+            borderRadius: '12px',
+            padding: '20px',
+            backgroundColor: 'var(--card-bg, #ffffff)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             transition: 'all 0.2s'
           }}
         >
-          <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ImageIcon size={20} /> ANEXO 1 - Solicitação Médica / Autorização
+          {/* Header Section */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#2563eb',
+                flexShrink: 0
+              }}>
+                <FileText size={20} />
+              </div>
+              <div>
+                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, #0f172a)' }}>
+                  Anexo 1 · Solicitação médica / Autorização
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
+                  Documento de solicitação e autorização do procedimento
+                </div>
+              </div>
             </div>
-            
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {(isEditable && isFieldEditable('edit_attachments_1_button')) && (
-                <>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowDeleteIcons(true);
-                    }}
-                    style={{
-                      backgroundColor: '#f59e0b',
-                      color: '#fff',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      fontSize: '0.8rem',
-                      fontWeight: '600',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      minWidth: '120px'
-                    }}
-                  >
-                    <Edit size={14} /> Editar Anexos
-                  </button>
-                  <button
-                    type="button"
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      setShowDeleteIcons(false);
-                      try {
-                        const firstUrl = localSurgery.medical_request_urls?.[0];
-                        const attUrl = firstUrl ? (firstUrl.includes('|||') ? firstUrl.split('|||')[0] : firstUrl) : null;
-                        await supabase.from('surgeries').update({
-                          medical_request_urls: localSurgery.medical_request_urls,
-                          attachment_url: attUrl
-                        }).eq('id', localSurgery.id);
-                      } catch (err) {
-                        console.error(err);
-                      }
-                    }}
-                    style={{
-                      backgroundColor: '#3b82f6',
-                      color: '#fff',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      fontSize: '0.8rem',
-                      fontWeight: '600',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      minWidth: '120px'
-                    }}
-                  >
-                    <Save size={14} /> Salvar Anexos
-                  </button>
-                </>
-              )}
+
+            <div>
+              {(() => {
+                const hasFiles = (localSurgery.medical_request_urls && localSurgery.medical_request_urls.length > 0) || !!localSurgery.attachment_url;
+                return hasFiles ? (
+                  <span style={{
+                    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                    color: '#059669',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    fontSize: '0.78rem',
+                    fontWeight: '600'
+                  }}>
+                    Anexado
+                  </span>
+                ) : (
+                  <span style={{
+                    backgroundColor: '#fef3c7',
+                    color: '#d97706',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    fontSize: '0.78rem',
+                    fontWeight: '600'
+                  }}>
+                    Pendente
+                  </span>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* Dropzone Container */}
+          <div style={{
+            border: (isEditable && isFieldEditable('attachment_url') && isDropzoneFocused1) 
+              ? '2px dashed #2563eb' 
+              : '1px dashed var(--border-color, #cbd5e1)',
+            borderRadius: '10px',
+            padding: '24px 16px',
+            backgroundColor: 'var(--bg-secondary, #f8fafc)',
+            minHeight: '90px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            outline: 'none',
+            transition: 'all 0.2s',
+            boxShadow: (isEditable && isFieldEditable('attachment_url') && isDropzoneFocused1) ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none'
+          }}>
+            {(() => {
+              const allAttachmentUrls = (localSurgery.medical_request_urls && localSurgery.medical_request_urls.length > 0)
+                ? localSurgery.medical_request_urls
+                : (localSurgery.attachment_url ? [localSurgery.attachment_url] : []);
+              
+              if (allAttachmentUrls.length === 0) {
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
+                    <EyeOff size={24} style={{ color: 'var(--text-secondary, #94a3b8)', opacity: 0.7 }} />
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
+                      Nenhum anexo de solicitação ou autorização enviado.
+                    </span>
+                  </div>
+                );
+              }
+
+              return (
+                <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', width: '100%' }}>
+                  {allAttachmentUrls.map((item, idx) => {
+                    const { url, name } = parsePrintUrl(item);
+                    return (
+                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                        {isDocumentFile(url) ? (
+                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+                            {url.toLowerCase().includes('.pdf') ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                                <FileText size={40} style={{ color: '#ef4444' }} />
+                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                                <FileText size={40} style={{ color: '#3b82f6' }} />
+                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
+                              </div>
+                            )}
+                          </a>
+                        ) : (
+                          <a href={url} target="_blank" rel="noopener noreferrer">
+                            <img 
+                              src={url} 
+                              alt={name || `Solicitacao ${idx + 1}`} 
+                              style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
+                            />
+                          </a>
+                        )}
+                        {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons && (
+                          <button 
+                            type="button" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              removeMedicalRequestUrl(item);
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: '4px',
+                              right: '4px',
+                              background: 'rgba(239, 68, 68, 0.9)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '22px',
+                              height: '22px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '13px',
+                              lineHeight: '1',
+                              fontWeight: 'bold',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                              zIndex: 10
+                            }}
+                            title="Remover anexo"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                      {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons ? (
+                        <input
+                          type="text"
+                          key={`${idx}`}
+                          value={name || ''}
+                          onChange={(e) => {
+                            const newName = e.target.value;
+                            const updatedUrls = [...(localSurgery.medical_request_urls || [])];
+                            updatedUrls[idx] = newName ? `${url}|||${newName}` : url;
+                            setLocalSurgery(prev => ({ ...prev, medical_request_urls: updatedUrls }));
+                          }}
+                          placeholder="Identificação..."
+                          style={{
+                            width: '120px',
+                            fontSize: '0.75rem',
+                            padding: '4px 6px',
+                            border: '1px solid var(--border-color, #e2e8f0)',
+                            borderRadius: '6px',
+                            textAlign: 'center',
+                            marginTop: '4px'
+                          }}
+                        />
+                      ) : (
+                        name && (
+                          <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                            {name}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  );
+                })}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Action Buttons Row */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            {(isEditable && isFieldEditable('edit_attachments_1_button')) && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteIcons(true);
+                  }}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#334155',
+                    border: '1px solid #cbd5e1',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Edit size={15} /> Editar anexos
+                </button>
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    setShowDeleteIcons(false);
+                    try {
+                      const firstUrl = localSurgery.medical_request_urls?.[0];
+                      const attUrl = firstUrl ? (firstUrl.includes('|||') ? firstUrl.split('|||')[0] : firstUrl) : null;
+                      await supabase.from('surgeries').update({
+                        medical_request_urls: localSurgery.medical_request_urls,
+                        attachment_url: attUrl
+                      }).eq('id', localSurgery.id);
+                    } catch (err) {
+                      console.error(err);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#334155',
+                    border: '1px solid #cbd5e1',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Save size={15} /> Salvar anexos
+                </button>
+              </>
+            )}
             {(isEditable && isFieldEditable('attachment_url')) && (
               <div id="details-attachment-menu-container" style={{ position: 'relative', display: 'inline-block' }}>
                 <button
@@ -863,24 +1051,24 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     setShowAttachmentDropdown(!showAttachmentDropdown);
                   }}
                   style={{
-                    backgroundColor: '#10b981',
-                    color: '#fff',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff',
+                    padding: '8px 18px',
+                    borderRadius: '8px',
                     border: 'none',
                     cursor: uploading ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '6px',
-                    fontSize: '0.8rem',
-                    fontWeight: '600',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)',
                     opacity: uploading ? 0.7 : 1,
-                    minWidth: '120px'
+                    transition: 'all 0.2s'
                   }}
                 >
-                  <Upload size={14} /> {uploading ? 'Enviando...' : 'Inserir Anexos'}
+                  <Upload size={15} /> {uploading ? 'Enviando...' : 'Inserir anexos'}
                 </button>
 
                 {showAttachmentDropdown && (
@@ -897,12 +1085,12 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                       style={{
                         position: 'absolute',
                         top: '100%',
-                        right: 0,
+                        left: 0,
                         marginTop: '8px',
                         backgroundColor: '#fff',
                         border: '1px solid var(--border-color)',
                         borderRadius: '8px',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                         zIndex: 1000,
                         minWidth: '200px',
                         overflow: 'hidden'
@@ -1016,8 +1204,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 )}
               </div>
             )}
-            </div>
-          </h3>
+          </div>
 
           {/* Hidden Inputs for details page */}
           {(isEditable && isFieldEditable('attachment_url')) && (
@@ -1047,207 +1234,286 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               />
             </>
           )}
-
-          {(() => {
-            const allAttachmentUrls = (localSurgery.medical_request_urls && localSurgery.medical_request_urls.length > 0)
-              ? localSurgery.medical_request_urls
-              : (localSurgery.attachment_url ? [localSurgery.attachment_url] : []);
-            
-            if (allAttachmentUrls.length === 0) {
-              return <p style={{ color: 'var(--text-muted, #94a3b8)', fontStyle: 'italic', margin: '8px 0' }}>Nenhum anexo de solicitação ou autorização.</p>;
-            }
-
-            return (
-              <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-                {allAttachmentUrls.map((item, idx) => {
-                  const { url, name } = parsePrintUrl(item);
-                  return (
-                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
-                      {isDocumentFile(url) ? (
-                        <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
-                          {url.toLowerCase().includes('.pdf') ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                              <FileText size={40} style={{ color: '#ef4444' }} />
-                              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
-                            </div>
-                          ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                              <FileText size={40} style={{ color: '#3b82f6' }} />
-                              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
-                            </div>
-                          )}
-                        </a>
-                      ) : (
-                        <a href={url} target="_blank" rel="noopener noreferrer">
-                          <img 
-                            src={url} 
-                            alt={name || `Solicitacao ${idx + 1}`} 
-                            style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
-                          />
-                        </a>
-                      )}
-                      {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons && (
-                        <button 
-                          type="button" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            removeMedicalRequestUrl(item);
-                          }}
-                          style={{
-                            position: 'absolute',
-                            top: '4px',
-                            right: '4px',
-                            background: 'rgba(239, 68, 68, 0.9)',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '50%',
-                            width: '22px',
-                            height: '22px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            lineHeight: '1',
-                            fontWeight: 'bold',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                            zIndex: 10
-                          }}
-                          title="Remover anexo"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                    {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons ? (
-                      <input
-                        type="text"
-                        key={`${idx}`}
-                        value={name || ''}
-                        onChange={(e) => {
-                          const newName = e.target.value;
-                          const updatedUrls = [...(localSurgery.medical_request_urls || [])];
-                          updatedUrls[idx] = newName ? `${url}|||${newName}` : url;
-                          setLocalSurgery(prev => ({ ...prev, medical_request_urls: updatedUrls }));
-                        }}
-                        placeholder="Identificação..."
-                        style={{
-                          width: '120px',
-                          fontSize: '0.75rem',
-                          padding: '4px 6px',
-                          border: '1px solid var(--border-color, #e2e8f0)',
-                          borderRadius: '6px',
-                          textAlign: 'center',
-                          marginTop: '4px'
-                        }}
-                      />
-                    ) : (
-                      name && (
-                        <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
-                          {name}
-                        </span>
-                      )
-                    )}
-                  </div>
-                );
-              })}
-              </div>
-            );
-          })()}
         </div>
 
         {/* Anexos de Comanda / Documentação Cirúrgica */}
         <div 
-          className={`detail-section ${(isEditable && isFieldEditable('comanda_urls')) ? 'paste-dropzone' : ''}`} 
+          className={`attachment-card-container ${(isEditable && isFieldEditable('comanda_urls')) ? 'paste-dropzone' : ''}`} 
           onPaste={(isEditable && isFieldEditable('comanda_urls')) ? handlePasteComandaImages : undefined}
           onFocus={(isEditable && isFieldEditable('comanda_urls')) ? () => setIsDropzoneFocused2(true) : undefined}
           onBlur={(isEditable && isFieldEditable('comanda_urls')) ? () => setIsDropzoneFocused2(false) : undefined}
           tabIndex={(isEditable && isFieldEditable('comanda_urls')) ? 0 : undefined}
           style={{ 
-            marginTop: '24px', 
+            marginTop: '20px', 
             display: 'flex', 
             flexDirection: 'column', 
             gap: '16px',
             outline: 'none',
-            border: (isEditable && isFieldEditable('comanda_urls') && isDropzoneFocused2) ? '2px dashed var(--primary-color, #10b981)' : ((isEditable && isFieldEditable('comanda_urls')) ? '1px dashed var(--border-color, #cbd5e1)' : '1px solid var(--border-color, #e2e8f0)'),
-            borderRadius: '8px',
-            padding: isDropzoneFocused2 ? '12px' : '0px',
-            boxShadow: isDropzoneFocused2 ? '0 0 0 3px rgba(16, 185, 129, 0.15)' : 'none',
+            border: '1px solid var(--border-color, #e2e8f0)',
+            borderRadius: '12px',
+            padding: '20px',
+            backgroundColor: 'var(--card-bg, #ffffff)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             transition: 'all 0.2s'
           }}
         >
-          <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '8px', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <ImageIcon size={20} /> ANEXO 2 - Comanda / Documentação Cirúrgica
+          {/* Header Section */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#2563eb',
+                flexShrink: 0
+              }}>
+                <ClipboardList size={20} />
+              </div>
+              <div>
+                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, #0f172a)' }}>
+                  Anexo 2 · Comanda / Documentação cirúrgica
+                </div>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
+                  Comanda cirúrgica e documentos complementares
+                </div>
+              </div>
             </div>
-            
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              {(isEditable && isFieldEditable('edit_attachments_2_button')) && (
-                <>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowDeleteIconsComanda(true);
-                    }}
-                    style={{
-                      backgroundColor: '#f59e0b',
-                      color: '#fff',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      fontSize: '0.8rem',
-                      fontWeight: '600',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      minWidth: '120px'
-                    }}
-                  >
-                    <Edit size={14} /> Editar Anexos
-                  </button>
-                  <button
-                    type="button"
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      setShowDeleteIconsComanda(false);
-                      try {
-                        const firstUrl = localSurgery.comanda_urls?.[0];
-                        const cUrl = firstUrl ? (firstUrl.includes('|||') ? firstUrl.split('|||')[0] : firstUrl) : null;
-                        await supabase.from('surgeries').update({
-                          comanda_urls: localSurgery.comanda_urls,
-                          comanda_url: cUrl
-                        }).eq('id', localSurgery.id);
-                      } catch (err) {
-                        console.error(err);
-                      }
-                    }}
-                    style={{
-                      backgroundColor: '#3b82f6',
-                      color: '#fff',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '6px',
-                      fontSize: '0.8rem',
-                      fontWeight: '600',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                      minWidth: '120px'
-                    }}
-                  >
-                    <Save size={14} /> Salvar Anexos
-                  </button>
-                </>
-              )}
+
+            <div>
+              {(() => {
+                const hasFiles = (localSurgery.comanda_urls && localSurgery.comanda_urls.length > 0) || !!localSurgery.comanda_url;
+                return hasFiles ? (
+                  <span style={{
+                    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                    color: '#059669',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    fontSize: '0.78rem',
+                    fontWeight: '600'
+                  }}>
+                    Anexado
+                  </span>
+                ) : (
+                  <span style={{
+                    backgroundColor: '#fef3c7',
+                    color: '#d97706',
+                    padding: '4px 12px',
+                    borderRadius: '9999px',
+                    fontSize: '0.78rem',
+                    fontWeight: '600'
+                  }}>
+                    Pendente
+                  </span>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* Dropzone Container */}
+          <div style={{
+            border: (isEditable && isFieldEditable('comanda_urls') && isDropzoneFocused2) 
+              ? '2px dashed #2563eb' 
+              : '1px dashed var(--border-color, #cbd5e1)',
+            borderRadius: '10px',
+            padding: '24px 16px',
+            backgroundColor: 'var(--bg-secondary, #f8fafc)',
+            minHeight: '90px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            outline: 'none',
+            transition: 'all 0.2s',
+            boxShadow: (isEditable && isFieldEditable('comanda_urls') && isDropzoneFocused2) ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none'
+          }}>
+            {(() => {
+              const allAttachmentUrls = (localSurgery.comanda_urls && localSurgery.comanda_urls.length > 0)
+                ? localSurgery.comanda_urls
+                : [];
+              
+              if (allAttachmentUrls.length === 0) {
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
+                    <EyeOff size={24} style={{ color: 'var(--text-secondary, #94a3b8)', opacity: 0.7 }} />
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
+                      Nenhum anexo de comanda ou documentação enviado.
+                    </span>
+                  </div>
+                );
+              }
+
+              return (
+                <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', width: '100%' }}>
+                  {allAttachmentUrls.map((item, idx) => {
+                    const { url, name } = parsePrintUrl(item);
+                    return (
+                    <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
+                        {isDocumentFile(url) ? (
+                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+                            {url.toLowerCase().includes('.pdf') ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                                <FileText size={40} style={{ color: '#ef4444' }} />
+                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
+                              </div>
+                            ) : (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                                <FileText size={40} style={{ color: '#3b82f6' }} />
+                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
+                              </div>
+                            )}
+                          </a>
+                        ) : (
+                          <a href={url} target="_blank" rel="noopener noreferrer">
+                            <img 
+                              src={url} 
+                              alt={name || `Solicitacao ${idx + 1}`} 
+                              style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
+                            />
+                          </a>
+                        )}
+                        {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda && (
+                          <button 
+                            type="button" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              removeComandaUrl(item);
+                            }}
+                            style={{
+                              position: 'absolute',
+                              top: '4px',
+                              right: '4px',
+                              background: 'rgba(239, 68, 68, 0.9)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '50%',
+                              width: '22px',
+                              height: '22px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              fontSize: '13px',
+                              lineHeight: '1',
+                              fontWeight: 'bold',
+                              boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                              zIndex: 10
+                            }}
+                            title="Remover anexo"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                      {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda ? (
+                        <input
+                          type="text"
+                          key={`${idx}`}
+                          value={name || ''}
+                          onChange={(e) => {
+                            const newName = e.target.value;
+                            const updatedUrls = [...(localSurgery.comanda_urls || [])];
+                            updatedUrls[idx] = newName ? `${url}|||${newName}` : url;
+                            setLocalSurgery(prev => ({ ...prev, comanda_urls: updatedUrls }));
+                          }}
+                          placeholder="Identificação..."
+                          style={{
+                            width: '120px',
+                            fontSize: '0.75rem',
+                            padding: '4px 6px',
+                            border: '1px solid var(--border-color, #e2e8f0)',
+                            borderRadius: '6px',
+                            textAlign: 'center',
+                            marginTop: '4px'
+                          }}
+                        />
+                      ) : (
+                        name && (
+                          <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                            {name}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  );
+                })}
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* Action Buttons Row */}
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            {(isEditable && isFieldEditable('edit_attachments_2_button')) && (
+              <>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowDeleteIconsComanda(true);
+                  }}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#334155',
+                    border: '1px solid #cbd5e1',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Edit size={15} /> Editar anexos
+                </button>
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    setShowDeleteIconsComanda(false);
+                    try {
+                      const firstUrl = localSurgery.comanda_urls?.[0];
+                      const cUrl = firstUrl ? (firstUrl.includes('|||') ? firstUrl.split('|||')[0] : firstUrl) : null;
+                      await supabase.from('surgeries').update({
+                        comanda_urls: localSurgery.comanda_urls,
+                        comanda_url: cUrl
+                      }).eq('id', localSurgery.id);
+                    } catch (err) {
+                      console.error(err);
+                    }
+                  }}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    color: '#334155',
+                    border: '1px solid #cbd5e1',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <Save size={15} /> Salvar anexos
+                </button>
+              </>
+            )}
             {(isEditable && isFieldEditable('comanda_urls')) && (
               <div id="details-comanda-menu-container" style={{ position: 'relative', display: 'inline-block' }}>
                 <button
@@ -1258,24 +1524,24 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     setShowComandaDropdown(!showComandaDropdown);
                   }}
                   style={{
-                    backgroundColor: '#10b981',
-                    color: '#fff',
-                    padding: '8px 12px',
-                    borderRadius: '6px',
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff',
+                    padding: '8px 18px',
+                    borderRadius: '8px',
                     border: 'none',
                     cursor: uploadingComanda ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '6px',
-                    fontSize: '0.8rem',
-                    fontWeight: '600',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    fontSize: '0.85rem',
+                    fontWeight: '500',
+                    boxShadow: '0 2px 4px rgba(37, 99, 235, 0.2)',
                     opacity: uploadingComanda ? 0.7 : 1,
-                    minWidth: '120px'
+                    transition: 'all 0.2s'
                   }}
                 >
-                  <Upload size={14} /> {uploadingComanda ? 'Enviando...' : 'Inserir Anexos'}
+                  <Upload size={15} /> {uploadingComanda ? 'Enviando...' : 'Inserir anexos'}
                 </button>
 
                 {showComandaDropdown && (
@@ -1289,6 +1555,19 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     />
                     <div 
                       className="details-dropdown-menu"
+                      style={{
+                        position: 'absolute',
+                        top: '100%',
+                        left: 0,
+                        marginTop: '8px',
+                        backgroundColor: '#fff',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        zIndex: 1000,
+                        minWidth: '200px',
+                        overflow: 'hidden'
+                      }}
                     >
                       <button
                         type="button"
@@ -1398,8 +1677,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 )}
               </div>
             )}
-            </div>
-          </h3>
+          </div>
 
           {/* Hidden Inputs for details page */}
           {(isEditable && isFieldEditable('comanda_urls')) && (
@@ -1429,115 +1707,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               />
             </>
           )}
-
-          {(() => {
-            const allAttachmentUrls = (localSurgery.comanda_urls && localSurgery.comanda_urls.length > 0)
-              ? localSurgery.comanda_urls
-              : [];
-            
-            if (allAttachmentUrls.length === 0) {
-              return <p style={{ color: 'var(--text-muted, #94a3b8)', fontStyle: 'italic', margin: '8px 0' }}>Nenhum anexo de comanda ou documentação.</p>;
-            }
-
-            return (
-              <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px' }}>
-                {allAttachmentUrls.map((item, idx) => {
-                  const { url, name } = parsePrintUrl(item);
-                  return (
-                  <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
-                      {isDocumentFile(url) ? (
-                        <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
-                          {url.toLowerCase().includes('.pdf') ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                              <FileText size={40} style={{ color: '#ef4444' }} />
-                              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
-                            </div>
-                          ) : (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                              <FileText size={40} style={{ color: '#3b82f6' }} />
-                              <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
-                            </div>
-                          )}
-                        </a>
-                      ) : (
-                        <a href={url} target="_blank" rel="noopener noreferrer">
-                          <img 
-                            src={url} 
-                            alt={name || `Solicitacao ${idx + 1}`} 
-                            style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
-                          />
-                        </a>
-                      )}
-                      {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda && (
-                        <button 
-                          type="button" 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            removeComandaUrl(item);
-                          }}
-                          style={{
-                            position: 'absolute',
-                            top: '4px',
-                            right: '4px',
-                            background: 'rgba(239, 68, 68, 0.9)',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '50%',
-                            width: '22px',
-                            height: '22px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            fontSize: '13px',
-                            lineHeight: '1',
-                            fontWeight: 'bold',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                            zIndex: 10
-                          }}
-                          title="Remover anexo"
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                    {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda ? (
-                      <input
-                        type="text"
-                        key={`${idx}`}
-                        value={name || ''}
-                        onChange={(e) => {
-                          const newName = e.target.value;
-                          const updatedUrls = [...(localSurgery.comanda_urls || [])];
-                          updatedUrls[idx] = newName ? `${url}|||${newName}` : url;
-                          setLocalSurgery(prev => ({ ...prev, comanda_urls: updatedUrls }));
-                        }}
-                        placeholder="Identificação..."
-                        style={{
-                          width: '120px',
-                          fontSize: '0.75rem',
-                          padding: '4px 6px',
-                          border: '1px solid var(--border-color, #e2e8f0)',
-                          borderRadius: '6px',
-                          textAlign: 'center',
-                          marginTop: '4px'
-                        }}
-                      />
-                    ) : (
-                      name && (
-                        <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
-                          {name}
-                        </span>
-                      )
-                    )}
-                  </div>
-                );
-              })}
-              </div>
-            );
-          })()}
         </div>
 
         {/* Observações */}
