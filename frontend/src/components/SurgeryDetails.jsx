@@ -171,7 +171,21 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
       if (item.type.indexOf('image') !== -1) {
         const file = item.getAsFile();
         if (file) {
-          await uploadAndAddFile(file, true);
+          uploadAndAddFile(file, true);
+        }
+      }
+    }
+  };
+
+  const handlePasteComandaImages = async (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+
+    for (const item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        const file = item.getAsFile();
+        if (file) {
+          uploadAndAddComandaFile(file, true);
         }
       }
     }
