@@ -228,8 +228,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   };
 
   const removeMedicalRequestUrl = async (itemToRemove) => {
-    if (!window.confirm("Tem certeza que deseja remover este anexo?")) return;
-
     setUploading(true);
     const previousUrls = localSurgery.medical_request_urls;
     const previousFirstUrl = localSurgery.attachment_url;
@@ -331,7 +329,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     }
   };
   const removeComandaUrl = async (itemToRemove) => {
-    if (!window.confirm("Tem certeza que deseja remover este anexo?")) return;
     setUploadingComanda(true);
     const previousUrls = localSurgery.comanda_urls;
     try {

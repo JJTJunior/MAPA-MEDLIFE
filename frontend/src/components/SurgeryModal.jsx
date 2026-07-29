@@ -496,7 +496,6 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     }
   };
   const removeComandaUrl = (urlToRemove) => {
-    if (!window.confirm("Tem certeza que deseja remover este anexo?")) return;
     setFormData(prev => ({
       ...prev,
       comanda_urls: (prev.comanda_urls || []).filter(url => url !== urlToRemove)
