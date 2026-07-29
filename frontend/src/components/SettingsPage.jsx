@@ -426,7 +426,7 @@ export default function SettingsPage({ user, onBack }) {
                   value={newItemName} 
                   onChange={e => setNewItemName(e.target.value)}
                   required
-                  style={{ flex: 1 }}
+                  style={{ flex: 1, minWidth: '200px' }}
                 />
                 {activeTab === 'medicos' && (
                   <input
@@ -442,7 +442,7 @@ export default function SettingsPage({ user, onBack }) {
                     type="submit" 
                     className="btn-primary" 
                     disabled={isSubmitting}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+                    style={{ width: 'auto', padding: '0 20px', display: 'flex', alignItems: 'center', gap: '8px' }}
                   >
                     <Plus size={18} />
                     Adicionar
