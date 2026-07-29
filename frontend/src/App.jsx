@@ -141,6 +141,7 @@ export default function App() {
           .select(`
             name,
             permissions,
+            is_active,
             user_groups ( name )
           `)
           .eq('id', session.user.id)
@@ -149,6 +150,13 @@ export default function App() {
         profile = data;
         
         if (profile) {
+          if (profile.is_active === false) {
+            await supabase.auth.signOut();
+            setSession(null);
+            setUser(null);
+            setLoading(false);
+            return;
+          }
           name = profile.name || name;
           role = profile.user_groups?.name || role;
           permissions = profile.permissions || permissions;

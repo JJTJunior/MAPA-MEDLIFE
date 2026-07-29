@@ -40,6 +40,18 @@ export default function Login({ onLoginSuccess }) {
       }
 
       if (data?.user) {
+        // Verificar se o usuário está ativo
+        const { data: profileData } = await supabase
+          .from('user_profiles')
+          .select('is_active')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileData && profileData.is_active === false) {
+          await supabase.auth.signOut();
+          throw new Error('Usuário inativo. Acesso negado.');
+        }
+
         // Obter o cargo do usuário (pode ser inferido do email ou dos metadados)
         const userEmail = data.user.email || '';
         let role = 'Vendedor'; // padrão
