@@ -896,6 +896,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
     if (s.includes('em separação') || s.includes('separacao') || s.includes('separação')) return 'status-preparing';
     if (s.includes('separado') || s.includes('entrega')) return 'status-ready';
     if (s.includes('urgência') || s.includes('urgencia')) return 'status-urgent';
+    if (s.includes('agendada')) return 'status-urgent';
     if (s.includes('aguardando') || s.includes('autorização') || s.includes('autorizacao')) return 'status-pending';
     if (s.includes('eletiva')) return 'status-eletiva';
     if (s.includes('retornado')) return 'status-returned';
@@ -909,6 +910,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
     if (s.includes('em separação') || s.includes('separacao') || s.includes('separação')) return '🔵';
     if (s.includes('separado') || s.includes('entrega')) return '🟠';
     if (s.includes('urgência') || s.includes('urgencia')) return '🟣';
+    if (s.includes('agendada')) return '🟣';
     if (s.includes('aguardando') || s.includes('autorização') || s.includes('autorizacao')) return '🟡';
     if (s.includes('eletiva')) return '⚪';
     if (s.includes('retornado')) return '🔄';

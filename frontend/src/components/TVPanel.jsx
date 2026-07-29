@@ -239,6 +239,7 @@ export default function TVPanel({ user, onBack }) {
     if (s.includes('em separação') || s.includes('separacao') || s.includes('separação')) return 'tv-row-blue';
     if (s.includes('separado') || s.includes('entrega')) return 'tv-row-orange';
     if (s.includes('urgência') || s.includes('urgencia')) return 'tv-row-purple';
+    if (s.includes('agendada')) return 'tv-row-purple';
     if (s.includes('aguardando') || s.includes('autorização') || s.includes('autorizacao')) return 'tv-row-yellow';
     if (s.includes('eletiva')) return 'tv-row-gray';
     if (s.includes('finalizada')) return 'tv-row-teal';
