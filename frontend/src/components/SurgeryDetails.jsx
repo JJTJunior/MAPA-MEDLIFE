@@ -4,16 +4,25 @@ import { supabase } from '../supabaseClient';
 
 const parsePrintUrl = (item) => {
   if (!item) return { url: '', name: '' };
-  if (item.includes('|||')) {
-    const [url, ...nameParts] = item.split('|||');
+  let cleanItem = item;
+  if (cleanItem.startsWith('[ANEXO_3]|||')) {
+    cleanItem = cleanItem.replace('[ANEXO_3]|||', '');
+    if (!cleanItem.includes('?anexo=3')) {
+      const parts = cleanItem.split('|||');
+      if (parts[0]) parts[0] = parts[0] + '?anexo=3';
+      cleanItem = parts.join('|||');
+    }
+  }
+  if (cleanItem.includes('|||')) {
+    const [url, ...nameParts] = cleanItem.split('|||');
     return { url, name: nameParts.join('|||') };
   }
-  return { url: item, name: '' };
+  return { url: cleanItem, name: '' };
 };
 
 const isDocumentFile = (url) => {
   if (!url) return false;
-  const cleanUrl = url.split('|||')[0].toLowerCase();
+  const cleanUrl = url.split('|||')[0].split('?')[0].toLowerCase();
   return cleanUrl.endsWith('.pdf') || cleanUrl.endsWith('.doc') || cleanUrl.endsWith('.docx');
 };
 
@@ -517,7 +526,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const valueToStore = displayName ? `[ANEXO_3]|||${publicUrl}|||${displayName}` : `[ANEXO_3]|||${publicUrl}`;
+        const valueToStore = displayName ? `${publicUrl}?anexo=3|||${displayName}` : `${publicUrl}?anexo=3`;
         newValuesToStore.push(valueToStore);
       }
 
@@ -1641,7 +1650,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
             <div>
               {(() => {
-                const comandaFiles = (localSurgery.comanda_urls || []).filter(url => !url.startsWith('[ANEXO_3]|||'));
+                const comandaFiles = (localSurgery.comanda_urls || []).filter(url => !url.startsWith('[ANEXO_3]|||') && !url.includes('?anexo=3'));
                 const hasFiles = comandaFiles.length > 0 || !!localSurgery.comanda_url;
                 return hasFiles ? (
                   <span style={{
@@ -1689,9 +1698,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             boxShadow: (isEditable && isFieldEditable('comanda_urls') && isDropzoneFocused2) ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none'
           }}>
             {(() => {
-              const allAttachmentUrls = (localSurgery.comanda_urls && localSurgery.comanda_urls.length > 0)
-                ? localSurgery.comanda_urls
-                : [];
+              const allAttachmentUrls = (localSurgery.comanda_urls || []).filter(url => !url.startsWith('[ANEXO_3]|||') && !url.includes('?anexo=3'));
               
               if (allAttachmentUrls.length === 0) {
                 return (
@@ -2130,14 +2137,14 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   Anexo 3 · Descartáveis / Implantes / Instrumentais / Equipamentos
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
-                  Documentação de descartáveis, implantes, instrumentais e equipamentos
+                  imagem de descartáveis, implantes, instrumentais e equipamentos
                 </div>
               </div>
             </div>
 
             <div>
               {(() => {
-                const equipmentFiles = (localSurgery.comanda_urls || []).filter(url => url.startsWith('[ANEXO_3]|||'));
+                const equipmentFiles = (localSurgery.comanda_urls || []).filter(url => url.startsWith('[ANEXO_3]|||') || url.includes('?anexo=3'));
                 return equipmentFiles.length > 0 ? (
                   <span style={{
                     backgroundColor: 'rgba(16, 185, 129, 0.12)',
@@ -2184,7 +2191,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             boxShadow: (isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls')) && isDropzoneFocused3) ? '0 0 0 3px rgba(99, 102, 241, 0.15)' : 'none'
           }}>
             {(() => {
-              const allEquipmentRaw = (localSurgery.comanda_urls || []).filter(url => url.startsWith('[ANEXO_3]|||'));
+              const allEquipmentRaw = (localSurgery.comanda_urls || []).filter(url => url.startsWith('[ANEXO_3]|||') || url.includes('?anexo=3'));
               
               if (allEquipmentRaw.length === 0) {
                 return (
@@ -2300,11 +2307,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               );
             })()}
 
-            {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && (
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', fontWeight: '500', marginTop: '4px' }}>
-                Selecione uma opção abaixo ou **clique aqui e aperte Ctrl+V** para colar anexos
-              </span>
-            )}
+            {/* Previews and empty states */}
           </div>
 
           {/* Action Buttons */}

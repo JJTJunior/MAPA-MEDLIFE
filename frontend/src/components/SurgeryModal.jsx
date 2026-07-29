@@ -4,16 +4,25 @@ import { X, Save, Trash2, Upload, Image, FileText, CheckCircle } from 'lucide-re
 
 const parsePrintUrl = (item) => {
   if (!item) return { url: '', name: '' };
-  if (item.includes('|||')) {
-    const [url, ...nameParts] = item.split('|||');
+  let cleanItem = item;
+  if (cleanItem.startsWith('[ANEXO_3]|||')) {
+    cleanItem = cleanItem.replace('[ANEXO_3]|||', '');
+    if (!cleanItem.includes('?anexo=3')) {
+      const parts = cleanItem.split('|||');
+      if (parts[0]) parts[0] = parts[0] + '?anexo=3';
+      cleanItem = parts.join('|||');
+    }
+  }
+  if (cleanItem.includes('|||')) {
+    const [url, ...nameParts] = cleanItem.split('|||');
     return { url, name: nameParts.join('|||') };
   }
-  return { url: item, name: '' };
+  return { url: cleanItem, name: '' };
 };
 
 const isDocumentFile = (url) => {
   if (!url) return false;
-  const cleanUrl = url.split('|||')[0].toLowerCase();
+  const cleanUrl = url.split('|||')[0].split('?')[0].toLowerCase();
   return cleanUrl.endsWith('.pdf') || cleanUrl.endsWith('.doc') || cleanUrl.endsWith('.docx');
 };
 
@@ -545,7 +554,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const valueToStore = displayName ? `[ANEXO_3]|||${publicUrl}|||${displayName}` : `[ANEXO_3]|||${publicUrl}`;
+        const valueToStore = displayName ? `${publicUrl}?anexo=3|||${displayName}` : `${publicUrl}?anexo=3`;
         newValuesToStore.push(valueToStore);
       }
 
@@ -1318,10 +1327,6 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                   style={{ display: 'none' }} 
                   onChange={handleFileDocumentSelect} 
                 />
-
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', fontWeight: '500' }}>
-                  Selecione uma opção acima ou **clique aqui e aperte Ctrl+V** para colar anexos
-                </span>
               </div>
               
               {/* Previews */}
