@@ -628,7 +628,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         {/* KPI: Anexo 2 Pendente */}
         <div className="kpi-card glass-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => handleNavigate({ missingAnexo2: true })} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <span className="kpi-title">Sem Anexo 2</span>
+            <span className="kpi-title">COMANDA FALTANTE</span>
             <AlertCircle size={20} style={{ color: '#ef4444' }} />
           </div>
           <div className="kpi-value" style={{ color: '#ef4444' }}>{stats.missingAnexo2}</div>
