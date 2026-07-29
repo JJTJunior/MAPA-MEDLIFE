@@ -130,6 +130,7 @@ export default function TVPanel({ user, onBack }) {
         .select('*')
         .gte('date', todayStr)
         .lte('date', endDateStr)
+        .not('status', 'ilike', 'FINALIZADA')
         .order('date', { ascending: true })
         .order('time', { ascending: true });
 
