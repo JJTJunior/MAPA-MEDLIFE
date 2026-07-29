@@ -412,37 +412,45 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     requestAttachmentName([file], shouldCompress, false);
   };
 
-  const processMedicalRequestUpload = async (file, shouldCompress, printName) => {
+  const processMedicalRequestBatchUpload = async (files, shouldCompress, baseName) => {
     setLoading(true);
     try {
-      let fileToUpload = file;
-      if (shouldCompress && file.type.startsWith('image/')) {
-        fileToUpload = await compressImage(file);
+      const newValuesToStore = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const displayName = files.length > 1 ? `${baseName} (${i + 1})` : baseName;
+
+        let fileToUpload = file;
+        if (shouldCompress && file.type.startsWith('image/')) {
+          fileToUpload = await compressImage(file);
+        }
+
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileName = `medical_request_${Date.now()}_${Math.floor(Math.random() * 100000)}_${i}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('attachments')
+          .upload(fileName, fileToUpload);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('attachments')
+          .getPublicUrl(fileName);
+
+        const valueToStore = displayName ? `${publicUrl}|||${displayName}` : publicUrl;
+        newValuesToStore.push(valueToStore);
       }
-
-      const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
-      const fileName = `medical_request_${Date.now()}_${Math.floor(Math.random() * 100000)}.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('attachments')
-        .upload(fileName, fileToUpload);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('attachments')
-        .getPublicUrl(fileName);
-
-      const valueToStore = printName ? `${publicUrl}|||${printName}` : publicUrl;
 
       setFormData(prev => ({
         ...prev,
-        medical_request_urls: [...(prev.medical_request_urls || []), valueToStore],
-        comanda_urls: [...(prev.comanda_urls || [])]
+        medical_request_urls: [...(prev.medical_request_urls || []), ...newValuesToStore]
       }));
+
     } catch (err) {
       console.error(err);
-      alert('Erro ao fazer upload da imagem: ' + err.message);
+      alert('Erro ao fazer upload dos anexos: ' + err.message);
     } finally {
       setLoading(false);
     }
@@ -452,26 +460,45 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     requestAttachmentName([file], shouldCompress, true);
   };
 
-  const processComandaUpload = async (file, shouldCompress, printName) => {
+  const processComandaBatchUpload = async (files, shouldCompress, baseName) => {
     setUploadingComanda(true);
     try {
-      let fileToUpload = file;
-      if (shouldCompress && file.type.startsWith('image/')) {
-        fileToUpload = await compressImage(file);
+      const newValuesToStore = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const displayName = files.length > 1 ? `${baseName} (${i + 1})` : baseName;
+
+        let fileToUpload = file;
+        if (shouldCompress && file.type.startsWith('image/')) {
+          fileToUpload = await compressImage(file);
+        }
+
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileName = `comanda_${Date.now()}_${Math.floor(Math.random() * 100000)}_${i}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('attachments')
+          .upload(fileName, fileToUpload);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('attachments')
+          .getPublicUrl(fileName);
+
+        const valueToStore = displayName ? `${publicUrl}|||${displayName}` : publicUrl;
+        newValuesToStore.push(valueToStore);
       }
-      const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
-      const fileName = `comanda_${Date.now()}_${Math.floor(Math.random() * 100000)}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage.from('attachments').upload(fileName, fileToUpload);
-      if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('attachments').getPublicUrl(fileName);
-      const valueToStore = printName ? `${publicUrl}|||${printName}` : publicUrl;
+
       setFormData(prev => ({
         ...prev,
-        comanda_urls: [...(prev.comanda_urls || []), valueToStore]
+        comanda_urls: [...(prev.comanda_urls || []), ...newValuesToStore]
       }));
+
     } catch (err) {
       console.error(err);
-      alert('Erro ao fazer upload da imagem: ' + err.message);
+      alert('Erro ao fazer upload das comandas: ' + err.message);
     } finally {
       setUploadingComanda(false);
     }
@@ -487,15 +514,10 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     setPendingAttachment(null);
     setAttachmentNameError('');
 
-    const fileList = item.files || [];
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList[i];
-      const displayName = fileList.length > 1 ? `${nameToUse} (${i + 1})` : nameToUse;
-      if (item.isComanda) {
-        await processComandaUpload(file, item.shouldCompress, displayName);
-      } else {
-        await processMedicalRequestUpload(file, item.shouldCompress, displayName);
-      }
+    if (item.isComanda) {
+      await processComandaBatchUpload(item.files, item.shouldCompress, nameToUse);
+    } else {
+      await processMedicalRequestBatchUpload(item.files, item.shouldCompress, nameToUse);
     }
   };
   const removeComandaUrl = (urlToRemove) => {

@@ -250,46 +250,59 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     requestAttachmentName([file], shouldCompress, false);
   };
 
-  const processMedicalRequestUpload = async (file, shouldCompress, printName) => {
+  const processMedicalRequestBatchUpload = async (files, shouldCompress, baseName) => {
     setUploading(true);
     try {
-      let fileToUpload = file;
-      if (shouldCompress && file.type.startsWith('image/')) {
-        fileToUpload = await compressImage(file);
+      const newValuesToStore = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const displayName = files.length > 1 ? `${baseName} (${i + 1})` : baseName;
+
+        let fileToUpload = file;
+        if (shouldCompress && file.type.startsWith('image/')) {
+          fileToUpload = await compressImage(file);
+        }
+
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileName = `medical_request_${Date.now()}_${Math.floor(Math.random() * 100000)}_${i}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('attachments')
+          .upload(fileName, fileToUpload);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('attachments')
+          .getPublicUrl(fileName);
+
+        const valueToStore = displayName ? `${publicUrl}|||${displayName}` : publicUrl;
+        newValuesToStore.push(valueToStore);
       }
 
-      const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
-      const fileName = `medical_request_${Date.now()}_${Math.floor(Math.random() * 100000)}.${fileExt}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('attachments')
-        .upload(fileName, fileToUpload);
+      setLocalSurgery(prev => {
+        const existingUrls = prev.medical_request_urls || [];
+        const updatedUrls = [...existingUrls, ...newValuesToStore];
+        const firstAttachmentUrl = updatedUrls.length > 0 ? (updatedUrls[0].includes('|||') ? updatedUrls[0].split('|||')[0] : updatedUrls[0]) : null;
 
-      if (uploadError) throw uploadError;
+        supabase.from('surgeries')
+          .update({ medical_request_urls: updatedUrls, attachment_url: firstAttachmentUrl })
+          .eq('id', prev.id)
+          .then(({ error }) => {
+            if (error) console.error('Erro ao atualizar banco:', error);
+          });
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('attachments')
-        .getPublicUrl(fileName);
-
-      const valueToStore = printName ? `${publicUrl}|||${printName}` : publicUrl;
-      const updatedUrls = [...(localSurgery.medical_request_urls || []), valueToStore];
-      const firstAttachmentUrl = updatedUrls.length > 0 ? (updatedUrls[0].includes('|||') ? updatedUrls[0].split('|||')[0] : updatedUrls[0]) : null;
-
-      const { error: updateError } = await supabase.from('surgeries')
-        .update({ medical_request_urls: updatedUrls, attachment_url: firstAttachmentUrl })
-        .eq('id', localSurgery.id);
-
-      if (updateError) throw updateError;
-
-      setLocalSurgery(prev => ({
-        ...prev,
-        medical_request_urls: updatedUrls,
-        attachment_url: firstAttachmentUrl
-      }));
+        return {
+          ...prev,
+          medical_request_urls: updatedUrls,
+          attachment_url: firstAttachmentUrl
+        };
+      });
 
     } catch (err) {
       console.error(err);
-      alert('Erro ao fazer upload da imagem: ' + err.message);
+      alert('Erro ao fazer upload dos anexos: ' + err.message);
     } finally {
       setUploading(false);
     }
@@ -376,28 +389,57 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     requestAttachmentName([file], shouldCompress, true);
   };
 
-  const processComandaUpload = async (file, shouldCompress, printName) => {
+  const processComandaBatchUpload = async (files, shouldCompress, baseName) => {
     setUploadingComanda(true);
     try {
-      let fileToUpload = file;
-      if (shouldCompress && file.type.startsWith('image/')) {
-        fileToUpload = await compressImage(file);
+      const newValuesToStore = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const displayName = files.length > 1 ? `${baseName} (${i + 1})` : baseName;
+
+        let fileToUpload = file;
+        if (shouldCompress && file.type.startsWith('image/')) {
+          fileToUpload = await compressImage(file);
+        }
+
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileName = `comanda_${Date.now()}_${Math.floor(Math.random() * 100000)}_${i}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('attachments')
+          .upload(fileName, fileToUpload);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('attachments')
+          .getPublicUrl(fileName);
+
+        const valueToStore = displayName ? `${publicUrl}|||${displayName}` : publicUrl;
+        newValuesToStore.push(valueToStore);
       }
-      const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
-      const fileName = `comanda_${Date.now()}_${Math.floor(Math.random() * 100000)}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage.from('attachments').upload(fileName, fileToUpload);
-      if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('attachments').getPublicUrl(fileName);
-      const valueToStore = printName ? `${publicUrl}|||${printName}` : publicUrl;
-      const updatedUrls = [...(localSurgery.comanda_urls || []), valueToStore];
-      const { error: updateError } = await supabase.from('surgeries')
-        .update({ comanda_urls: updatedUrls })
-        .eq('id', localSurgery.id);
-      if (updateError) throw updateError;
-      setLocalSurgery(prev => ({ ...prev, comanda_urls: updatedUrls }));
+
+      setLocalSurgery(prev => {
+        const existingUrls = prev.comanda_urls || [];
+        const updatedUrls = [...existingUrls, ...newValuesToStore];
+
+        supabase.from('surgeries')
+          .update({ comanda_urls: updatedUrls })
+          .eq('id', prev.id)
+          .then(({ error }) => {
+            if (error) console.error('Erro ao atualizar banco:', error);
+          });
+
+        return {
+          ...prev,
+          comanda_urls: updatedUrls
+        };
+      });
+
     } catch (err) {
       console.error(err);
-      alert('Erro ao fazer upload da imagem: ' + err.message);
+      alert('Erro ao fazer upload das comandas: ' + err.message);
     } finally {
       setUploadingComanda(false);
     }
@@ -413,15 +455,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     setPendingAttachment(null);
     setAttachmentNameError('');
 
-    const fileList = item.files || [];
-    for (let i = 0; i < fileList.length; i++) {
-      const file = fileList[i];
-      const displayName = fileList.length > 1 ? `${nameToUse} (${i + 1})` : nameToUse;
-      if (item.isComanda) {
-        await processComandaUpload(file, item.shouldCompress, displayName);
-      } else {
-        await processMedicalRequestUpload(file, item.shouldCompress, displayName);
-      }
+    if (item.isComanda) {
+      await processComandaBatchUpload(item.files, item.shouldCompress, nameToUse);
+    } else {
+      await processMedicalRequestBatchUpload(item.files, item.shouldCompress, nameToUse);
     }
   };
   const removeComandaUrl = async (itemToRemove) => {
