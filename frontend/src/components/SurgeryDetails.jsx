@@ -2130,7 +2130,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               </div>
               <div>
                 <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, #0f172a)' }}>
-                  Anexo 3 · Descartáveis / Implantes / Instrumentais / Equipamentos
+                  Anexo 3 · Descartáveis / Implantes / Instrumentais / Equipamentos / Comprovante de entrega
                 </div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
                   imagem de descartáveis, implantes, instrumentais, equipamentos e comprovante de entrega
