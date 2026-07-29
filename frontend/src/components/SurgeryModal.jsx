@@ -469,6 +469,36 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
       }
     }
   };
+
+  const handlePrintOptionClick = async (isComanda = false) => {
+    setShowAttachmentDropdown(false);
+
+    if (navigator.clipboard && navigator.clipboard.read) {
+      try {
+        const clipboardItems = await navigator.clipboard.read();
+        for (const item of clipboardItems) {
+          const imageType = item.types.find(t => t.startsWith('image/'));
+          if (imageType) {
+            const blob = await item.getType(imageType);
+            const file = new File([blob], `print_${Date.now()}.png`, { type: imageType });
+            if (isComanda) {
+              await uploadAndAddComandaFile(file, true);
+            } else {
+              await uploadAndAddFile(file, true);
+            }
+            return;
+          }
+        }
+      } catch (err) {
+        console.log('Clipboard read error or denied:', err);
+      }
+    }
+
+    const el = document.querySelector('.paste-dropzone');
+    if (el) {
+      el.focus();
+    }
+  };
   const uploadAndAddComandaFile = async (file, shouldCompress = false) => {
     const displayName = prompt("Digite o nome/identificação para este anexo (ex: Comanda, Documentação):");
     const printName = displayName ? displayName.trim() : "";
@@ -1093,12 +1123,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setShowAttachmentDropdown(false);
-                            const el = document.querySelector('.paste-dropzone');
-                            if (el) {
-                              el.focus();
-                              alert("Área de anexos focada! Pressione Ctrl+V no teclado para colar o print.");
-                            }
+                            handlePrintOptionClick(false);
                           }}
                           style={{
                             background: 'none',

@@ -178,6 +178,66 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     }
   };
 
+  const handlePrintOptionClick = async (isComanda = false) => {
+    setShowAttachmentDropdown(false);
+    setShowComandaDropdown(false);
+
+    if (navigator.clipboard && navigator.clipboard.read) {
+      try {
+        const clipboardItems = await navigator.clipboard.read();
+        for (const item of clipboardItems) {
+          const imageType = item.types.find(t => t.startsWith('image/'));
+          if (imageType) {
+            const blob = await item.getType(imageType);
+            const file = new File([blob], `print_${Date.now()}.png`, { type: imageType });
+            if (isComanda) {
+              await uploadAndAddComandaFile(file, true);
+            } else {
+              await uploadAndAddFile(file, true);
+            }
+            return;
+          }
+        }
+      } catch (err) {
+        console.log('Clipboard read error or denied:', err);
+      }
+    }
+
+    const dropzoneId = isComanda ? 'anexo2-dropzone' : 'anexo1-dropzone';
+    const el = document.getElementById(dropzoneId);
+    if (el) {
+      el.focus();
+    }
+  };
+
+  useEffect(() => {
+    const handleGlobalPaste = (e) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target?.tagName)) {
+        return;
+      }
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (const item of items) {
+        if (item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          if (file) {
+            if (isDropzoneFocused2) {
+              uploadAndAddComandaFile(file, true);
+            } else {
+              uploadAndAddFile(file, true);
+            }
+          }
+        }
+      }
+    };
+
+    window.addEventListener('paste', handleGlobalPaste);
+    return () => {
+      window.removeEventListener('paste', handleGlobalPaste);
+    };
+  }, [isDropzoneFocused2, localSurgery]);
+
   const uploadAndAddFile = async (file, shouldCompress = false) => {
     const displayName = prompt("Digite o nome/identificação para este anexo (ex: Solicitação, Autorização):");
     const printName = displayName ? displayName.trim() : "";
@@ -1172,12 +1232,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setShowAttachmentDropdown(false);
-                          const el = document.querySelector('.paste-dropzone');
-                          if (el) {
-                            el.focus();
-                            alert("Área de anexos focada! Pressione Ctrl+V no teclado para colar o print.");
-                          }
+                          handlePrintOptionClick(false);
                         }}
                         style={{
                           background: 'none',
@@ -1645,12 +1700,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setShowComandaDropdown(false);
-                          const el = document.querySelector('.paste-dropzone');
-                          if (el) {
-                            el.focus();
-                            alert("Área de anexos focada! Pressione Ctrl+V no teclado para colar o print.");
-                          }
+                          handlePrintOptionClick(true);
                         }}
                         style={{
                           background: 'none',
