@@ -400,8 +400,14 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
   };
 
   const uploadAndAddFile = async (file, shouldCompress = false) => {
-    const displayName = prompt("Digite o nome/identificação para este anexo (ex: Solicitação, Autorização):");
-    const printName = displayName ? displayName.trim() : "";
+    let displayName = prompt("É OBRIGATÓRIO informar a identificação para este anexo (ex: Solicitação, Autorização):");
+    if (displayName === null) return;
+    while (!displayName || !displayName.trim()) {
+      alert("A identificação do anexo é OBRIGATÓRIA!");
+      displayName = prompt("Por favor, digite a identificação para este anexo (ex: Solicitação, Autorização):");
+      if (displayName === null) return;
+    }
+    const printName = displayName.trim();
 
     setLoading(true);
     try {
@@ -500,8 +506,14 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
     }
   };
   const uploadAndAddComandaFile = async (file, shouldCompress = false) => {
-    const displayName = prompt("Digite o nome/identificação para este anexo (ex: Comanda, Documentação):");
-    const printName = displayName ? displayName.trim() : "";
+    let displayName = prompt("É OBRIGATÓRIO informar a identificação para este anexo (ex: Comanda, Documentação):");
+    if (displayName === null) return;
+    while (!displayName || !displayName.trim()) {
+      alert("A identificação do anexo é OBRIGATÓRIA!");
+      displayName = prompt("Por favor, digite a identificação para este anexo (ex: Comanda, Documentação):");
+      if (displayName === null) return;
+    }
+    const printName = displayName.trim();
     setUploadingComanda(true);
     try {
       let fileToUpload = file;
