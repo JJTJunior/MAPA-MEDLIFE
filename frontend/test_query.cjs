@@ -5,12 +5,17 @@ const supabaseKey = 'sb_publishable_SbGEToIs2nHojuQG2DGEig_eRNQw5iF';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function run() {
-  const { data, error } = await supabase.from('status').select('*');
+  const { count, error } = await supabase
+    .from('surgeries')
+    .select('*', { count: 'exact', head: true })
+    .eq('comanda_urls', '{}')
+    .not('status', 'ilike', 'SUSPENSA');
+  
   if (error) {
     console.error('Error fetching data:', error);
-    return;
+  } else {
+    console.log('Count not SUSPENSA:', count);
   }
-  console.log(data);
 }
 
 run();
