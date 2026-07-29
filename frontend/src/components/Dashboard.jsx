@@ -433,11 +433,11 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
 
       const monthlyData = Object.values(monthlyDataMap);
 
-      const sortAndSlice = (obj) => {
+      const sortAndSlice = (obj, limit = 5) => {
         return Object.entries(obj)
           .map(([name, count]) => ({ name, count }))
           .sort((a, b) => b.count - a.count)
-          .slice(0, 5);
+          .slice(0, limit);
       };
 
       setStats({
@@ -452,8 +452,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         materialRetornado: materialRetornadoRes.count || 0,
         missingAnexo2: missingAnexo2Res.count || 0,
         topHospitals: sortAndSlice(hospitalCounts),
-        topDoctorsOrtopedia: sortAndSlice(doctorOrtopediaCounts),
-        topDoctorsBuco: sortAndSlice(doctorBucoCounts),
+        topDoctorsOrtopedia: sortAndSlice(doctorOrtopediaCounts, 10),
+        topDoctorsBuco: sortAndSlice(doctorBucoCounts, 10),
         topVendors: Object.values(vendorStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 5),
         topInstrumentalists: Object.values(instrumentalistStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 10),
         topInsurances: sortAndSlice(insuranceCounts),
