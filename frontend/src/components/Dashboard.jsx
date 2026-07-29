@@ -120,12 +120,12 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
     return `${year}-${month}-${day}`;
   };
 
-  const handleNavigate = (filters) => {
+  const handleNavigate = (filters, clearDates = false) => {
     if (onNavigate) {
       onNavigate({
         ...filters,
-        startDate: getStartDate() || '',
-        endDate: getEndDate() || ''
+        startDate: clearDates ? '' : (getStartDate() || ''),
+        endDate: clearDates ? '' : (getEndDate() || '')
       });
     }
   };
@@ -615,7 +615,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         </div>
 
         {/* KPI: Aguardando Autorização */}
-        <div className="kpi-card glass-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => handleNavigate({ status: 'AGUARDANDO AUTORIZACAO' })} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+        <div className="kpi-card glass-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => handleNavigate({ status: 'AGUARDANDO AUTORIZACAO' }, true)} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <span className="kpi-title">Aguardando Autorização</span>
             <AlertCircle size={20} style={{ color: '#eab308' }} />
