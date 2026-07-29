@@ -194,12 +194,12 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
         supabase.from('surgery_types').select('name').order('name', { ascending: true }),
         supabase.from('medicos').select('name').order('name', { ascending: true })
       ]);
-      if (vendedoresRes.data) setVendedoresList(vendedoresRes.data);
-      if (instrumentadoresRes.data) setInstrumentadoresList(instrumentadoresRes.data);
-      if (hospRes.data) setHospitaisList(hospRes.data);
-      if (convRes.data) setConveniosList(convRes.data);
-      if (procRes.data) setProcedimentosList(procRes.data);
-      if (typesRes.data) setSurgeryTypesList(typesRes.data);
+      if (vendedoresRes.data) setVendedoresList(vendedoresRes.data.filter(i => !(i.name || '').includes('(INATIVO)')));
+      if (instrumentadoresRes.data) setInstrumentadoresList(instrumentadoresRes.data.filter(i => !(i.name || '').includes('(INATIVO)')));
+      if (hospRes.data) setHospitaisList(hospRes.data.filter(i => !(i.name || '').includes('(INATIVO)')));
+      if (convRes.data) setConveniosList(convRes.data.filter(i => !(i.name || '').includes('(INATIVO)')));
+      if (procRes.data) setProcedimentosList(procRes.data.filter(i => !(i.name || '').includes('(INATIVO)')));
+      if (typesRes.data) setSurgeryTypesList(typesRes.data.filter(i => !(i.name || '').includes('(INATIVO)')));
 
       try {
         const { data: caraterData } = await supabase.from('carater').select('name').order('name', { ascending: true });
@@ -240,7 +240,9 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
       
       const medicosData = medicosRes?.data;
       if (medicosData) {
-        const uniqueMedicos = medicosData.map(item => item.name ? item.name.split('|CRM:')[0] : '').filter(Boolean);
+        const uniqueMedicos = medicosData
+          .map(item => item.name ? item.name.split('|CRM:')[0] : '')
+          .filter(name => name && !name.includes('(INATIVO)'));
         setMedicosList(uniqueMedicos);
       }
     } catch (err) {

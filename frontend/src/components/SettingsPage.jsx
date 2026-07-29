@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '../supabaseClient';
-import { X, Settings, Users, Stethoscope, Building2, UserPlus, Tag, Plus, Trash2, ShieldAlert, Activity, FileText, Hash, List, Edit2, Save, Search, ArrowLeft } from 'lucide-react';
+import { X, Settings, Users, Stethoscope, Building2, UserPlus, Tag, Plus, Trash2, ShieldAlert, Activity, FileText, Hash, List, Edit2, Save, Search, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import UserManagement from './UserManagement';
 import AuditLogs from './AuditLogs';
 
@@ -203,6 +203,38 @@ export default function SettingsPage({ user, onBack }) {
       setErrorMsg(`Erro: ${err.message || 'Desconhecido'} (Código: ${err.code || 'N/A'}). Se o problema persistir, atualize a página e tente novamente.`);
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleToggleActive = async (item) => {
+    try {
+      const isInactive = (item.name || '').includes('(INATIVO)');
+      let newName = item.name || '';
+      
+      if (isInactive) {
+        newName = newName.replace(' (INATIVO)', '').replace('(INATIVO)', '').trim();
+      } else {
+        newName = `${newName} (INATIVO)`;
+      }
+      
+      if (activeTab === 'carater') {
+        const updated = items.map(i => i.id === item.id ? { ...i, name: newName } : i);
+        localStorage.setItem('carater_list', JSON.stringify(updated));
+        supabase.from('carater').update({ name: newName }).eq('id', item.id).then(() => {}).catch(() => {});
+        setItems(updated);
+        return;
+      }
+
+      const { error } = await supabase
+        .from(activeTab)
+        .update({ name: newName })
+        .eq('id', item.id);
+        
+      if (error) throw error;
+      await fetchItems();
+    } catch (err) {
+      console.error(`Erro ao alternar status em ${activeTab}:`, err);
+      setErrorMsg('Não foi possível alterar o status do item.');
     }
   };
 
@@ -659,6 +691,17 @@ export default function SettingsPage({ user, onBack }) {
                           </div>
                         ) : (
                           <>
+                            {activeTab !== 'status' && (
+                              <button 
+                                type="button" 
+                                className="btn-icon" 
+                                style={{ color: (item.name || '').includes('(INATIVO)') ? '#9ca3af' : '#10b981' }}
+                                onClick={() => handleToggleActive(item)}
+                                title={(item.name || '').includes('(INATIVO)') ? "Reativar cadastro" : "Inativar cadastro"}
+                              >
+                                {(item.name || '').includes('(INATIVO)') ? <EyeOff size={18} /> : <Eye size={18} />}
+                              </button>
+                            )}
                             <button 
                               type="button" 
                               className="btn-icon" 
