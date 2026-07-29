@@ -334,7 +334,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         monthlyDataMap[monthKey] = {
           name: `${monthNames[temp.getMonth()]}`,
           Agendadas: 0,
-          Entregues: 0,
+          Finalizadas: 0,
           Suspensas: 0
         };
       }
@@ -347,22 +347,22 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           if (row.salesperson) {
             const vp = row.salesperson;
             if (!vendorStatsMap[vp]) {
-              vendorStatsMap[vp] = { name: vp, Agendadas: 0, Entregues: 0, Suspensas: 0 };
+              vendorStatsMap[vp] = { name: vp, Agendadas: 0, Finalizadas: 0, Suspensas: 0 };
             }
             vendorStatsMap[vp].Agendadas++;
             const st = row.status ? row.status.toUpperCase() : '';
-            if (st === 'MATERIAL ENTREGUE') vendorStatsMap[vp].Entregues++;
+            if (st === 'FINALIZADA') vendorStatsMap[vp].Finalizadas++;
             if (st === 'SUSPENSA') vendorStatsMap[vp].Suspensas++;
           }
 
           const processInstrumentalist = (inst) => {
             if (inst) {
               if (!instrumentalistStatsMap[inst]) {
-                instrumentalistStatsMap[inst] = { name: inst, Agendadas: 0, Entregues: 0, Suspensas: 0 };
+                instrumentalistStatsMap[inst] = { name: inst, Agendadas: 0, Finalizadas: 0, Suspensas: 0 };
               }
               instrumentalistStatsMap[inst].Agendadas++;
               const st = row.status ? row.status.toUpperCase() : '';
-              if (st === 'MATERIAL ENTREGUE') instrumentalistStatsMap[inst].Entregues++;
+              if (st === 'FINALIZADA') instrumentalistStatsMap[inst].Finalizadas++;
               if (st === 'SUSPENSA') instrumentalistStatsMap[inst].Suspensas++;
             }
           };
@@ -384,8 +384,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             if (monthlyDataMap[monthKey]) {
               monthlyDataMap[monthKey].Agendadas++;
               const st = row.status ? row.status.toUpperCase() : '';
-              if (st === 'MATERIAL ENTREGUE') {
-                monthlyDataMap[monthKey].Entregues++;
+              if (st === 'FINALIZADA') {
+                monthlyDataMap[monthKey].Finalizadas++;
               }
               if (st === 'SUSPENSA') {
                 monthlyDataMap[monthKey].Suspensas++;
@@ -911,8 +911,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
                   <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
                     <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
                   </Bar>
-                  <Bar dataKey="Entregues" fill="#10b981" radius={[4, 4, 0, 0]}>
-                    <LabelList dataKey="Entregues" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                  <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
                   </Bar>
                   <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
                     <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
@@ -946,8 +946,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
                 <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
                 </Bar>
-                <Bar dataKey="Entregues" fill="#10b981" radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="Entregues" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
                 </Bar>
                 <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
                   <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
@@ -979,8 +979,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
               <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
                 <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
               </Bar>
-              <Bar dataKey="Entregues" fill="#10b981" radius={[4, 4, 0, 0]}>
-                <LabelList dataKey="Entregues" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+              <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
+                <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
               </Bar>
               <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
                 <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
