@@ -97,6 +97,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const [pendingAttachment, setPendingAttachment] = useState(null);
   const [attachmentNameInput, setAttachmentNameInput] = useState('');
   const [attachmentNameError, setAttachmentNameError] = useState('');
+  const [uploadProgress, setUploadProgress] = useState(null);
 
   useEffect(() => {
     setLocalSurgery(surgery);
@@ -252,12 +253,31 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
   const processMedicalRequestBatchUpload = async (files, shouldCompress, baseName) => {
     setUploading(true);
+    setUploadProgress({
+      current: 0,
+      total: files.length,
+      fileName: baseName,
+      percent: 5,
+      status: `Preparando ${files.length} arquivo(s)...`,
+      isDone: false
+    });
+
     try {
       const newValuesToStore = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const displayName = files.length > 1 ? `${baseName} (${i + 1})` : baseName;
+        const currentPercent = Math.round((i / files.length) * 85) + 5;
+
+        setUploadProgress({
+          current: i + 1,
+          total: files.length,
+          fileName: displayName,
+          percent: currentPercent,
+          status: `Enviando arquivo ${i + 1} de ${files.length}...`,
+          isDone: false
+        });
 
         let fileToUpload = file;
         if (shouldCompress && file.type.startsWith('image/')) {
@@ -281,6 +301,15 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         newValuesToStore.push(valueToStore);
       }
 
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Atualizando registro...',
+        percent: 95,
+        status: 'Salvando alterações no prontuário...',
+        isDone: false
+      });
+
       setLocalSurgery(prev => {
         const existingUrls = prev.medical_request_urls || [];
         const updatedUrls = [...existingUrls, ...newValuesToStore];
@@ -300,9 +329,23 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         };
       });
 
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Concluído!',
+        percent: 100,
+        status: 'Todos os anexos foram enviados com sucesso!',
+        isDone: true
+      });
+
+      setTimeout(() => {
+        setUploadProgress(null);
+      }, 1200);
+
     } catch (err) {
       console.error(err);
       alert('Erro ao fazer upload dos anexos: ' + err.message);
+      setUploadProgress(null);
     } finally {
       setUploading(false);
     }
@@ -391,12 +434,31 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
   const processComandaBatchUpload = async (files, shouldCompress, baseName) => {
     setUploadingComanda(true);
+    setUploadProgress({
+      current: 0,
+      total: files.length,
+      fileName: baseName,
+      percent: 5,
+      status: `Preparando ${files.length} arquivo(s)...`,
+      isDone: false
+    });
+
     try {
       const newValuesToStore = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const displayName = files.length > 1 ? `${baseName} (${i + 1})` : baseName;
+        const currentPercent = Math.round((i / files.length) * 85) + 5;
+
+        setUploadProgress({
+          current: i + 1,
+          total: files.length,
+          fileName: displayName,
+          percent: currentPercent,
+          status: `Enviando arquivo ${i + 1} de ${files.length}...`,
+          isDone: false
+        });
 
         let fileToUpload = file;
         if (shouldCompress && file.type.startsWith('image/')) {
@@ -420,6 +482,15 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         newValuesToStore.push(valueToStore);
       }
 
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Atualizando registro...',
+        percent: 95,
+        status: 'Salvando alterações no prontuário...',
+        isDone: false
+      });
+
       setLocalSurgery(prev => {
         const existingUrls = prev.comanda_urls || [];
         const updatedUrls = [...existingUrls, ...newValuesToStore];
@@ -437,9 +508,23 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         };
       });
 
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Concluído!',
+        percent: 100,
+        status: 'Todos os anexos foram enviados com sucesso!',
+        isDone: true
+      });
+
+      setTimeout(() => {
+        setUploadProgress(null);
+      }, 1200);
+
     } catch (err) {
       console.error(err);
       alert('Erro ao fazer upload das comandas: ' + err.message);
+      setUploadProgress(null);
     } finally {
       setUploadingComanda(false);
     }
@@ -2316,6 +2401,97 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               >
                 Confirmar e Anexar
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Customizado de Progresso de Upload */}
+      {uploadProgress && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999999
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '20px',
+            padding: '32px 28px',
+            maxWidth: '420px',
+            width: '90%',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            textAlign: 'center',
+            gap: '20px'
+          }}>
+            <div style={{
+              width: '64px',
+              height: '64px',
+              borderRadius: '50%',
+              backgroundColor: uploadProgress.isDone ? 'rgba(16, 185, 129, 0.12)' : 'rgba(37, 99, 235, 0.12)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: uploadProgress.isDone ? '#10b981' : '#2563eb',
+              transition: 'all 0.3s'
+            }}>
+              {uploadProgress.isDone ? (
+                <CheckCircle size={36} />
+              ) : (
+                <Upload size={32} />
+              )}
+            </div>
+
+            <div>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: '#0f172a' }}>
+                {uploadProgress.isDone ? 'Anexos Enviados!' : 'Enviando Anexos'}
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
+                {uploadProgress.status}
+              </p>
+            </div>
+
+            <div style={{ width: '100%' }}>
+              <div style={{
+                display: 'flex',
+                justify: 'space-between',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: '#475569',
+                marginBottom: '8px'
+              }}>
+                <span>{uploadProgress.fileName}</span>
+                <span>{uploadProgress.percent}%</span>
+              </div>
+              
+              <div style={{
+                width: '100%',
+                height: '10px',
+                backgroundColor: '#e2e8f0',
+                borderRadius: '999px',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  width: `${uploadProgress.percent}%`,
+                  height: '100%',
+                  background: uploadProgress.isDone ? '#10b981' : 'linear-gradient(90deg, #2563eb, #3b82f6)',
+                  borderRadius: '999px',
+                  transition: 'width 0.3s ease-in-out'
+                }} />
+              </div>
+            </div>
+
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+              Por favor, aguarde a conclusão do carregamento...
             </div>
           </div>
         </div>
