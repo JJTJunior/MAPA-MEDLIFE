@@ -37,6 +37,7 @@ export default function SettingsPage({ user, onBack }) {
   const [selectedIcon, setSelectedIcon] = useState('⚪');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
   const [editValue, setEditValue] = useState('');
   const [editCrm, setEditCrm] = useState('');
   const [editIcon, setEditIcon] = useState('⚪');
@@ -170,7 +171,7 @@ export default function SettingsPage({ user, onBack }) {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Tem certeza que deseja remover este nome? Ele deixará de aparecer nas opções de agendamento.')) return;
+    // Confirmation is now handled by inline buttons
     
     if (activeTab === 'carater') {
       const updated = items.filter(item => item.id !== id);
@@ -198,6 +199,8 @@ export default function SettingsPage({ user, onBack }) {
     } catch (err) {
       console.error(`Erro ao remover de ${activeTab}:`, err);
       alert(`Erro: ${err.message || 'Desconhecido'} (Código: ${err.code || 'N/A'}). Se o problema persistir, atualize a página e tente novamente.`);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -614,6 +617,28 @@ export default function SettingsPage({ user, onBack }) {
                               <X size={18} />
                             </button>
                           </>
+                        ) : deletingId === item.id ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ fontSize: '0.8rem', color: '#ef4444', fontWeight: '500' }}>Confirmar exclusão?</span>
+                            <button 
+                              type="button" 
+                              className="btn-icon" 
+                              style={{ color: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
+                              onClick={() => handleDelete(item.id)}
+                              title="Sim, excluir"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                            <button 
+                              type="button" 
+                              className="btn-icon" 
+                              style={{ color: '#6b7280', backgroundColor: 'rgba(107, 114, 128, 0.1)' }}
+                              onClick={() => setDeletingId(null)}
+                              title="Cancelar"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
                         ) : (
                           <>
                             <button 
@@ -629,7 +654,7 @@ export default function SettingsPage({ user, onBack }) {
                               type="button" 
                               className="btn-icon" 
                               style={{ color: '#ef4444' }}
-                              onClick={() => handleDelete(item.id)}
+                              onClick={() => setDeletingId(item.id)}
                               title="Remover"
                             >
                               <Trash2 size={18} />
