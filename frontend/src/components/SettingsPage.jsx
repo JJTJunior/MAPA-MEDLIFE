@@ -187,11 +187,17 @@ export default function SettingsPage({ user, onBack }) {
         .delete()
         .eq('id', id);
         
-      if (error) throw error;
+      if (error) {
+        if (error.code === '23503') {
+          throw new Error('Este item já está vinculado a alguma cirurgia e não pode ser excluído.');
+        }
+        throw error;
+      }
       
       await fetchItems();
     } catch (err) {
       console.error(`Erro ao remover de ${activeTab}:`, err);
+      alert(err.message || 'Não foi possível excluir. Pode ser que o item já esteja em uso no sistema.');
     }
   };
 
