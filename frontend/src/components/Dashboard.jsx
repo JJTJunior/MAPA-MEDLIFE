@@ -48,6 +48,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
     urgent: 0,
     pendingAuth: 0,
     inSeparation: 0,
+    missingAnexo2: 0,
     topHospitals: [],
     topDoctors: [],
     topVendors: [],
@@ -292,6 +293,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         sepEntregaRes,
         finalizadaRes,
         materialRetornadoRes,
+        missingAnexo2Res,
         chartsRes,
         onCallRes,
         funcionariosRes,
@@ -305,7 +307,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         buildQuery('AGENDADA'),
         buildQuery('Separado para entregar'),
         buildQuery('Finalizada'),
-        buildQuery('Material retornado'),
+        buildQueryUnfiltered('Material retornado'),
+        buildQuery().eq('comanda_urls', '{}'),
         qCharts,
         supabase.from('on_call').select('*').order('start_date', { ascending: true }),
         supabase.from('funcionarios').select('*'),
@@ -414,6 +417,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         sepDelivery: sepEntregaRes.count || 0,
         finalizada: finalizadaRes.count || 0,
         materialRetornado: materialRetornadoRes.count || 0,
+        missingAnexo2: missingAnexo2Res.count || 0,
         topHospitals: sortAndSlice(hospitalCounts),
         topDoctors: sortAndSlice(doctorCounts),
         topVendors: Object.values(vendorStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 5),
@@ -619,6 +623,16 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           </div>
           <div className="kpi-value" style={{ color: '#10b981' }}>{stats.finalizada}</div>
           <span className="kpi-footer">Cirurgias concluídas</span>
+        </div>
+
+        {/* KPI: Anexo 2 Pendente */}
+        <div className="kpi-card glass-card" style={{ cursor: 'pointer', transition: 'transform 0.2s' }} onClick={() => handleNavigate({ missingAnexo2: true })} onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.02)'} onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <span className="kpi-title">Sem Anexo 2</span>
+            <AlertCircle size={20} style={{ color: '#ef4444' }} />
+          </div>
+          <div className="kpi-value" style={{ color: '#ef4444' }}>{stats.missingAnexo2}</div>
+          <span className="kpi-footer">Anexo 2 pendente</span>
         </div>
 
         {/* KPI: Suspensas */}

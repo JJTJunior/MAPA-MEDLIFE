@@ -102,6 +102,23 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
     }
   };
 
+  const clearFilters = () => {
+    setPatientFilter('');
+    setDoctorFilter('');
+    setHospitalFilter('');
+    setInsuranceFilter('');
+    setSalespersonFilter('');
+    setSelectedStatus('');
+    setInstrumentalist1Filter('');
+    setInstrumentalist2Filter('');
+    setSurgeryTypeFilter('');
+    setCaraterFilter('');
+    setMissingAnexo2Filter(false);
+    
+    // Reset dates to current month instead of clearing them
+    const today = new Date();
+  };
+
   // Filtros
   const [patientFilter, setPatientFilter] = useState('');
   const [hospitalFilter, setHospitalFilter] = useState(initialFilters?.hospital !== undefined ? initialFilters.hospital : '');
@@ -122,6 +139,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
   const [surgeryTypeFilter, setSurgeryTypeFilter] = useState(initialFilters?.surgery_type !== undefined ? initialFilters.surgery_type : '');
   const [autoExportAction, setAutoExportAction] = useState(initialFilters?.autoExport !== undefined ? initialFilters.autoExport : null);
   const [noDateOnly, setNoDateOnly] = useState(false);
+  const [missingAnexo2Filter, setMissingAnexo2Filter] = useState(initialFilters?.missingAnexo2 !== undefined ? initialFilters.missingAnexo2 : false);
   const [columnFilters, setColumnFilters] = useState({});
   const [activeFilterColumn, setActiveFilterColumn] = useState(null);
   const [instrumentalist1Options, setInstrumentalist1Options] = useState([]);
@@ -214,6 +232,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
       if (initialFilters.startDate !== undefined) setStartDateFilter(initialFilters.startDate);
       if (initialFilters.endDate !== undefined) setEndDateFilter(initialFilters.endDate);
       if (initialFilters.autoExport !== undefined) setAutoExportAction(initialFilters.autoExport);
+      if (initialFilters.missingAnexo2 !== undefined) setMissingAnexo2Filter(initialFilters.missingAnexo2);
     }
   }, [initialFilters]);
 
@@ -323,6 +342,9 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
       }
       if (caraterFilter.trim() !== '') {
         query = query.ilike('carater', caraterFilter.trim());
+      }
+      if (missingAnexo2Filter) {
+        query = query.eq('comanda_urls', '{}');
       }
 
       // 5. Filtro de Data Inicial e Final
