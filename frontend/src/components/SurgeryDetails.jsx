@@ -98,6 +98,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const [attachmentNameInput, setAttachmentNameInput] = useState('');
   const [attachmentNameError, setAttachmentNameError] = useState('');
   const [uploadProgress, setUploadProgress] = useState(null);
+  const [pendingDeleteAttachment, setPendingDeleteAttachment] = useState(null);
 
   useEffect(() => {
     setLocalSurgery(surgery);
@@ -1125,7 +1126,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             onClick={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              removeMedicalRequestUrl(item);
+                              setPendingDeleteAttachment({ item, isComanda: false });
                             }}
                             style={{
                               position: 'absolute',
@@ -1594,7 +1595,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             onClick={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              removeComandaUrl(item);
+                              setPendingDeleteAttachment({ item, isComanda: true });
                             }}
                             style={{
                               position: 'absolute',
@@ -2492,6 +2493,114 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
             <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
               Por favor, aguarde a conclusão do carregamento...
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Customizado de Confirmação de Exclusão de Anexo */}
+      {pendingDeleteAttachment && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999999
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            padding: '24px',
+            maxWidth: '420px',
+            width: '90%',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ef4444',
+                flexShrink: 0
+              }}>
+                <Trash2 size={22} />
+              </div>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+                  Excluir Anexo?
+                </h3>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                  Esta ação removerá o arquivo do prontuário da cirurgia.
+                </p>
+              </div>
+            </div>
+
+            <div style={{
+              padding: '12px 14px',
+              backgroundColor: '#f8fafc',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+              fontSize: '0.88rem',
+              color: '#334155',
+              fontWeight: 500
+            }}>
+              📄 <strong>{parsePrintUrl(pendingDeleteAttachment.item).name || 'Anexo sem identificação'}</strong>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
+              <button
+                type="button"
+                onClick={() => setPendingDeleteAttachment(null)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  backgroundColor: '#f8fafc',
+                  color: '#475569',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 500
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={async () => {
+                  const target = pendingDeleteAttachment;
+                  setPendingDeleteAttachment(null);
+                  if (target.isComanda) {
+                    await removeComandaUrl(target.item);
+                  } else {
+                    await removeMedicalRequestUrl(target.item);
+                  }
+                }}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#ef4444',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  boxShadow: '0 2px 4px rgba(239, 68, 68, 0.2)'
+                }}
+              >
+                Sim, Excluir
+              </button>
             </div>
           </div>
         </div>
