@@ -33,10 +33,12 @@ export default function SettingsPage({ user, onBack }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newItemName, setNewItemName] = useState('');
+  const [newItemCrm, setNewItemCrm] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('⚪');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [editCrm, setEditCrm] = useState('');
   const [editIcon, setEditIcon] = useState('⚪');
   const [selectedColor, setSelectedColor] = useState('#3b82f6');
   const [editColor, setEditColor] = useState('#3b82f6');
@@ -116,6 +118,8 @@ export default function SettingsPage({ user, onBack }) {
       let insertData = { name: finalName };
       if (activeTab === 'funcionarios') {
         insertData.color = selectedColor;
+      } else if (activeTab === 'medicos') {
+        insertData.crm = newItemCrm.trim() || null;
       }
 
       if (activeTab === 'carater') {
@@ -135,6 +139,7 @@ export default function SettingsPage({ user, onBack }) {
       if (error) throw error;
       
       setNewItemName('');
+      setNewItemCrm('');
       await fetchItems();
     } catch (err) {
       console.error(`Erro ao adicionar em ${activeTab}:`, err);
@@ -180,6 +185,7 @@ export default function SettingsPage({ user, onBack }) {
       setEditValue(item.name);
       setEditIcon('⚪');
       if (activeTab === 'funcionarios') setEditColor(item.color || '#3b82f6');
+      if (activeTab === 'medicos') setEditCrm(item.crm || '');
     }
   };
 
@@ -193,6 +199,9 @@ export default function SettingsPage({ user, onBack }) {
       let updateData = { name: finalName };
       if (activeTab === 'funcionarios') {
         updateData.color = editColor;
+      }
+      if (activeTab === 'medicos') {
+        updateData.crm = editCrm.trim() || null;
       }
 
       if (activeTab === 'carater') {
@@ -340,6 +349,16 @@ export default function SettingsPage({ user, onBack }) {
                   required
                   style={{ flex: 1 }}
                 />
+                {activeTab === 'medicos' && (
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="CRM..."
+                    value={newItemCrm}
+                    onChange={e => setNewItemCrm(e.target.value)}
+                    style={{ width: '120px' }}
+                  />
+                )}
                 <button 
                   type="submit" 
                   className="btn-primary" 
@@ -466,6 +485,16 @@ export default function SettingsPage({ user, onBack }) {
                               if (e.key === 'Escape') setEditingId(null);
                             }}
                           />
+                          {activeTab === 'medicos' && (
+                            <input
+                              type="text"
+                              className="form-input"
+                              placeholder="CRM..."
+                              value={editCrm}
+                              onChange={e => setEditCrm(e.target.value)}
+                              style={{ width: '120px', padding: '4px 12px', height: '36px' }}
+                            />
+                          )}
                         </div>
                       ) : (
                         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -482,6 +511,9 @@ export default function SettingsPage({ user, onBack }) {
                               item.name
                             )}
                           </span>
+                          {activeTab === 'medicos' && item.crm && (
+                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginLeft: '10px', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px' }}>CRM: {item.crm}</span>
+                          )}
                         </div>
                       )}
 
