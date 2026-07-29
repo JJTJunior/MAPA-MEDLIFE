@@ -51,6 +51,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
     topHospitals: [],
     topDoctors: [],
     topVendors: [],
+    topInstrumentalists: [],
     topInsurances: [],
     topSurgeryTypes: [],
     topCaraters: [],
@@ -317,6 +318,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       const hospitalCounts = {};
       const doctorCounts = {};
       const vendorStatsMap = {};
+      const instrumentalistStatsMap = {};
       const insuranceCounts = {};
       const surgeryTypeCounts = {};
       const caraterCounts = {};
@@ -352,6 +354,20 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             if (st === 'MATERIAL ENTREGUE') vendorStatsMap[vp].Entregues++;
             if (st === 'SUSPENSA') vendorStatsMap[vp].Suspensas++;
           }
+
+          const processInstrumentalist = (inst) => {
+            if (inst) {
+              if (!instrumentalistStatsMap[inst]) {
+                instrumentalistStatsMap[inst] = { name: inst, Agendadas: 0, Entregues: 0, Suspensas: 0 };
+              }
+              instrumentalistStatsMap[inst].Agendadas++;
+              const st = row.status ? row.status.toUpperCase() : '';
+              if (st === 'MATERIAL ENTREGUE') instrumentalistStatsMap[inst].Entregues++;
+              if (st === 'SUSPENSA') instrumentalistStatsMap[inst].Suspensas++;
+            }
+          };
+          processInstrumentalist(row.instrumentalist1);
+          processInstrumentalist(row.instrumentalist2);
 
           if (row.insurance) insuranceCounts[row.insurance] = (insuranceCounts[row.insurance] || 0) + 1;
           if (row.surgery_type) surgeryTypeCounts[row.surgery_type] = (surgeryTypeCounts[row.surgery_type] || 0) + 1;
@@ -401,6 +417,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         topHospitals: sortAndSlice(hospitalCounts),
         topDoctors: sortAndSlice(doctorCounts),
         topVendors: Object.values(vendorStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 5),
+        topInstrumentalists: Object.values(instrumentalistStatsMap).sort((a, b) => b.Agendadas - a.Agendadas).slice(0, 5),
         topInsurances: sortAndSlice(insuranceCounts),
         topSurgeryTypes: sortAndSlice(surgeryTypeCounts),
         topCaraters: sortAndSlice(caraterCounts),
@@ -908,6 +925,40 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           </div>
         </div>
       )}
+
+      {/* PERFORMANCE DE INSTRUMENTADORES (BAR CHART) */}
+      <div className="glass-card" style={{ marginTop: '24px', padding: '20px' }}>
+        <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+          <Award size={20} style={{ color: '#34d399' }} /> Performance de Instrumentadores (Top 5)
+        </h3>
+        <div style={{ width: '100%', height: 300 }}>
+          {stats.topInstrumentalists && stats.topInstrumentalists.length > 0 ? (
+            <ResponsiveContainer>
+              <BarChart data={stats.topInstrumentalists} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                <YAxis stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                <Tooltip 
+                  contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'var(--border-glass)', color: 'var(--text-primary)', borderRadius: '8px' }}
+                  itemStyle={{ color: '#60a5fa' }}
+                />
+                <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                </Bar>
+                <Bar dataKey="Entregues" fill="#10b981" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="Entregues" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                </Bar>
+                <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="empty-state" style={{ padding: '20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Não há dados recentes.</div>
+          )}
+        </div>
+      </div>
 
       {/* EVOLUÇÃO MENSAL (BAR CHART) */}
       <div className="glass-card" style={{ marginTop: '24px', marginBottom: '24px', padding: '20px' }}>
