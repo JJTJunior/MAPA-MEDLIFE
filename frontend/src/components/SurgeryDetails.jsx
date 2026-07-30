@@ -2984,16 +2984,16 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               {/* Share all button (footer) */}
               <button
                 onClick={async () => {
-                  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+                  const allFiles = shareModalData.files.map(f => new File([f], f.name, { type: f.type }));
                   
-                  if (isMobile && navigator.share) {
+                  if (navigator.share && navigator.canShare && navigator.canShare({ files: allFiles })) {
                     try {
                       await navigator.share({
                         text: shareModalData.text,
-                        files: shareModalData.files,
+                        files: allFiles,
                         title: `Cirurgia - ${shareModalData.patient}`
                       });
-                      return; // Compartilhado com sucesso!
+                      return; // Compartilhado com sucesso via tela nativa do OS!
                     } catch (e) {
                       console.error("Erro ao usar navigator.share:", e);
                       // Se foi cancelado pelo usuário (AbortError), não faz nada
