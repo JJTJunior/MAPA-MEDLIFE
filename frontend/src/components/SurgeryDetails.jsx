@@ -2984,7 +2984,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               {/* Share all button (footer) */}
               <button
                 onClick={async () => {
-                  if (navigator.share) {
+                  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+                  
+                  if (isMobile && navigator.share) {
                     try {
                       await navigator.share({
                         text: shareModalData.text,
@@ -2993,14 +2995,19 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                       });
                       return; // Compartilhado com sucesso!
                     } catch (e) {
-                      console.error("Erro ao usar navigator.share:", e);
+                      console.error("Erro ao usar navigator.share no celular:", e);
                       // Se foi cancelado pelo usuário (AbortError), não faz nada
                       if (e.name === 'AbortError') return;
                     }
                   }
                   
-                  // Fallback se não compartilhou via API nativa (ex: computadores ou falha do app de destino)
-                  // 1. Baixa todos os arquivos para que o usuário possa arrastar para o WhatsApp
+                  // Fallback para computadores (onde navigator.share de arquivos não é suportado) ou falha no celular:
+                  // 1. Abre a tela do WhatsApp Web IMEDIATAMENTE de forma síncrona com o gesto do usuário
+                  // Isso garante que o navegador NÃO bloqueie a nova aba como popup indesejado
+                  const encodedText = encodeURIComponent(shareModalData.text);
+                  window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+                  
+                  // 2. Dispara o download em background de todos os anexos para que o usuário possa arrastar e soltar
                   shareModalData.files.forEach(file => {
                     const blobUrl = URL.createObjectURL(file);
                     const link = document.createElement('a');
@@ -3011,12 +3018,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     document.body.removeChild(link);
                     URL.revokeObjectURL(blobUrl);
                   });
-                  
-                  // 2. Abre o WhatsApp com o texto
-                  const encodedText = encodeURIComponent(shareModalData.text);
-                  window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
-                  
-                  alert(`${shareModalData.files.length} anexo(s) baixado(s). Arraste-os para o chat do WhatsApp.`);
                 }}
                 style={{
                   display: 'flex',
