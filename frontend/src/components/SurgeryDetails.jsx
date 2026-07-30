@@ -2984,7 +2984,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               {/* Share all button (footer) */}
               <button
                 onClick={async () => {
-                  if (navigator.share) {
+                  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+                  
+                  if (isMobile && navigator.share) {
                     try {
                       await navigator.share({
                         text: shareModalData.text,
