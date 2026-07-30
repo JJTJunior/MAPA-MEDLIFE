@@ -2984,43 +2984,39 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               {/* Share all button (footer) */}
               <button
                 onClick={async () => {
-                  let shared = false;
                   if (navigator.share) {
                     try {
-                      const filesArray = shareModalData.files.map(f => new File([f], f.name, { type: f.type }));
-                      if (navigator.canShare && navigator.canShare({ files: filesArray })) {
-                        await navigator.share({
-                          text: shareModalData.text,
-                          files: filesArray,
-                          title: `Cirurgia - ${shareModalData.patient}`
-                        });
-                        shared = true;
-                      }
+                      await navigator.share({
+                        text: shareModalData.text,
+                        files: shareModalData.files,
+                        title: `Cirurgia - ${shareModalData.patient}`
+                      });
+                      return; // Compartilhado com sucesso!
                     } catch (e) {
-                      console.error("Erro no navigator.share:", e);
+                      console.error("Erro ao usar navigator.share:", e);
+                      // Se foi cancelado pelo usuário (AbortError), não faz nada
+                      if (e.name === 'AbortError') return;
                     }
                   }
                   
-                  if (!shared) {
-                    // Fallback para computador/navegadores sem suporte a navigator.share de arquivos
-                    // 1. Baixa todos os arquivos para que o usuário possa arrastar para o WhatsApp
-                    shareModalData.files.forEach(file => {
-                      const blobUrl = URL.createObjectURL(file);
-                      const link = document.createElement('a');
-                      link.href = blobUrl;
-                      link.download = file.name;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      URL.revokeObjectURL(blobUrl);
-                    });
-                    
-                    // 2. Abre o WhatsApp com o texto
-                    const encodedText = encodeURIComponent(shareModalData.text);
-                    window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
-                    
-                    alert(`${shareModalData.files.length} anexo(s) baixado(s). Arraste-os para o chat do WhatsApp.`);
-                  }
+                  // Fallback se não compartilhou via API nativa (ex: computadores ou falha do app de destino)
+                  // 1. Baixa todos os arquivos para que o usuário possa arrastar para o WhatsApp
+                  shareModalData.files.forEach(file => {
+                    const blobUrl = URL.createObjectURL(file);
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = file.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(blobUrl);
+                  });
+                  
+                  // 2. Abre o WhatsApp com o texto
+                  const encodedText = encodeURIComponent(shareModalData.text);
+                  window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+                  
+                  alert(`${shareModalData.files.length} anexo(s) baixado(s). Arraste-os para o chat do WhatsApp.`);
                 }}
                 style={{
                   display: 'flex',
