@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
-import { Calendar, CheckCircle2, AlertTriangle, Clock, ShieldAlert, Award, Settings, FileText, TrendingUp, Activity, History, AlertCircle, PackageSearch, PackageCheck, Map, Eye, Tag, CheckCircle, RefreshCw } from 'lucide-react';
+import { Calendar, CheckCircle2, AlertTriangle, Clock, ShieldAlert, Award, Settings, FileText, TrendingUp, Activity, History, AlertCircle, PackageSearch, PackageCheck, Map, Eye, Tag, CheckCircle, RefreshCw, GripVertical, LayoutDashboard, RotateCcw } from 'lucide-react';
 import { BarChart, Bar, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 import * as XLSX from 'xlsx';
 import html2pdf from 'html2pdf.js';
@@ -67,6 +67,62 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
   const [printData, setPrintData] = useState(null);
   const [printTitle, setPrintTitle] = useState('');
   const [isExporting, setIsExporting] = useState(null);
+
+  // Modular Dashboard
+  const DEFAULT_SECTION_ORDER = ['hospitals', 'doctors_ortopedia', 'doctors_buco', 'on_call', 'insurances', 'surgery_types', 'carater', 'vendors', 'instrumentalists', 'monthly_trend'];
+  const [isModularMode, setIsModularMode] = useState(false);
+  const [sectionOrder, setSectionOrder] = useState(DEFAULT_SECTION_ORDER);
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      const saved = localStorage.getItem(`medlife-dashboard-order-${user.id}`);
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          // Ensure all default sections exist (in case new ones were added)
+          const merged = parsed.filter(id => DEFAULT_SECTION_ORDER.includes(id));
+          DEFAULT_SECTION_ORDER.forEach(id => { if (!merged.includes(id)) merged.push(id); });
+          setSectionOrder(merged);
+        } catch { /* ignore */ }
+      }
+    }
+  }, [user?.id]);
+
+  const saveSectionOrder = useCallback((newOrder) => {
+    setSectionOrder(newOrder);
+    if (user?.id) {
+      localStorage.setItem(`medlife-dashboard-order-${user.id}`, JSON.stringify(newOrder));
+    }
+  }, [user?.id]);
+
+  const handleDragStart = (idx) => { dragItem.current = idx; };
+  const handleDragEnter = (idx) => { dragOverItem.current = idx; };
+  const handleDragEnd = () => {
+    if (dragItem.current === null || dragOverItem.current === null) return;
+    const newOrder = [...sectionOrder];
+    const draggedItem = newOrder.splice(dragItem.current, 1)[0];
+    newOrder.splice(dragOverItem.current, 0, draggedItem);
+    dragItem.current = null;
+    dragOverItem.current = null;
+    saveSectionOrder(newOrder);
+  };
+  const resetSectionOrder = () => { saveSectionOrder([...DEFAULT_SECTION_ORDER]); };
+
+  const SECTION_LABELS = {
+    hospitals: 'Hospitais',
+    doctors_ortopedia: 'Top Médicos - Ortopedia',
+    doctors_buco: 'Top Médicos - Bucomaxilo',
+    on_call: 'Pronto Aviso',
+    insurances: 'Convênios',
+    surgery_types: 'Tipos de Cirurgia',
+    carater: 'Caráter',
+    vendors: 'Performance Vendas',
+    instrumentalists: 'Performance Instrumentadores',
+    monthly_trend: 'Evolução Mensal'
+  };
+  const FULL_WIDTH_SECTIONS = ['vendors', 'instrumentalists', 'monthly_trend'];
 
   useEffect(() => {
     fetchStats();
@@ -526,6 +582,391 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
   const maxSurgeryTypeCount = stats.topSurgeryTypes[0]?.count || 1;
   const maxCaraterCount = (stats.topCaraters && stats.topCaraters[0]?.count) || 1;
 
+  const renderSection = (id) => {
+    switch (id) {
+      case 'hospitals':
+        return (
+          <div className="glass-card chart-container-card" style={{ height: '100%', minHeight: '300px' }}>
+            <h3 className="chart-title">Hospitais Mais Atendidos (Recentes)</h3>
+            {stats.topHospitals.length > 0 ? (
+              <div className="chart-bar-list">
+                {stats.topHospitals.map((item, idx) => (
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ hospital: item.name })}>
+                    <span className="chart-bar-label" title={item.name}>{item.name}</span>
+                    <div className="chart-bar-progress-bg">
+                      <div 
+                        className="chart-bar-progress-fill" 
+                        style={{ 
+                          width: `${(item.count / maxHospitalCount) * 100}%`,
+                          background: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)'
+                        }}
+                      ></div>
+                    </div>
+                    <span className="chart-bar-value">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
+            )}
+          </div>
+        );
+      case 'doctors_ortopedia':
+        return (
+          <div className="glass-card chart-container-card" style={{ height: '100%', minHeight: '300px' }}>
+            <h3 className="chart-title">Top Médicos - Ortopedia</h3>
+            {stats.topDoctorsOrtopedia && stats.topDoctorsOrtopedia.length > 0 ? (
+              <div className="chart-bar-list">
+                {stats.topDoctorsOrtopedia.map((item, idx) => (
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name, surgery_type: 'ORTOPEDIA' })}>
+                    <span className="chart-bar-label" title={item.name}>{item.name}</span>
+                    <div className="chart-bar-progress-bg">
+                      <div 
+                        className="chart-bar-progress-fill" 
+                        style={{ 
+                          width: `${(item.count / maxDoctorOrtopediaCount) * 100}%`,
+                          background: 'linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%)' 
+                        }}
+                      ></div>
+                    </div>
+                    <span className="chart-bar-value">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
+            )}
+          </div>
+        );
+      case 'doctors_buco':
+        return (
+          <div className="glass-card chart-container-card" style={{ height: '100%', minHeight: '300px' }}>
+            <h3 className="chart-title">Top Médicos - Bucomaxilo</h3>
+            {stats.topDoctorsBuco && stats.topDoctorsBuco.length > 0 ? (
+              <div className="chart-bar-list">
+                {stats.topDoctorsBuco.map((item, idx) => (
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name, surgery_type: 'BUCOMAXILO' })}>
+                    <span className="chart-bar-label" title={item.name}>{item.name}</span>
+                    <div className="chart-bar-progress-bg">
+                      <div 
+                        className="chart-bar-progress-fill" 
+                        style={{ 
+                          width: `${(item.count / maxDoctorBucoCount) * 100}%`,
+                          background: 'linear-gradient(90deg, #06b6d4 0%, #0891b2 100%)' 
+                        }}
+                      ></div>
+                    </div>
+                    <span className="chart-bar-value">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
+            )}
+          </div>
+        );
+      case 'on_call':
+        return (
+          <div className="glass-card chart-container-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%', minHeight: '300px' }}>
+            <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '24px', borderBottom: '1px solid var(--border-glass)' }}>
+              <span style={{ fontWeight: '700', letterSpacing: '1px' }}>PRONTO AVISO</span>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button 
+                  onClick={() => setIsOnCallHistoryModalOpen(true)}
+                  className="btn-icon" 
+                  style={{ padding: '6px' }}
+                  title="histórico do sobreaviso"
+                >
+                  <History size={16} />
+                </button>
+                {(!user.permissions?.can_view_only && (user.role === 'Admin' || user.role === 'Gerente' || user.permissions?.allowed_edit_fields?.includes('manage_on_call'))) && (
+                  <button 
+                    onClick={() => setIsOnCallModalOpen(true)}
+                    className="btn-icon" 
+                    style={{ padding: '6px' }}
+                    title="cadastra escala do sobre aviso"
+                  >
+                    <Settings size={16} />
+                  </button>
+                )}
+              </div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', flex: 1, width: '100%', overflowY: 'auto' }}>
+              {onCallSchedule.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  Nenhuma escala configurada.
+                </div>
+              ) : onCallSchedule.map((item, idx) => {
+                const hexToRgba = (hex, alpha) => {
+                  if (!hex || !hex.startsWith('#')) return 'transparent';
+                  const r = parseInt(hex.slice(1, 3), 16) || 0;
+                  const g = parseInt(hex.slice(3, 5), 16) || 0;
+                  const b = parseInt(hex.slice(5, 7), 16) || 0;
+                  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                };
+
+                let bg = hexToRgba(item.color, 0.15);
+                let textColor = item.color;
+                let fontWeight = '500';
+                
+                if (item.status === 'past') {
+                  bg = 'transparent';
+                  textColor = 'var(--text-muted)';
+                } else if (item.status === 'current') {
+                  bg = hexToRgba(item.color, 0.3);
+                  fontWeight = '700';
+                }
+
+                return (
+                  <div key={idx} style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: '1fr 1fr', 
+                    padding: '12px 16px', 
+                    background: bg, 
+                    color: textColor,
+                    borderBottom: '1px solid var(--border-glass)',
+                    fontWeight: fontWeight,
+                    alignItems: 'center',
+                    fontSize: '0.85rem',
+                    flex: 1
+                  }}>
+                    <div style={{ textAlign: 'center' }}>{item.period}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: item.color }}></div>
+                      {item.name}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      case 'insurances':
+        return (
+          <div className="glass-card chart-container-card" style={{ height: '100%', minHeight: '300px' }}>
+            <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <FileText size={20} style={{ color: '#10b981' }} /> Convênios Mais Atendidos
+            </h3>
+            {stats.topInsurances.length > 0 ? (
+              <div className="chart-bar-list">
+                {stats.topInsurances.map((item, idx) => (
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ insurance: item.name })}>
+                    <span className="chart-bar-label" title={item.name}>{item.name}</span>
+                    <div className="chart-bar-progress-bg">
+                      <div 
+                        className="chart-bar-progress-fill" 
+                        style={{ 
+                          width: `${(item.count / maxInsuranceCount) * 100}%`,
+                          background: 'linear-gradient(90deg, #10b981 0%, #059669 100%)' 
+                        }}
+                      ></div>
+                    </div>
+                    <span className="chart-bar-value">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
+            )}
+          </div>
+        );
+      case 'surgery_types':
+        return (
+          <div className="glass-card chart-container-card" style={{ height: '100%', minHeight: '300px' }}>
+            <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Activity size={20} style={{ color: '#ec4899' }} /> Top Tipos de Cirurgia
+            </h3>
+            {stats.topSurgeryTypes.length > 0 ? (
+              <div className="chart-bar-list">
+                {stats.topSurgeryTypes.map((item, idx) => {
+                  const isSelected = exportModalState.isOpen && exportModalState.surgeryType === item.name;
+                  const nameUpper = item.name.toUpperCase();
+                  const getBarColor = () => {
+                    if (nameUpper.includes('ORTOPEDIA') || nameUpper.includes('ORTOPÉDICA')) return 'linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%)';
+                    if (nameUpper.includes('BUCO')) return 'linear-gradient(90deg, #06b6d4 0%, #0891b2 100%)';
+                    return 'linear-gradient(90deg, #ec4899 0%, #be185d 100%)';
+                  };
+                  const getSelectColor = () => {
+                    if (nameUpper.includes('ORTOPEDIA') || nameUpper.includes('ORTOPÉDICA')) return { bg: 'rgba(139, 92, 246, 0.1)', shadow: 'rgba(139, 92, 246, 0.15)', border: 'rgba(139, 92, 246, 0.3)' };
+                    if (nameUpper.includes('BUCO')) return { bg: 'rgba(6, 182, 212, 0.1)', shadow: 'rgba(6, 182, 212, 0.15)', border: 'rgba(6, 182, 212, 0.3)' };
+                    return { bg: 'rgba(236, 72, 153, 0.1)', shadow: 'rgba(236, 72, 153, 0.15)', border: 'rgba(236, 72, 153, 0.3)' };
+                  };
+                  const selColors = getSelectColor();
+                  return (
+                    <div 
+                      key={idx} 
+                      className="chart-bar-item" 
+                      style={{ 
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        transition: 'all 0.2s ease',
+                        backgroundColor: isSelected ? selColors.bg : 'transparent',
+                        boxShadow: isSelected ? `0 4px 12px ${selColors.shadow}` : 'none',
+                        border: isSelected ? `1px solid ${selColors.border}` : '1px solid transparent'
+                      }} 
+                      onClick={() => setExportModalState({ isOpen: true, surgeryType: item.name })}
+                    >
+                      <span className="chart-bar-label" title={item.name}>{item.name}</span>
+                      <div className="chart-bar-progress-bg">
+                        <div 
+                          className="chart-bar-progress-fill" 
+                          style={{ 
+                            width: `${(item.count / maxSurgeryTypeCount) * 100}%`,
+                            background: getBarColor() 
+                          }}
+                        ></div>
+                      </div>
+                      <span className="chart-bar-value">{item.count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
+            )}
+          </div>
+        );
+      case 'carater':
+        return (
+          <div className="glass-card chart-container-card" style={{ height: '100%', minHeight: '300px' }}>
+            <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Tag size={20} style={{ color: '#a855f7' }} /> Caráter das Cirurgias
+            </h3>
+            {stats.topCaraters && stats.topCaraters.length > 0 ? (
+              <div className="chart-bar-list">
+                {stats.topCaraters.map((item, idx) => (
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ carater: item.name })}>
+                    <span className="chart-bar-label" title={item.name}>{item.name}</span>
+                    <div className="chart-bar-progress-bg">
+                      <div 
+                        className="chart-bar-progress-fill" 
+                        style={{ 
+                          width: `${(item.count / maxCaraterCount) * 100}%`,
+                          background: (item.name === 'URGÊNCIA' || item.name === 'URGENCIA')
+                            ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)' 
+                            : (item.name === 'JUDICIAL' 
+                              ? 'linear-gradient(90deg, #a855f7 0%, #7e22ce 100%)' 
+                              : 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)') 
+                        }}
+                      ></div>
+                    </div>
+                    <span className="chart-bar-value">{item.count}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
+            )}
+          </div>
+        );
+      case 'vendors':
+        if (user.role === 'Vendedor') return null;
+        return (
+          <div className="glass-card" style={{ padding: '20px', height: '100%' }}>
+            <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+              <Award size={20} style={{ color: '#fbbf24' }} /> Performance de Vendas (Top Vendedores)
+            </h3>
+            <div style={{ width: '100%', height: 300 }}>
+              {stats.topVendors.length > 0 ? (
+                <ResponsiveContainer>
+                  <BarChart data={stats.topVendors} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                    <YAxis stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'var(--border-glass)', color: 'var(--text-primary)', borderRadius: '8px' }}
+                      itemStyle={{ color: '#60a5fa' }}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                    <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                    </Bar>
+                    <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                    </Bar>
+                    <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="empty-state" style={{ padding: '20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Não há dados recentes.</div>
+              )}
+            </div>
+          </div>
+        );
+      case 'instrumentalists':
+        return (
+          <div className="glass-card" style={{ padding: '20px', height: '100%' }}>
+            <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+              <Award size={20} style={{ color: '#34d399' }} /> Performance de Instrumentadores (Top 10)
+            </h3>
+            <div style={{ width: '100%', height: 300 }}>
+              {stats.topInstrumentalists && stats.topInstrumentalists.length > 0 ? (
+                <ResponsiveContainer>
+                  <BarChart data={stats.topInstrumentalists} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                    <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                    <YAxis stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'var(--border-glass)', color: 'var(--text-primary)', borderRadius: '8px' }}
+                      itemStyle={{ color: '#60a5fa' }}
+                    />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                    <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                    </Bar>
+                    <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                    </Bar>
+                    <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
+                      <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="empty-state" style={{ padding: '20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Não há dados recentes.</div>
+              )}
+            </div>
+          </div>
+        );
+      case 'monthly_trend':
+        return (
+          <div className="glass-card" style={{ padding: '20px', height: '100%' }}>
+            <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+              <TrendingUp size={20} style={{ color: '#3b82f6' }} /> Comparativo Mensal (Últimos 6 Meses)
+            </h3>
+            <div style={{ width: '100%', height: 300 }}>
+              <ResponsiveContainer>
+                <BarChart data={stats.monthlyTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                  <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                  <YAxis stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'var(--border-glass)', color: 'var(--text-primary)', borderRadius: '8px' }}
+                    itemStyle={{ color: '#60a5fa' }}
+                  />
+                  <Legend wrapperStyle={{ paddingTop: '10px' }} />
+                  <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                  </Bar>
+                  <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                  </Bar>
+                  <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
+                    <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       {exportModalState.isOpen && (
@@ -577,7 +1018,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           <h1 className="dashboard-title">Olá, {user.name || user.email.split('@')[0].toUpperCase()}</h1>
           <p className="dashboard-subtitle">Acompanhe as métricas de agendamentos e status das entregas da Medlife.</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Filtro de Período:</span>
           <select 
             className="form-input" 
@@ -593,8 +1034,54 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             <option value="current_year">Ano Atual</option>
             <option value="last_year">Ano Passado</option>
           </select>
+          <button
+            onClick={() => setIsModularMode(!isModularMode)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '8px 14px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+              fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.2s ease',
+              background: isModularMode ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : 'var(--bg-glass)',
+              color: isModularMode ? '#fff' : 'var(--text-secondary)',
+              boxShadow: isModularMode ? '0 4px 12px rgba(139, 92, 246, 0.3)' : 'none',
+              border: isModularMode ? 'none' : '1px solid var(--border-glass)'
+            }}
+            title="Arraste os quadrinhos para reorganizar"
+          >
+            <LayoutDashboard size={16} />
+            {isModularMode ? 'Salvar Layout' : 'Modular Dashboard'}
+          </button>
+          {isModularMode && (
+            <button
+              onClick={resetSectionOrder}
+              style={{
+                display: 'flex', alignItems: 'center', gap: '4px',
+                padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-glass)',
+                cursor: 'pointer', fontSize: '0.8rem', fontWeight: 500,
+                background: 'var(--bg-glass)', color: 'var(--text-secondary)',
+                transition: 'all 0.2s ease'
+              }}
+              title="Resetar para ordem padrão"
+            >
+              <RotateCcw size={14} />
+              Resetar
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Modular mode banner */}
+      {isModularMode && (
+        <div style={{
+          background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1))',
+          border: '1px dashed rgba(139, 92, 246, 0.4)',
+          borderRadius: '12px', padding: '10px 16px', marginBottom: '16px',
+          display: 'flex', alignItems: 'center', gap: '8px',
+          fontSize: '0.85rem', color: 'var(--text-secondary)'
+        }}>
+          <GripVertical size={16} style={{ color: '#8b5cf6' }} />
+          <span><strong>Modo Modular ativo:</strong> Arraste os quadrinhos pela alça para reorganizar. A ordem é salva automaticamente para o seu usuário.</span>
+        </div>
+      )}
 
       {/* KPI GRID */}
       <div className="kpi-grid">
@@ -702,379 +1189,36 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       </div>
 
       {/* CHARTS / ANALYTICS SECTION */}
-      <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
-        {/* Top Hospitais */}
-        <div className="glass-card chart-container-card">
-          <h3 className="chart-title">Hospitais Mais Atendidos (Recentes)</h3>
-          {stats.topHospitals.length > 0 ? (
-            <div className="chart-bar-list">
-              {stats.topHospitals.map((item, idx) => (
-                <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ hospital: item.name })}>
-                  <span className="chart-bar-label" title={item.name}>{item.name}</span>
-                  <div className="chart-bar-progress-bg">
-                    <div 
-                      className="chart-bar-progress-fill" 
-                      style={{ 
-                        width: `${(item.count / maxHospitalCount) * 100}%`,
-                        background: 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)'
-                      }}
-                    ></div>
-                  </div>
-                  <span className="chart-bar-value">{item.count}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
-          )}
-        </div>
+      <div className="modular-grid">
+        {sectionOrder.map((id, idx) => {
+          const sectionContent = renderSection(id);
+          if (!sectionContent) return null;
 
-        {/* Top Médicos - Ortopedia */}
-        <div className="glass-card chart-container-card">
-          <h3 className="chart-title">Top Médicos - Ortopedia</h3>
-          {stats.topDoctorsOrtopedia && stats.topDoctorsOrtopedia.length > 0 ? (
-            <div className="chart-bar-list">
-              {stats.topDoctorsOrtopedia.map((item, idx) => (
-                <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name, surgery_type: 'ORTOPEDIA' })}>
-                  <span className="chart-bar-label" title={item.name}>{item.name}</span>
-                  <div className="chart-bar-progress-bg">
-                    <div 
-                      className="chart-bar-progress-fill" 
-                      style={{ 
-                        width: `${(item.count / maxDoctorOrtopediaCount) * 100}%`,
-                        background: 'linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%)' 
-                      }}
-                    ></div>
-                  </div>
-                  <span className="chart-bar-value">{item.count}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
-          )}
-        </div>
+          const colSpanClass = FULL_WIDTH_SECTIONS.includes(id)
+            ? 'modular-col-12'
+            : (['insurances', 'surgery_types', 'carater'].includes(id)
+              ? 'modular-col-4'
+              : 'modular-col-3');
 
-        {/* Top Médicos - Bucomaxilo */}
-        <div className="glass-card chart-container-card">
-          <h3 className="chart-title">Top Médicos - Bucomaxilo</h3>
-          {stats.topDoctorsBuco && stats.topDoctorsBuco.length > 0 ? (
-            <div className="chart-bar-list">
-              {stats.topDoctorsBuco.map((item, idx) => (
-                <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name, surgery_type: 'BUCOMAXILO' })}>
-                  <span className="chart-bar-label" title={item.name}>{item.name}</span>
-                  <div className="chart-bar-progress-bg">
-                    <div 
-                      className="chart-bar-progress-fill" 
-                      style={{ 
-                        width: `${(item.count / maxDoctorBucoCount) * 100}%`,
-                        background: 'linear-gradient(90deg, #06b6d4 0%, #0891b2 100%)' 
-                      }}
-                    ></div>
-                  </div>
-                  <span className="chart-bar-value">{item.count}</span>
+          return (
+            <div
+              key={id}
+              className={`${colSpanClass} modular-card-wrapper ${isModularMode ? 'is-modular-active' : ''}`}
+              draggable={isModularMode}
+              onDragStart={() => handleDragStart(idx)}
+              onDragEnter={() => handleDragEnter(idx)}
+              onDragEnd={handleDragEnd}
+              onDragOver={(e) => e.preventDefault()}
+            >
+              {isModularMode && (
+                <div className="modular-drag-handle" title="Arraste para reposicionar">
+                  <GripVertical size={16} />
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
-          )}
-        </div>
-
-        {/* Pronto Aviso */}
-        <div className="glass-card chart-container-card" style={{ padding: '0', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <div style={{ background: 'rgba(255, 255, 255, 0.1)', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '24px', borderBottom: '1px solid var(--border-glass)' }}>
-            <span style={{ fontWeight: '700', letterSpacing: '1px' }}>PRONTO AVISO</span>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button 
-                onClick={() => setIsOnCallHistoryModalOpen(true)}
-                className="btn-icon" 
-                style={{ padding: '6px' }}
-                title="histórico do sobreaviso"
-              >
-                <History size={16} />
-              </button>
-              {(!user.permissions?.can_view_only && (user.role === 'Admin' || user.role === 'Gerente' || user.permissions?.allowed_edit_fields?.includes('manage_on_call'))) && (
-                <button 
-                  onClick={() => setIsOnCallModalOpen(true)}
-                  className="btn-icon" 
-                  style={{ padding: '6px' }}
-                  title="cadastra escala do sobre aviso"
-                >
-                  <Settings size={16} />
-                </button>
               )}
+              {sectionContent}
             </div>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', flex: 1, width: '100%', overflowY: 'auto' }}>
-            {onCallSchedule.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                Nenhuma escala configurada.
-              </div>
-            ) : onCallSchedule.map((item, idx) => {
-              const hexToRgba = (hex, alpha) => {
-                if (!hex || !hex.startsWith('#')) return 'transparent';
-                const r = parseInt(hex.slice(1, 3), 16) || 0;
-                const g = parseInt(hex.slice(3, 5), 16) || 0;
-                const b = parseInt(hex.slice(5, 7), 16) || 0;
-                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-              };
-
-              let bg = hexToRgba(item.color, 0.15);
-              let textColor = item.color;
-              let fontWeight = '500';
-              
-              if (item.status === 'past') {
-                bg = 'transparent';
-                textColor = 'var(--text-muted)';
-              } else if (item.status === 'current') {
-                bg = hexToRgba(item.color, 0.3);
-                fontWeight = '700';
-              }
-
-              return (
-                <div key={idx} style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: '1fr 1fr', 
-                  padding: '12px 16px', 
-                  background: bg, 
-                  color: textColor,
-                  borderBottom: '1px solid var(--border-glass)',
-                  fontWeight: fontWeight,
-                  alignItems: 'center',
-                  fontSize: '0.85rem',
-                  flex: 1
-                }}>
-                  <div style={{ textAlign: 'center' }}>{item.period}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: item.color }}></div>
-                    {item.name}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      <div className="charts-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
-
-        {/* Top Convênios */}
-        <div className="glass-card chart-container-card" style={{ height: 'auto', minHeight: '300px' }}>
-          <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FileText size={20} style={{ color: '#10b981' }} /> Convênios Mais Atendidos
-          </h3>
-          {stats.topInsurances.length > 0 ? (
-            <div className="chart-bar-list">
-              {stats.topInsurances.map((item, idx) => (
-                <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ insurance: item.name })}>
-                  <span className="chart-bar-label" title={item.name}>{item.name}</span>
-                  <div className="chart-bar-progress-bg">
-                    <div 
-                      className="chart-bar-progress-fill" 
-                      style={{ 
-                        width: `${(item.count / maxInsuranceCount) * 100}%`,
-                        background: 'linear-gradient(90deg, #10b981 0%, #059669 100%)' 
-                      }}
-                    ></div>
-                  </div>
-                  <span className="chart-bar-value">{item.count}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
-          )}
-        </div>
-
-        {/* Top Tipos de Cirurgia */}
-        <div className="glass-card chart-container-card" style={{ height: 'auto', minHeight: '300px' }}>
-          <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Activity size={20} style={{ color: '#ec4899' }} /> Top Tipos de Cirurgia
-          </h3>
-          {stats.topSurgeryTypes.length > 0 ? (
-            <div className="chart-bar-list">
-              {stats.topSurgeryTypes.map((item, idx) => {
-                const isSelected = exportModalState.isOpen && exportModalState.surgeryType === item.name;
-                const nameUpper = item.name.toUpperCase();
-                const getBarColor = () => {
-                  if (nameUpper.includes('ORTOPEDIA') || nameUpper.includes('ORTOPÉDICA')) return 'linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%)';
-                  if (nameUpper.includes('BUCO')) return 'linear-gradient(90deg, #06b6d4 0%, #0891b2 100%)';
-                  return 'linear-gradient(90deg, #ec4899 0%, #be185d 100%)';
-                };
-                const getSelectColor = () => {
-                  if (nameUpper.includes('ORTOPEDIA') || nameUpper.includes('ORTOPÉDICA')) return { bg: 'rgba(139, 92, 246, 0.1)', shadow: 'rgba(139, 92, 246, 0.15)', border: 'rgba(139, 92, 246, 0.3)' };
-                  if (nameUpper.includes('BUCO')) return { bg: 'rgba(6, 182, 212, 0.1)', shadow: 'rgba(6, 182, 212, 0.15)', border: 'rgba(6, 182, 212, 0.3)' };
-                  return { bg: 'rgba(236, 72, 153, 0.1)', shadow: 'rgba(236, 72, 153, 0.15)', border: 'rgba(236, 72, 153, 0.3)' };
-                };
-                const selColors = getSelectColor();
-                return (
-                  <div 
-                    key={idx} 
-                    className="chart-bar-item" 
-                    style={{ 
-                      cursor: 'pointer',
-                      padding: '8px',
-                      borderRadius: '8px',
-                      transition: 'all 0.2s ease',
-                      backgroundColor: isSelected ? selColors.bg : 'transparent',
-                      boxShadow: isSelected ? `0 4px 12px ${selColors.shadow}` : 'none',
-                      border: isSelected ? `1px solid ${selColors.border}` : '1px solid transparent'
-                    }} 
-                    onClick={() => setExportModalState({ isOpen: true, surgeryType: item.name })}
-                  >
-                    <span className="chart-bar-label" title={item.name}>{item.name}</span>
-                    <div className="chart-bar-progress-bg">
-                      <div 
-                        className="chart-bar-progress-fill" 
-                        style={{ 
-                          width: `${(item.count / maxSurgeryTypeCount) * 100}%`,
-                          background: getBarColor() 
-                        }}
-                      ></div>
-                    </div>
-                    <span className="chart-bar-value">{item.count}</span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
-          )}
-        </div>
-
-        {/* Caráter das Cirurgias */}
-        <div className="glass-card chart-container-card" style={{ height: 'auto', minHeight: '300px' }}>
-          <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Tag size={20} style={{ color: '#a855f7' }} /> Caráter das Cirurgias
-          </h3>
-          {stats.topCaraters && stats.topCaraters.length > 0 ? (
-            <div className="chart-bar-list">
-              {stats.topCaraters.map((item, idx) => (
-                <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ carater: item.name })}>
-                  <span className="chart-bar-label" title={item.name}>{item.name}</span>
-                  <div className="chart-bar-progress-bg">
-                    <div 
-                      className="chart-bar-progress-fill" 
-                      style={{ 
-                        width: `${(item.count / maxCaraterCount) * 100}%`,
-                        background: (item.name === 'URGÊNCIA' || item.name === 'URGENCIA')
-                          ? 'linear-gradient(90deg, #ef4444 0%, #dc2626 100%)' 
-                          : (item.name === 'JUDICIAL' 
-                            ? 'linear-gradient(90deg, #a855f7 0%, #7e22ce 100%)' 
-                            : 'linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%)') 
-                      }}
-                    ></div>
-                  </div>
-                  <span className="chart-bar-value">{item.count}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="empty-state" style={{ padding: '20px' }}>Não há dados recentes.</div>
-          )}
-        </div>
-
-      </div>
-
-      {/* PERFORMANCE DE VENDAS (BAR CHART) */}
-      {user.role !== 'Vendedor' && (
-        <div className="glass-card" style={{ marginTop: '24px', padding: '20px' }}>
-          <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-            <Award size={20} style={{ color: '#fbbf24' }} /> Performance de Vendas (Top Vendedores)
-          </h3>
-          <div style={{ width: '100%', height: 300 }}>
-            {stats.topVendors.length > 0 ? (
-              <ResponsiveContainer>
-                <BarChart data={stats.topVendors} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                  <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-                  <YAxis stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'var(--border-glass)', color: 'var(--text-primary)', borderRadius: '8px' }}
-                    itemStyle={{ color: '#60a5fa' }}
-                  />
-                  <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                  <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
-                    <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-                  </Bar>
-                  <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
-                    <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-                  </Bar>
-                  <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
-                    <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="empty-state" style={{ padding: '20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Não há dados recentes.</div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* PERFORMANCE DE INSTRUMENTADORES (BAR CHART) */}
-      <div className="glass-card" style={{ marginTop: '24px', padding: '20px' }}>
-        <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <Award size={20} style={{ color: '#34d399' }} /> Performance de Instrumentadores (Top 10)
-        </h3>
-        <div style={{ width: '100%', height: 300 }}>
-          {stats.topInstrumentalists && stats.topInstrumentalists.length > 0 ? (
-            <ResponsiveContainer>
-              <BarChart data={stats.topInstrumentalists} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-                <YAxis stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'var(--border-glass)', color: 'var(--text-primary)', borderRadius: '8px' }}
-                  itemStyle={{ color: '#60a5fa' }}
-                />
-                <Legend wrapperStyle={{ paddingTop: '10px' }} />
-                <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-                </Bar>
-                <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-                </Bar>
-                <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="empty-state" style={{ padding: '20px', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Não há dados recentes.</div>
-          )}
-        </div>
-      </div>
-
-      {/* EVOLUÇÃO MENSAL (BAR CHART) */}
-      <div className="glass-card" style={{ marginTop: '24px', marginBottom: '24px', padding: '20px' }}>
-        <h3 className="chart-title" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <TrendingUp size={20} style={{ color: '#3b82f6' }} /> Comparativo Mensal (Últimos 6 Meses)
-        </h3>
-        <div style={{ width: '100%', height: 300 }}>
-          <ResponsiveContainer>
-            <BarChart data={stats.monthlyTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-              <XAxis dataKey="name" stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-              <YAxis stroke="var(--text-secondary)" tick={{ fill: 'var(--text-secondary)', fontSize: 12 }} />
-              <Tooltip 
-                contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'var(--border-glass)', color: 'var(--text-primary)', borderRadius: '8px' }}
-                itemStyle={{ color: '#60a5fa' }}
-              />
-              <Legend wrapperStyle={{ paddingTop: '10px' }} />
-              <Bar dataKey="Agendadas" fill="#3b82f6" radius={[4, 4, 0, 0]}>
-                <LabelList dataKey="Agendadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-              </Bar>
-              <Bar dataKey="Finalizadas" fill="#10b981" radius={[4, 4, 0, 0]}>
-                <LabelList dataKey="Finalizadas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-              </Bar>
-              <Bar dataKey="Suspensas" fill="#ef4444" radius={[4, 4, 0, 0]}>
-                <LabelList dataKey="Suspensas" position="top" fill="var(--text-secondary)" fontSize={11} formatter={(val) => val > 0 ? val : ''} />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+          );
+        })}
       </div>
 
 
