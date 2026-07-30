@@ -837,9 +837,28 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
       if (item.comanda_urls && item.comanda_urls.length > 0) {
         item.comanda_urls.forEach(att => {
           if (!att) return;
-          const url = att.includes('|||') ? att.split('|||')[0] : att;
-          const name = att.includes('|||') ? att.split('|||')[1] : 'Comanda';
-          attachments.push({ url, name, origin: 'anexo2' });
+          let url = '';
+          let name = 'Comanda';
+          let origin = 'anexo2';
+          
+          if (att.startsWith('[ANEXO_3]|||')) {
+            origin = 'anexo3';
+            const parts = att.split('|||'); // ['[ANEXO_3]', url, name]
+            url = parts[1] || '';
+            name = parts[2] || 'Equipamento/Descartável';
+          } else {
+            const parts = att.split('|||'); // [url, name]
+            url = parts[0] || '';
+            name = parts[1] || 'Comanda';
+            if (url.includes('?anexo=3') || url.includes('&anexo=3')) {
+              origin = 'anexo3';
+              if (name === 'Comanda') name = 'Equipamento/Descartável';
+            }
+          }
+          
+          if (url) {
+            attachments.push({ url, name, origin });
+          }
         });
       }
 
@@ -2801,6 +2820,108 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           <FileText size={20} style={{ flexShrink: 0 }} />
                           <div style={{ textAlign: 'left' }}>
                             <div>Enviar texto + PDFs ({pdfFiles2.length})</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.9, fontWeight: 'normal' }}>Android: só o arquivo é enviado</div>
+                          </div>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {(() => {
+                const imgFiles3 = shareModalData.files.filter(f => f.type.startsWith('image/') && f.origin === 'anexo3');
+                const pdfFiles3 = shareModalData.files.filter(f => f.type === 'application/pdf' && f.origin === 'anexo3');
+                if (imgFiles3.length === 0 && pdfFiles3.length === 0) return null;
+                
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '8px', paddingLeft: '4px' }}>
+                      Anexo 3 • descartáveis / implantes / equipamentos / comprovante
+                    </div>
+                    <div style={{ 
+                      display: 'flex', flexDirection: 'column', gap: '10px', 
+                      padding: '12px', border: '1px solid var(--border-color, #e2e8f0)', 
+                      borderRadius: '12px', backgroundColor: 'var(--bg-primary, #ffffff)'
+                    }}>
+                      {imgFiles3.length > 0 && (
+                        <button
+                          onClick={async () => {
+                            const imgFiles = imgFiles3.map(f => new File([f], f.name, { type: f.type }));
+                            if (navigator.share && navigator.canShare && navigator.canShare({ files: imgFiles })) {
+                              try {
+                                await navigator.share({
+                                  files: imgFiles,
+                                  title: `Imagens Anexo 3 - ${shareModalData.patient}`,
+                                  text: shareModalData.text
+                                });
+                                return;
+                              } catch (e) {
+                                if (e.name === 'AbortError') return;
+                              }
+                            }
+                            imgFiles.forEach(file => {
+                              const blobUrl = URL.createObjectURL(file);
+                              const link = document.createElement('a');
+                              link.href = blobUrl;
+                              link.download = file.name;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              URL.revokeObjectURL(blobUrl);
+                            });
+                            alert(`${imgFiles.length} imagem(ns) baixada(s). Anexe-as no WhatsApp.`);
+                          }}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
+                            backgroundColor: '#2563eb', color: '#ffffff', border: 'none',
+                            borderRadius: '8px', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer'
+                          }}
+                        >
+                          <Paperclip size={20} style={{ flexShrink: 0 }} />
+                          <div style={{ textAlign: 'left' }}>
+                            <div>Enviar texto + imagens ({imgFiles3.length})</div>
+                          </div>
+                        </button>
+                      )}
+                      
+                      {pdfFiles3.length > 0 && (
+                        <button
+                          onClick={async () => {
+                            const pdfFiles = pdfFiles3.map(f => new File([f], f.name, { type: f.type }));
+                            if (navigator.share && navigator.canShare && navigator.canShare({ files: pdfFiles })) {
+                              try {
+                                await navigator.share({
+                                  files: pdfFiles,
+                                  title: `PDFs Anexo 3 - ${shareModalData.patient}`,
+                                  text: shareModalData.text
+                                });
+                                return;
+                              } catch (e) {
+                                if (e.name === 'AbortError') return;
+                              }
+                            }
+                            pdfFiles.forEach(file => {
+                              const blobUrl = URL.createObjectURL(file);
+                              const link = document.createElement('a');
+                              link.href = blobUrl;
+                              link.download = file.name;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              URL.revokeObjectURL(blobUrl);
+                            });
+                            alert(`${pdfFiles.length} PDF(s) baixado(s). Anexe-os no WhatsApp.`);
+                          }}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px',
+                            backgroundColor: '#dc2626', color: '#ffffff', border: 'none',
+                            borderRadius: '8px', fontWeight: '600', fontSize: '0.95rem', cursor: 'pointer'
+                          }}
+                        >
+                          <FileText size={20} style={{ flexShrink: 0 }} />
+                          <div style={{ textAlign: 'left' }}>
+                            <div>Enviar texto + PDFs ({pdfFiles3.length})</div>
                             <div style={{ fontSize: '0.75rem', opacity: 0.9, fontWeight: 'normal' }}>Android: só o arquivo é enviado</div>
                           </div>
                         </button>
