@@ -2984,9 +2984,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               {/* Share all button (footer) */}
               <button
                 onClick={async () => {
-                  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-                  
-                  if (isMobile && navigator.share) {
+                  if (navigator.share) {
                     try {
                       await navigator.share({
                         text: shareModalData.text,
@@ -2995,7 +2993,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                       });
                       return; // Compartilhado com sucesso!
                     } catch (e) {
-                      console.error("Erro ao usar navigator.share no celular:", e);
+                      console.error("Erro ao usar navigator.share:", e);
                       // Se foi cancelado pelo usuário (AbortError), não faz nada
                       if (e.name === 'AbortError') return;
                     }
