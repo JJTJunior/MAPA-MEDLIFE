@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { supabase } from '../supabaseClient';
-import { Calendar, CheckCircle2, AlertTriangle, Clock, ShieldAlert, Award, Settings, FileText, TrendingUp, Activity, History, AlertCircle, PackageSearch, PackageCheck, Map, Eye, Tag, CheckCircle, RefreshCw, GripVertical, LayoutDashboard, RotateCcw } from 'lucide-react';
+import { Calendar, CheckCircle2, AlertTriangle, Clock, ShieldAlert, Award, Settings, FileText, TrendingUp, Activity, History, AlertCircle, PackageSearch, PackageCheck, Map, Eye, Tag, CheckCircle, RefreshCw, GripVertical, LayoutDashboard, RotateCcw, Maximize2, Minimize2 } from 'lucide-react';
 import { BarChart, Bar, Legend, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList } from 'recharts';
 import * as XLSX from 'xlsx';
 import html2pdf from 'html2pdf.js';
@@ -70,8 +70,21 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
 
   // Modular Dashboard
   const DEFAULT_SECTION_ORDER = ['hospitals', 'doctors_ortopedia', 'doctors_buco', 'on_call', 'insurances', 'surgery_types', 'carater', 'vendors', 'instrumentalists', 'monthly_trend'];
+  const DEFAULT_SECTION_SIZES = {
+    hospitals: 3,
+    doctors_ortopedia: 3,
+    doctors_buco: 3,
+    on_call: 3,
+    insurances: 4,
+    surgery_types: 4,
+    carater: 4,
+    vendors: 12,
+    instrumentalists: 12,
+    monthly_trend: 12
+  };
   const [isModularMode, setIsModularMode] = useState(false);
   const [sectionOrder, setSectionOrder] = useState(DEFAULT_SECTION_ORDER);
+  const [sectionSizes, setSectionSizes] = useState(DEFAULT_SECTION_SIZES);
   const dragItem = useRef(null);
   const dragOverItem = useRef(null);
 
@@ -85,6 +98,14 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           const merged = parsed.filter(id => DEFAULT_SECTION_ORDER.includes(id));
           DEFAULT_SECTION_ORDER.forEach(id => { if (!merged.includes(id)) merged.push(id); });
           setSectionOrder(merged);
+        } catch { /* ignore */ }
+      }
+
+      const savedSizes = localStorage.getItem(`medlife-dashboard-sizes-${user.id}`);
+      if (savedSizes) {
+        try {
+          const parsed = JSON.parse(savedSizes);
+          setSectionSizes({ ...DEFAULT_SECTION_SIZES, ...parsed });
         } catch { /* ignore */ }
       }
     }
@@ -108,7 +129,35 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
     dragOverItem.current = null;
     saveSectionOrder(newOrder);
   };
-  const resetSectionOrder = () => { saveSectionOrder([...DEFAULT_SECTION_ORDER]); };
+
+  const handleResizeSection = (id, direction) => {
+    const currentSize = sectionSizes[id] || DEFAULT_SECTION_SIZES[id];
+    let newSize = currentSize;
+
+    if (direction === 'increase') {
+      if (currentSize === 3 || currentSize === 4) newSize = 6;
+      else if (currentSize === 6) newSize = 12;
+    } else if (direction === 'decrease') {
+      if (currentSize === 12) newSize = 6;
+      else if (currentSize === 6) newSize = DEFAULT_SECTION_SIZES[id];
+    }
+
+    if (newSize !== currentSize) {
+      const updated = { ...sectionSizes, [id]: newSize };
+      setSectionSizes(updated);
+      if (user?.id) {
+        localStorage.setItem(`medlife-dashboard-sizes-${user.id}`, JSON.stringify(updated));
+      }
+    }
+  };
+
+  const resetSectionOrder = () => {
+    saveSectionOrder([...DEFAULT_SECTION_ORDER]);
+    setSectionSizes({ ...DEFAULT_SECTION_SIZES });
+    if (user?.id) {
+      localStorage.removeItem(`medlife-dashboard-sizes-${user.id}`);
+    }
+  };
 
   const SECTION_LABELS = {
     hospitals: 'Hospitais',
@@ -1194,11 +1243,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           const sectionContent = renderSection(id);
           if (!sectionContent) return null;
 
-          const colSpanClass = FULL_WIDTH_SECTIONS.includes(id)
-            ? 'modular-col-12'
-            : (['insurances', 'surgery_types', 'carater'].includes(id)
-              ? 'modular-col-4'
-              : 'modular-col-3');
+          const currentSize = sectionSizes[id] || DEFAULT_SECTION_SIZES[id];
+          const colSpanClass = `modular-col-${currentSize}`;
 
           return (
             <div
@@ -1211,8 +1257,26 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
               onDragOver={(e) => e.preventDefault()}
             >
               {isModularMode && (
-                <div className="modular-drag-handle" title="Arraste para reposicionar">
-                  <GripVertical size={16} />
+                <div className="modular-card-controls">
+                  <button 
+                    onClick={() => handleResizeSection(id, 'decrease')} 
+                    disabled={currentSize <= (DEFAULT_SECTION_SIZES[id] || 3)}
+                    className="modular-control-btn"
+                    title="Diminuir largura"
+                  >
+                    <Minimize2 size={12} />
+                  </button>
+                  <button 
+                    onClick={() => handleResizeSection(id, 'increase')} 
+                    disabled={currentSize >= 12}
+                    className="modular-control-btn"
+                    title="Aumentar largura"
+                  >
+                    <Maximize2 size={12} />
+                  </button>
+                  <div className="modular-drag-handle" title="Arraste para reposicionar">
+                    <GripVertical size={14} />
+                  </div>
                 </div>
               )}
               {sectionContent}
