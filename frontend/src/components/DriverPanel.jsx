@@ -201,7 +201,8 @@ const DriverPanel = ({ user }) => {
       const { error: updateError } = await supabase.from('surgeries')
         .update({ 
           comanda_urls: updatedUrls,
-          status: 'Material entregue'
+          status: 'MATERIAL ENTREGUE',
+          delivery_status: '🟢'
         })
         .eq('id', selectedSurgeryId);
 
@@ -210,7 +211,7 @@ const DriverPanel = ({ user }) => {
       // Update local state
       setSurgeries(prev => prev.map(s => {
         if (s.id === selectedSurgeryId) {
-          return { ...s, comanda_urls: updatedUrls, status: 'Material entregue' };
+          return { ...s, comanda_urls: updatedUrls, status: 'MATERIAL ENTREGUE', delivery_status: '🟢' };
         }
         return s;
       }));
