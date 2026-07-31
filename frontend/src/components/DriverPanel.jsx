@@ -562,6 +562,42 @@ const DriverPanel = ({ user }) => {
         style={{ display: 'none' }} 
         onChange={handleFileUpload}
       />
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex',
+          flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <button 
+            onClick={() => setSelectedImage(null)}
+            style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+          >
+            <X size={32} />
+          </button>
+          
+          <img 
+            src={selectedImage.url} 
+            alt="Preview" 
+            style={{ maxWidth: '90%', maxHeight: '75vh', objectFit: 'contain', borderRadius: '8px' }} 
+          />
+          
+          <div style={{ color: '#fff', marginTop: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>
+            {selectedImage.name}
+          </div>
+          
+          <button
+            onClick={() => handleDeleteImage(selectedImage.surgeryId, selectedImage.fullString)}
+            style={{
+              marginTop: '24px', padding: '12px 24px', backgroundColor: '#ef4444', color: '#fff',
+              border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer'
+            }}
+          >
+            Excluir Anexo
+          </button>
+        </div>
+      )}
     </div>
   );
 };
