@@ -235,13 +235,24 @@ const DriverPanel = ({ user }) => {
       
       const updatedUrls = (surgeryToUpdate.comanda_urls || []).filter(item => item !== fullString);
       
+      let updatePayload = { comanda_urls: updatedUrls };
+      if (updatedUrls.length === 0) {
+        updatePayload.status = 'SEPARADO PARA ENTREGAR';
+        updatePayload.delivery_status = '🟠';
+      }
+
       const { error } = await supabase.from('surgeries')
-        .update({ comanda_urls: updatedUrls })
+        .update(updatePayload)
         .eq('id', surgeryId);
         
       if (error) throw error;
       
-      setSurgeries(prev => prev.map(s => s.id === surgeryId ? { ...s, comanda_urls: updatedUrls } : s));
+      setSurgeries(prev => prev.map(s => {
+        if (s.id === surgeryId) {
+          return { ...s, ...updatePayload };
+        }
+        return s;
+      }));
       setSelectedImage(null);
     } catch (err) {
       console.error('Erro ao excluir anexo:', err);

@@ -702,14 +702,20 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     const previousUrls = localSurgery.comanda_urls;
     try {
       const updatedUrls = (localSurgery.comanda_urls || []).filter(url => url !== itemToRemove);
-      setLocalSurgery(prev => ({ ...prev, comanda_urls: updatedUrls }));
+      let updatePayload = { comanda_urls: updatedUrls };
+      if (updatedUrls.length === 0) {
+        updatePayload.status = 'SEPARADO PARA ENTREGAR';
+        updatePayload.delivery_status = '🟠';
+      }
+      
+      setLocalSurgery(prev => ({ ...prev, ...updatePayload }));
 
       const filenameToDelete = extractFilename(itemToRemove);
       if (filenameToDelete) {
         await supabase.storage.from('attachments').remove([filenameToDelete]);
       }
       const { error: updateError } = await supabase.from('surgeries')
-        .update({ comanda_urls: updatedUrls })
+        .update(updatePayload)
         .eq('id', localSurgery.id);
       if (updateError) throw updateError;
     } catch (err) {
