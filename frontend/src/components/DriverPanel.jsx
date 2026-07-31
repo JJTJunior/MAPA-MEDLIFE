@@ -573,8 +573,6 @@ const DriverPanel = ({ user }) => {
 
       <input 
         type="file" 
-      <input 
-        type="file" 
         accept="image/*" 
         ref={fileInputRef} 
         style={{ display: 'none' }} 
