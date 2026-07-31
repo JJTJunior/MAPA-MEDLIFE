@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Calendar, Clock, Camera, Plus, Check, X } from 'lucide-react';
+import { Search, Calendar, Clock, Camera, Plus, Check, X, FileText } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+
+const isDocumentFile = (url) => {
+  if (!url) return false;
+  const lower = url.toLowerCase();
+  return lower.includes('.pdf') || lower.includes('.doc') || lower.includes('.docx');
+};
 
 const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) => {
   return new Promise((resolve) => {
@@ -517,9 +523,18 @@ const DriverPanel = ({ user }) => {
                       <div 
                         key={idx} 
                         onClick={() => handleOpenImage(surgery.id, anexo3Items, idx)}
-                        style={{ width: '50px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative' }}
+                        style={{ width: '50px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
                       >
-                        <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        {isDocumentFile(parsed.url) ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                            <FileText size={20} style={{ color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }} />
+                            <span style={{ fontSize: '0.55rem', fontWeight: 'bold', color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }}>
+                              {parsed.url.toLowerCase().includes('.pdf') ? 'PDF' : 'WORD'}
+                            </span>
+                          </div>
+                        ) : (
+                          <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        )}
                       </div>
                     );
                   })}
@@ -671,20 +686,43 @@ const DriverPanel = ({ user }) => {
               <X size={32} />
             </button>
             
-            <TransformWrapper
-              initialScale={1}
-              minScale={0.5}
-              maxScale={5}
-              centerOnInit={true}
-            >
-              <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
-                <img 
-                  src={parsed.url} 
-                  alt="Preview" 
-                  style={{ maxWidth: '90vw', maxHeight: '70vh', objectFit: 'contain', borderRadius: '8px' }} 
-                />
-              </TransformComponent>
-            </TransformWrapper>
+            {isDocumentFile(parsed.url) ? (
+              <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', borderRadius: '8px', overflow: 'hidden' }}>
+                {parsed.url.toLowerCase().includes('.pdf') ? (
+                  <iframe 
+                    src={`https://docs.google.com/viewer?url=${encodeURIComponent(parsed.url)}&embedded=true`} 
+                    style={{ width: '100%', height: '100%', border: 'none' }} 
+                    title="PDF Viewer"
+                  />
+                ) : (
+                  <div style={{ textAlign: 'center' }}>
+                    <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <h3 style={{ margin: 0, color: '#334155', fontSize: '1.2rem' }}>Documento de Texto</h3>
+                    <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>Visualização direta não suportada.</p>
+                    <a href={parsed.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '16px', padding: '10px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' }}>
+                      Baixar / Abrir
+                    </a>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <TransformWrapper
+                initialScale={1}
+                minScale={0.5}
+                maxScale={5}
+                centerOnInit={true}
+              >
+                <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
+                  <img 
+                    src={parsed.url} 
+                    alt="Preview" 
+                    style={{ maxWidth: '90vw', maxHeight: '70vh', objectFit: 'contain', borderRadius: '8px' }} 
+                  />
+                </TransformComponent>
+              </TransformWrapper>
+            )}
             
             <div style={{ color: '#fff', marginTop: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>
               {parsed.name}
