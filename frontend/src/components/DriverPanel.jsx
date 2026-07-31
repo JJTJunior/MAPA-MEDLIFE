@@ -107,7 +107,7 @@ const DriverPanel = ({ user }) => {
       let query = supabase
         .from('surgeries')
         .select('*')
-        .in('status', ['Separado para entrega', 'Material entregue']);
+        .in('status', ['Separado para entrega', 'Separado para entregar', 'Material entregue']);
 
       const { start, end } = getLocalDateRange(dateFilter);
       if (start && end) {
@@ -212,7 +212,7 @@ const DriverPanel = ({ user }) => {
             s.medico?.toLowerCase().includes(search));
   });
 
-  const pendingCount = filteredSurgeries.filter(s => s.status === 'Separado para entrega').length;
+  const pendingCount = filteredSurgeries.filter(s => s.status === 'Separado para entrega' || s.status === 'Separado para entregar').length;
   const deliveredCount = filteredSurgeries.filter(s => s.status === 'Material entregue').length;
   const totalCount = filteredSurgeries.length;
 
@@ -376,8 +376,8 @@ const DriverPanel = ({ user }) => {
                     alignItems: 'center',
                     gap: '4px'
                   }}>
-                    {isDelivered ? <Check size={14} /> : <span style={{ fontSize: '12px' }}>⏳</span>}
-                    {isDelivered ? 'Entregue' : 'Pendente'}
+                    {isDelivered ? <Check size={14} /> : <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#f97316' }}></div>}
+                    {isDelivered ? 'ENTREGUE' : 'SEPARADO PARA ENTREGAR'}
                   </div>
                 </div>
 
