@@ -544,6 +544,20 @@ export default function App() {
         />
       )}
 
+      {activeTab === 'driver' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>Área do Motorista</h2>
+          <p>Esta tela está em desenvolvimento. Em breve você poderá gerenciar as entregas por aqui.</p>
+        </div>
+      )}
+
+      {activeTab === 'scrub_nurse' && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>Área do Instrumentador</h2>
+          <p>Esta tela está em desenvolvimento. Em breve você poderá gerenciar as informações de instrumentação por aqui.</p>
+        </div>
+      )}
+
       {/* Modal único de Criar/Editar */}
       <SurgeryModal 
         isOpen={isModalOpen}

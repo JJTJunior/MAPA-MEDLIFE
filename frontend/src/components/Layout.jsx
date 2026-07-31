@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, Calendar, LogOut, Sun, Moon, Settings, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Calendar, LogOut, Sun, Moon, Settings, Menu, X, Truck, Stethoscope } from 'lucide-react';
 
 export default function Layout({ children, activeTab, setActiveTab, user, onLogout, theme, toggleTheme, onlineUsers, onOpenOnlineModal }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -79,6 +79,22 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
           >
             <Calendar size={20} />
             Mapa Cirúrgico
+          </button>
+          
+          <button 
+            className={`nav-item ${activeTab === 'driver' ? 'active' : ''}`}
+            onClick={() => handleNavClick('driver')}
+          >
+            <Truck size={20} />
+            Motorista
+          </button>
+          
+          <button 
+            className={`nav-item ${activeTab === 'scrub_nurse' ? 'active' : ''}`}
+            onClick={() => handleNavClick('scrub_nurse')}
+          >
+            <Stethoscope size={20} />
+            Instrumentador
           </button>
           
           {hasSettingsPermission && (
