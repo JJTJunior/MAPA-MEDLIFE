@@ -485,20 +485,12 @@ const DriverPanel = ({ user }) => {
                     <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px' }}>{surgery.patient}</div>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                    <div style={{ 
-                      backgroundColor: isDelivered ? '#ecfdf5' : '#fffbeb', 
-                      color: isDelivered ? '#10b981' : '#f59e0b',
-                      padding: '6px 12px',
-                      borderRadius: '20px',
-                      fontSize: '0.75rem',
-                      fontWeight: 'bold',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}>
-                      {isDelivered ? <Check size={14} /> : <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#f97316' }}></div>}
-                      {isDelivered ? 'ENTREGUE' : 'SEPARADO PARA ENTREGAR'}
-                    </div>
+                    <span 
+                      className={`status-badge ${isDelivered ? 'status-delivered' : 'status-ready'}`} 
+                      style={{ padding: '6px 12px' }}
+                    >
+                      {isDelivered ? '🟢 MATERIAL ENTREGUE' : '🟠 SEPARADO PARA ENTREGAR'}
+                    </span>
                     {isDelivered && deliveredBy && (
                       <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600' }}>
                         por {deliveredBy}
