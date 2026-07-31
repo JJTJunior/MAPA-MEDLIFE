@@ -1,7 +1,57 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Calendar, Clock, Camera, Plus, Check } from 'lucide-react';
 import { supabase } from '../supabaseClient';
-import imageCompression from 'browser-image-compression';
+
+const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now(),
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          },
+          'image/jpeg',
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = event.target.result;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+};
 
 const DriverPanel = ({ user }) => {
   const [surgeries, setSurgeries] = useState([]);
@@ -99,13 +149,7 @@ const DriverPanel = ({ user }) => {
 
       let fileToUpload = file;
       if (file.type.startsWith('image/')) {
-        const options = {
-          maxSizeMB: 1,
-          maxWidthOrHeight: 1200,
-          useWebWorker: true,
-          initialQuality: 0.7,
-        };
-        fileToUpload = await imageCompression(file, options);
+        fileToUpload = await compressImage(file, 1200, 1200, 0.7);
       }
 
       const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
