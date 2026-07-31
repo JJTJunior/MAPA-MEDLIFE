@@ -1282,25 +1282,28 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
                         {isDocumentFile(url) ? (
-                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
                             {url.toLowerCase().includes('.pdf') ? (
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                                <FileText size={40} style={{ color: '#ef4444' }} />
-                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <FileText size={32} style={{ color: '#ef4444' }} />
+                                <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
                               </div>
                             ) : (
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                                <FileText size={40} style={{ color: '#3b82f6' }} />
-                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <FileText size={32} style={{ color: '#3b82f6' }} />
+                                <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
                               </div>
                             )}
                           </a>
                         ) : (
-                          <div onClick={() => handleOpenImage(allAttachmentUrls, idx)} style={{ cursor: 'pointer' }}>
+                          <div 
+                            onClick={() => handleOpenImage(allAttachmentUrls, idx)} 
+                            style={{ width: '80px', height: '80px', cursor: 'pointer', position: 'relative' }}
+                          >
                             <img 
                               src={url} 
                               alt={name || `Solicitação ${idx + 1}`} 
-                              style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain' }} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                             />
                           </div>
                         )}
@@ -1750,25 +1753,28 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
                         {isDocumentFile(url) ? (
-                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
                             {url.toLowerCase().includes('.pdf') ? (
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                                <FileText size={40} style={{ color: '#ef4444' }} />
-                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <FileText size={32} style={{ color: '#ef4444' }} />
+                                <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#ef4444' }}>PDF</span>
                               </div>
                             ) : (
-                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                                <FileText size={40} style={{ color: '#3b82f6' }} />
-                                <span style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                                <FileText size={32} style={{ color: '#3b82f6' }} />
+                                <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
                               </div>
                             )}
                           </a>
                         ) : (
-                          <div onClick={() => handleOpenImage(allAttachmentUrls, idx)} style={{ cursor: 'pointer' }}>
+                          <div 
+                            onClick={() => handleOpenImage(allAttachmentUrls, idx)} 
+                            style={{ width: '80px', height: '80px', cursor: 'pointer', position: 'relative' }}
+                          >
                             <img 
                               src={url} 
                               alt={name || `Solicitação ${idx + 1}`} 
-                              style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain' }} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                             />
                           </div>
                         )}
@@ -2244,7 +2250,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
                         {isDocumentFile(url) ? (
-                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '100px', height: '100px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', textDecoration: 'none' }}>
+                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', textDecoration: 'none' }}>
                             {url.toLowerCase().includes('.pdf') ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                 <FileText size={32} style={{ color: '#ef4444' }} />
@@ -2258,11 +2264,14 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             )}
                           </a>
                         ) : (
-                          <div onClick={() => handleOpenImage(allEquipmentRaw, idx)} style={{ cursor: 'pointer' }}>
+                          <div 
+                            onClick={() => handleOpenImage(allEquipmentRaw, idx)} 
+                            style={{ width: '80px', height: '80px', cursor: 'pointer', position: 'relative' }}
+                          >
                             <img 
                               src={url} 
                               alt={name || `Equipamento ${idx + 1}`} 
-                              style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain' }} 
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
                             />
                           </div>
                         )}
