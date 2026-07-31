@@ -59,7 +59,7 @@ const DriverPanel = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('today'); // today, yesterday, last7, all, custom
   const [customDate, setCustomDate] = useState('');
-  const [uploadingId, setUploadingId] = useState(null);
+  const [statusFilter, setStatusFilter] = useState('all'); // all, pending, delivered
   
   const fileInputRef = useRef(null);
   const [selectedSurgeryId, setSelectedSurgeryId] = useState(null);
@@ -112,9 +112,9 @@ const DriverPanel = ({ user }) => {
       const { start, end } = getLocalDateRange(dateFilter);
       if (start && end) {
         if (start === end) {
-          query = query.eq('data_cirurgia', start);
+          query = query.eq('date', start);
         } else {
-          query = query.gte('data_cirurgia', start).lte('data_cirurgia', end);
+          query = query.gte('date', start).lte('date', end);
         }
       }
 
@@ -123,10 +123,10 @@ const DriverPanel = ({ user }) => {
       
       // Sort by time/date
       data.sort((a, b) => {
-        if (a.data_cirurgia !== b.data_cirurgia) {
-          return new Date(a.data_cirurgia) - new Date(b.data_cirurgia);
+        if (a.date !== b.date) {
+          return new Date(a.date) - new Date(b.date);
         }
-        return (a.hora_cirurgia || '23:59').localeCompare(b.hora_cirurgia || '23:59');
+        return (a.time || '23:59').localeCompare(b.time || '23:59');
       });
       
       setSurgeries(data || []);
@@ -204,24 +204,35 @@ const DriverPanel = ({ user }) => {
     }
   };
 
-  const filteredSurgeries = surgeries.filter(s => {
+  const searchedSurgeries = surgeries.filter(s => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
-    return (s.paciente?.toLowerCase().includes(search) || 
+    return (s.patient?.toLowerCase().includes(search) || 
             s.hospital?.toLowerCase().includes(search) ||
-            s.medico?.toLowerCase().includes(search));
+            s.doctor?.toLowerCase().includes(search));
   });
 
-  const pendingCount = filteredSurgeries.filter(s => {
+  const pendingCount = searchedSurgeries.filter(s => {
     const st = s.status ? s.status.toUpperCase() : '';
     return st === 'SEPARADO PARA ENTREGA' || st === 'SEPARADO PARA ENTREGAR';
   }).length;
   
-  const deliveredCount = filteredSurgeries.filter(s => {
+  const deliveredCount = searchedSurgeries.filter(s => {
     const st = s.status ? s.status.toUpperCase() : '';
     return st === 'MATERIAL ENTREGUE';
   }).length;
-  const totalCount = filteredSurgeries.length;
+  
+  const totalCount = searchedSurgeries.length;
+
+  const filteredSurgeries = searchedSurgeries.filter(s => {
+    const st = s.status ? s.status.toUpperCase() : '';
+    const isPending = st === 'SEPARADO PARA ENTREGA' || st === 'SEPARADO PARA ENTREGAR';
+    const isDelivered = st === 'MATERIAL ENTREGUE';
+    
+    if (statusFilter === 'pending') return isPending;
+    if (statusFilter === 'delivered') return isDelivered;
+    return true;
+  });
 
   const getDayName = () => {
     const now = new Date();
@@ -257,15 +268,21 @@ const DriverPanel = ({ user }) => {
 
         {/* Summary Cards */}
         <div style={{ display: 'flex', gap: '12px' }}>
-          <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div 
+            onClick={() => setStatusFilter('all')}
+            style={{ flex: 1, backgroundColor: statusFilter === 'all' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '12px', border: statusFilter === 'all' ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s' }}>
             <div style={{ fontSize: '1.2rem', fontWeight: 'bold', lineHeight: 1 }}>{totalCount}</div>
             <div style={{ fontSize: '0.65rem', fontWeight: '600', letterSpacing: '0.5px', marginTop: '6px', opacity: 0.9 }}>PACIENTES</div>
           </div>
-          <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div 
+            onClick={() => setStatusFilter('pending')}
+            style={{ flex: 1, backgroundColor: statusFilter === 'pending' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '12px', border: statusFilter === 'pending' ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s' }}>
             <div style={{ fontSize: '1.2rem', fontWeight: 'bold', lineHeight: 1 }}>{pendingCount}</div>
             <div style={{ fontSize: '0.65rem', fontWeight: '600', letterSpacing: '0.5px', marginTop: '6px', opacity: 0.9 }}>PENDENTES</div>
           </div>
-          <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <div 
+            onClick={() => setStatusFilter('delivered')}
+            style={{ flex: 1, backgroundColor: statusFilter === 'delivered' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)', padding: '12px', borderRadius: '12px', border: statusFilter === 'delivered' ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', transition: 'all 0.2s' }}>
             <div style={{ fontSize: '1.2rem', fontWeight: 'bold', lineHeight: 1 }}>{deliveredCount}</div>
             <div style={{ fontSize: '0.65rem', fontWeight: '600', letterSpacing: '0.5px', marginTop: '6px', opacity: 0.9 }}>ENTREGUES</div>
           </div>
@@ -353,7 +370,7 @@ const DriverPanel = ({ user }) => {
             }
 
             // format date
-            let displayDate = surgery.data_cirurgia;
+            let displayDate = surgery.date;
             if (displayDate) {
               const d = new Date(displayDate + 'T00:00:00');
               const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -371,7 +388,7 @@ const DriverPanel = ({ user }) => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>PACIENTE</div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px' }}>{surgery.paciente}</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px' }}>{surgery.patient}</div>
                   </div>
                   <div style={{ 
                     backgroundColor: isDelivered ? '#ecfdf5' : '#fffbeb', 
@@ -398,7 +415,7 @@ const DriverPanel = ({ user }) => {
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>MÉDICO</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500' }}>{surgery.medico}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500' }}>{surgery.doctor}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>DATA</div>
@@ -408,12 +425,12 @@ const DriverPanel = ({ user }) => {
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>VENDEDOR</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500' }}>{surgery.vendedor || '--'}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500' }}>{surgery.salesperson || '--'}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>HORA</div>
                     <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Clock size={14} color="#64748b" /> {surgery.hora_cirurgia || '--'}
+                      <Clock size={14} color="#64748b" /> {surgery.time || '--'}
                     </div>
                   </div>
                 </div>
