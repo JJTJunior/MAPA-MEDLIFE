@@ -332,7 +332,7 @@ const DriverPanel = ({ user }) => {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ef4444' }}></div>
-              <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>Entregas</h1>
+              <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>Entregas de Materiais</h1>
             </div>
             <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.8, marginTop: '4px' }}>{getDayName()}</p>
           </div>
