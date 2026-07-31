@@ -97,7 +97,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const [showDeleteIconsComanda, setShowDeleteIconsComanda] = useState(false);
   const [isSharingWhatsApp, setIsSharingWhatsApp] = useState(false);
   const [shareModalData, setShareModalData] = useState(null);
-  const [collapsedSections, setCollapsedSections] = useState({ anexo1: false, anexo2: false, anexo3: false });
+  const [collapsedSections, setCollapsedSections] = useState({ anexo1: true, anexo2: true, anexo3: true });
   const [pendingAttachment, setPendingAttachment] = useState(null);
   const [attachmentNameInput, setAttachmentNameInput] = useState('');
   const [attachmentNameError, setAttachmentNameError] = useState('');
