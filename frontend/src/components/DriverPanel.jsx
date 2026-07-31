@@ -86,10 +86,19 @@ const DriverPanel = ({ user }) => {
     }
     
     if (cleanItem.includes('|||')) {
-      const [url, ...nameParts] = cleanItem.split('|||');
-      return { url, name: nameParts.join('|||') };
+      const parts = cleanItem.split('|||');
+      let userName = null;
+      let nameParts = [];
+      for (let i = 1; i < parts.length; i++) {
+        if (parts[i].startsWith('UPLOADED_BY:')) {
+          userName = parts[i].replace('UPLOADED_BY:', '');
+        } else {
+          nameParts.push(parts[i]);
+        }
+      }
+      return { url: parts[0], name: nameParts.join('|||'), userName };
     }
-    return { url: cleanItem, name: '' };
+    return { url: cleanItem, name: '', userName: null };
   };
   
   const fileInputRef = useRef(null);
@@ -205,7 +214,8 @@ const DriverPanel = ({ user }) => {
         .from('attachments')
         .getPublicUrl(fileName);
 
-      const valueToStore = `${publicUrl}?anexo=3|||${fileNameInput.trim()}`;
+      const uploaderName = user?.name || user?.email || 'Desconhecido';
+      const valueToStore = `${publicUrl}?anexo=3|||${fileNameInput.trim()}|||UPLOADED_BY:${uploaderName}`;
       
       const surgeryToUpdate = surgeries.find(s => s.id === selectedSurgeryId);
       const existingUrls = surgeryToUpdate?.comanda_urls || [];
@@ -453,9 +463,13 @@ const DriverPanel = ({ user }) => {
             }
 
             // Get anexo 3 items
-            const anexo3Items = (surgery.comanda_urls || []).filter(item => {
-              return item.includes('?anexo=3') || item.startsWith('[ANEXO_3]|||');
-            });
+            const anexo3Items = (surgery.comanda_urls || []).filter(item => item && (item.includes('?anexo=3') || item.includes('[ANEXO_3]')));
+          
+            let deliveredBy = null;
+            if (anexo3Items.length > 0) {
+              const parsedLast = parsePrintUrl(anexo3Items[anexo3Items.length - 1]);
+              if (parsedLast.userName) deliveredBy = parsedLast.userName;
+            }
 
             return (
               <div key={surgery.id} style={{ 
@@ -470,19 +484,26 @@ const DriverPanel = ({ user }) => {
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>PACIENTE</div>
                     <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px' }}>{surgery.patient}</div>
                   </div>
-                  <div style={{ 
-                    backgroundColor: isDelivered ? '#ecfdf5' : '#fffbeb', 
-                    color: isDelivered ? '#10b981' : '#f59e0b',
-                    padding: '6px 12px',
-                    borderRadius: '20px',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px'
-                  }}>
-                    {isDelivered ? <Check size={14} /> : <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#f97316' }}></div>}
-                    {isDelivered ? 'ENTREGUE' : 'SEPARADO PARA ENTREGAR'}
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                    <div style={{ 
+                      backgroundColor: isDelivered ? '#ecfdf5' : '#fffbeb', 
+                      color: isDelivered ? '#10b981' : '#f59e0b',
+                      padding: '6px 12px',
+                      borderRadius: '20px',
+                      fontSize: '0.75rem',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}>
+                      {isDelivered ? <Check size={14} /> : <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#f97316' }}></div>}
+                      {isDelivered ? 'ENTREGUE' : 'SEPARADO PARA ENTREGAR'}
+                    </div>
+                    {isDelivered && deliveredBy && (
+                      <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600' }}>
+                        por {deliveredBy}
+                      </div>
+                    )}
                   </div>
                 </div>
 
