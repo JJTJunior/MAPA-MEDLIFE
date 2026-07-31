@@ -2864,127 +2864,14 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 );
               })()}
 
-              {/* Anexo 3 */}
-              {(() => {
-                const imgFiles3 = shareModalData.files.filter(f => f.type.startsWith('image/') && f.origin === 'anexo3');
-                const pdfFiles3 = shareModalData.files.filter(f => f.type === 'application/pdf' && f.origin === 'anexo3');
-                if (imgFiles3.length === 0 && pdfFiles3.length === 0) return null;
-                const isCollapsed = collapsedSections.anexo3;
-                
-                return (
-                  <div style={{ 
-                    border: '1px solid var(--border-color, #e2e8f0)', 
-                    borderRadius: '12px', padding: '12px',
-                    backgroundColor: 'var(--bg-secondary, #f8fafc)',
-                    display: 'flex', flexDirection: 'column', gap: '10px'
-                  }}>
-                    <div 
-                      onClick={() => setCollapsedSections(prev => ({ ...prev, anexo3: !prev.anexo3 }))}
-                      style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', userSelect: 'none' }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', flexWrap: 'wrap' }}>
-                        <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-primary)' }}>Anexo 3</span>
-                        <span style={{ fontSize: '0.78rem', color: '#64748b' }}>- descartáveis / implantes / equipamentos / comprovante</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#64748b', backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', fontWeight: '500' }}>
-                          {imgFiles3.length > 0 && `${imgFiles3.length} img`}{imgFiles3.length > 0 && pdfFiles3.length > 0 && ' · '}{pdfFiles3.length > 0 && `${pdfFiles3.length} pdf`}
-                        </span>
-                        {isCollapsed ? <ChevronDown size={14} style={{ color: '#64748b' }} /> : <ChevronUp size={14} style={{ color: '#64748b' }} />}
-                      </div>
-                    </div>
-                    
-                    {!isCollapsed && (
-                      <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-                        {imgFiles3.length > 0 && (
-                          <button
-                            onClick={async () => {
-                              const imgFiles = imgFiles3.map(f => new File([f], f.name, { type: f.type }));
-                              if (navigator.share && navigator.canShare && navigator.canShare({ files: imgFiles })) {
-                                try {
-                                  await navigator.share({
-                                    files: imgFiles,
-                                    title: `Imagens Anexo 3 - ${shareModalData.patient}`,
-                                    text: shareModalData.text
-                                  });
-                                  return;
-                                } catch (e) {
-                                  if (e.name === 'AbortError') return;
-                                }
-                              }
-                              imgFiles.forEach(file => {
-                                const blobUrl = URL.createObjectURL(file);
-                                const link = document.createElement('a');
-                                link.href = blobUrl;
-                                link.download = file.name;
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                URL.revokeObjectURL(blobUrl);
-                              });
-                              alert(`${imgFiles.length} imagem(ns) baixada(s). Anexe-as no WhatsApp.`);
-                            }}
-                            style={{
-                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 14px',
-                              backgroundColor: '#2563eb', color: '#ffffff', border: 'none', flex: 1,
-                              borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            <Paperclip size={15} style={{ flexShrink: 0 }} />
-                            <div style={{ whiteSpace: 'nowrap' }}>Texto + Imagens ({imgFiles3.length})</div>
-                          </button>
-                        )}
-                        
-                        {pdfFiles3.length > 0 && (
-                          <button
-                            onClick={async () => {
-                              const pdfFiles = pdfFiles3.map(f => new File([f], f.name, { type: f.type }));
-                              if (navigator.share && navigator.canShare && navigator.canShare({ files: pdfFiles })) {
-                                try {
-                                  await navigator.share({
-                                    files: pdfFiles,
-                                    title: `PDFs Anexo 3 - ${shareModalData.patient}`,
-                                    text: shareModalData.text
-                                  });
-                                  return;
-                                } catch (e) {
-                                  if (e.name === 'AbortError') return;
-                                }
-                              }
-                              pdfFiles.forEach(file => {
-                                const blobUrl = URL.createObjectURL(file);
-                                const link = document.createElement('a');
-                                link.href = blobUrl;
-                                link.download = file.name;
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                URL.revokeObjectURL(blobUrl);
-                              });
-                              alert(`${pdfFiles.length} PDF(s) baixado(s). Anexe-os no WhatsApp.`);
-                            }}
-                            style={{
-                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 14px',
-                              backgroundColor: '#dc2626', color: '#ffffff', border: 'none', flex: 1,
-                              borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer',
-                              transition: 'all 0.2s'
-                            }}
-                          >
-                            <FileText size={15} style={{ flexShrink: 0 }} />
-                            <div style={{ whiteSpace: 'nowrap' }}>Texto + PDF ({pdfFiles3.length})</div>
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
 
               {/* Share all button (footer) */}
               <button
                 onClick={async () => {
-                  const allFiles = shareModalData.files.map(f => new File([f], f.name, { type: f.type }));
+                  // Filtramos o Anexo 3 pois costuma ter muitos arquivos e quebrar o limite de compartilhamento
+                  const allFiles = shareModalData.files
+                    .filter(f => f.origin !== 'anexo3')
+                    .map(f => new File([f], f.name, { type: f.type }));
                   
                   if (navigator.share) {
                     try {
@@ -3007,7 +2894,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   const encodedText = encodeURIComponent(shareModalData.text);
                   window.open(`https://web.whatsapp.com/send?text=${encodedText}`, '_blank');
                   
-                  shareModalData.files.forEach(file => {
+                  allFiles.forEach(file => {
                     const blobUrl = URL.createObjectURL(file);
                     const link = document.createElement('a');
                     link.href = blobUrl;

@@ -1983,12 +1983,14 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
 
               <button
                 onClick={async () => {
+                  const filteredFiles = shareModalData.files.filter(f => f.origin !== 'anexo3');
+                  
                   if (navigator.share) {
                     try {
                       try { await navigator.clipboard.writeText(shareModalData.text); } catch(err) { console.error(err); }
                       
                       await navigator.share({
-                        files: shareModalData.files,
+                        files: filteredFiles,
                         title: `Mapa - ${shareModalData.patient}`
                       });
                       return;
@@ -2000,7 +2002,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                   const encodedText = encodeURIComponent(shareModalData.text);
                   window.open(`https://web.whatsapp.com/send?text=${encodedText}`, '_blank');
                   
-                  shareModalData.files.forEach(file => {
+                  filteredFiles.forEach(file => {
                     const blobUrl = URL.createObjectURL(file);
                     const link = document.createElement('a');
                     link.href = blobUrl;
