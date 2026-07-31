@@ -61,6 +61,25 @@ const DriverPanel = ({ user }) => {
   const [customDate, setCustomDate] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // all, pending, delivered
   const [uploadingId, setUploadingId] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null); // { url, surgeryId, fullString }
+  
+  const parsePrintUrl = (item) => {
+    if (!item) return { url: '', name: '' };
+    let cleanItem = item;
+    if (cleanItem.startsWith('[ANEXO_3]|||')) {
+      cleanItem = cleanItem.replace('[ANEXO_3]|||', '');
+      if (!cleanItem.includes('?anexo=3')) {
+        const parts = cleanItem.split('|||');
+        if (parts[0]) parts[0] = parts[0] + '?anexo=3';
+        cleanItem = parts.join('|||');
+      }
+    }
+    if (cleanItem.includes('|||')) {
+      const [url, ...nameParts] = cleanItem.split('|||');
+      return { url, name: nameParts.join('|||') };
+    }
+    return { url: cleanItem, name: '' };
+  };
   
   const fileInputRef = useRef(null);
   const [selectedSurgeryId, setSelectedSurgeryId] = useState(null);
@@ -141,12 +160,16 @@ const DriverPanel = ({ user }) => {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file || !selectedSurgeryId) return;
-    
-    setUploadingId(selectedSurgeryId);
-    
+
+    const fileNameInput = prompt("Digite um nome para este arquivo (Obrigatório):");
+    if (!fileNameInput || fileNameInput.trim() === '') {
+       alert("Nome do arquivo é obrigatório. Envio cancelado.");
+       if (fileInputRef.current) fileInputRef.current.value = '';
+       return;
+    }
+
     try {
-      const surgery = surgeries.find(s => s.id === selectedSurgeryId);
-      if (!surgery) throw new Error("Cirurgia não encontrada");
+      setUploadingId(selectedSurgeryId);
 
       let fileToUpload = file;
       if (file.type.startsWith('image/')) {
@@ -154,7 +177,7 @@ const DriverPanel = ({ user }) => {
       }
 
       const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
-      const fileName = `motorista_${Date.now()}_${Math.floor(Math.random() * 10000)}.${fileExt}`;
+      const fileName = `anexo3_${Date.now()}_${Math.floor(Math.random() * 10000)}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('attachments')
@@ -166,14 +189,15 @@ const DriverPanel = ({ user }) => {
         .from('attachments')
         .getPublicUrl(fileName);
 
-      const displayName = "Comprovante Entrega";
-      const valueToStore = `${publicUrl}|||${displayName}`;
-      const existingUrls = surgery.comanda_urls || [];
+      const valueToStore = `[ANEXO_3]|||${publicUrl}|||${fileNameInput.trim()}`;
+      
+      const surgeryToUpdate = surgeries.find(s => s.id === selectedSurgeryId);
+      const existingUrls = surgeryToUpdate?.print_url || [];
       const updatedUrls = [...existingUrls, valueToStore];
 
       const { error: updateError } = await supabase.from('surgeries')
         .update({ 
-          comanda_urls: updatedUrls,
+          print_url: updatedUrls,
           status: 'Material entregue'
         })
         .eq('id', selectedSurgeryId);
@@ -183,7 +207,7 @@ const DriverPanel = ({ user }) => {
       // Update local state
       setSurgeries(prev => prev.map(s => {
         if (s.id === selectedSurgeryId) {
-          return { ...s, comanda_urls: updatedUrls, status: 'Material entregue' };
+          return { ...s, print_url: updatedUrls, status: 'Material entregue' };
         }
         return s;
       }));
@@ -195,6 +219,29 @@ const DriverPanel = ({ user }) => {
       setUploadingId(null);
       setSelectedSurgeryId(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDeleteImage = async (surgeryId, fullString) => {
+    if (!window.confirm('Tem certeza que deseja excluir este anexo?')) return;
+    
+    try {
+      const surgeryToUpdate = surgeries.find(s => s.id === surgeryId);
+      if (!surgeryToUpdate) return;
+      
+      const updatedUrls = (surgeryToUpdate.print_url || []).filter(item => item !== fullString);
+      
+      const { error } = await supabase.from('surgeries')
+        .update({ print_url: updatedUrls })
+        .eq('id', surgeryId);
+        
+      if (error) throw error;
+      
+      setSurgeries(prev => prev.map(s => s.id === surgeryId ? { ...s, print_url: updatedUrls } : s));
+      setSelectedImage(null);
+    } catch (err) {
+      console.error('Erro ao excluir anexo:', err);
+      alert('Erro ao excluir anexo: ' + err.message);
     }
   };
 
@@ -378,6 +425,9 @@ const DriverPanel = ({ user }) => {
               displayDate = `${d.getDate()} ${months[d.getMonth()]}`;
             }
 
+            // Get anexo 3 items
+            const anexo3Items = (surgery.print_url || []).filter(item => item.startsWith('[ANEXO_3]|||'));
+
             return (
               <div key={surgery.id} style={{ 
                 backgroundColor: '#ffffff', 
@@ -436,24 +486,35 @@ const DriverPanel = ({ user }) => {
                   </div>
                 </div>
 
-                {isDelivered && firstThumbnail && (
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
-                    <div style={{ width: '50px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-                      <img src={firstThumbnail} alt="Comprovante" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    </div>
+                {/* Render Attachments */}
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
+                  {isDelivered && anexo3Items.map((itemStr, idx) => {
+                    const parsed = parsePrintUrl(itemStr);
+                    return (
+                      <div 
+                        key={idx} 
+                        onClick={() => setSelectedImage({ url: parsed.url, name: parsed.name, surgeryId: surgery.id, fullString: itemStr })}
+                        style={{ width: '50px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative' }}
+                      >
+                        <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    );
+                  })}
+                  
+                  {isDelivered && (
                     <button 
                       onClick={() => openFilePicker(surgery.id)}
                       disabled={uploadingId === surgery.id}
                       style={{ 
                         width: '50px', height: '60px', borderRadius: '8px', border: '1px dashed #cbd5e1', 
                         display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc',
-                        cursor: 'pointer', color: '#0f4c5c'
+                        cursor: 'pointer', color: '#0f4c5c', minWidth: '50px'
                       }}
                     >
                       <Plus size={20} />
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
 
                 {isDelivered ? (
                   <button 
