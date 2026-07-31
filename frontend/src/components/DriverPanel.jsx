@@ -731,13 +731,13 @@ const DriverPanel = ({ user }) => {
               Foto {selectedImage.currentIndex + 1} de {selectedImage.items.length}
             </div>
             
-            <div style={{ display: 'flex', gap: '16px', marginTop: '24px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '16px', marginTop: '24px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
               {hasMultiple && (
                 <button
                   onClick={handlePrev}
                   style={{
-                    padding: '12px', backgroundColor: '#334155', color: '#fff',
-                    border: 'none', borderRadius: '8px', cursor: 'pointer',
+                    padding: '12px 20px', backgroundColor: '#334155', color: '#fff',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}
                 >
@@ -745,11 +745,26 @@ const DriverPanel = ({ user }) => {
                 </button>
               )}
               
+              <a 
+                href={parsed.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                download
+                style={{
+                  padding: '12px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none',
+                  border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}
+              >
+                Baixar
+              </a>
+
               <button
                 onClick={() => handleDeleteImage(selectedImage.surgeryId, currentItemStr)}
                 style={{
                   padding: '12px 24px', backgroundColor: '#ef4444', color: '#fff',
-                  border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer'
+                  border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}
               >
                 Excluir
@@ -759,8 +774,8 @@ const DriverPanel = ({ user }) => {
                 <button
                   onClick={handleNext}
                   style={{
-                    padding: '12px', backgroundColor: '#334155', color: '#fff',
-                    border: 'none', borderRadius: '8px', cursor: 'pointer',
+                    padding: '12px 20px', backgroundColor: '#334155', color: '#fff',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}
                 >

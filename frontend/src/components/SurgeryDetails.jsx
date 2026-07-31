@@ -3379,22 +3379,35 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   </div>
                 )}
                 
-                {hasMultiple && (
-                  <div style={{ display: 'flex', gap: '16px', marginTop: '24px' }}>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length })); }}
-                      style={{ padding: '10px 20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
-                    >
-                      Anterior
-                    </button>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex + 1) % prev.items.length })); }}
-                      style={{ padding: '10px 20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
-                    >
-                      Próxima
-                    </button>
-                  </div>
-                )}
+            <div style={{ display: 'flex', gap: '16px', marginTop: '24px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {hasMultiple && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length })); }}
+                  style={{ padding: '10px 20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  Anterior
+                </button>
+              )}
+              
+              <a 
+                href={parsed.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                download
+                style={{ padding: '10px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                Baixar
+              </a>
+
+              {hasMultiple && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex + 1) % prev.items.length })); }}
+                  style={{ padding: '10px 20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  Próxima
+                </button>
+              )}
+            </div>
               </>
             );
           })()}
