@@ -1163,15 +1163,16 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
 
 
-        {/* Anexos de Solicitação Médica / Autorização */}
-        <div 
-          className={`attachment-card-container ${(isEditable && isFieldEditable('attachment_url')) ? 'paste-dropzone' : ''}`} 
-          onPaste={(isEditable && isFieldEditable('attachment_url')) ? handlePasteImages : undefined}
-          onFocus={(isEditable && isFieldEditable('attachment_url')) ? () => setIsDropzoneFocused1(true) : undefined}
-          onBlur={(isEditable && isFieldEditable('attachment_url')) ? () => setIsDropzoneFocused1(false) : undefined}
-          tabIndex={(isEditable && isFieldEditable('attachment_url')) ? 0 : undefined}
-          style={{ 
-            marginTop: '24px', 
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))', gap: '24px', marginTop: '24px' }}>
+          {/* Anexos de Solicitação Médica / Autorização */}
+          <div 
+            className={`attachment-card-container ${(isEditable && isFieldEditable('attachment_url')) ? 'paste-dropzone' : ''}`} 
+            onPaste={(isEditable && isFieldEditable('attachment_url')) ? handlePasteImages : undefined}
+            onFocus={(isEditable && isFieldEditable('attachment_url')) ? () => setIsDropzoneFocused1(true) : undefined}
+            onBlur={(isEditable && isFieldEditable('attachment_url')) ? () => setIsDropzoneFocused1(false) : undefined}
+            tabIndex={(isEditable && isFieldEditable('attachment_url')) ? 0 : undefined}
+            style={{ 
+              marginTop: '0px', 
             display: 'flex', 
             flexDirection: 'column', 
             gap: '16px',
@@ -1635,15 +1636,15 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           )}
         </div>
 
-        {/* Anexos de Comanda / Documentação Cirúrgica */}
-        <div 
-          className={`attachment-card-container ${(isEditable && isFieldEditable('comanda_urls')) ? 'paste-dropzone' : ''}`} 
-          onPaste={(isEditable && isFieldEditable('comanda_urls')) ? handlePasteComandaImages : undefined}
-          onFocus={(isEditable && isFieldEditable('comanda_urls')) ? () => setIsDropzoneFocused2(true) : undefined}
-          onBlur={(isEditable && isFieldEditable('comanda_urls')) ? () => setIsDropzoneFocused2(false) : undefined}
-          tabIndex={(isEditable && isFieldEditable('comanda_urls')) ? 0 : undefined}
-          style={{ 
-            marginTop: '20px', 
+          {/* Anexos de Comanda / Documentação Cirúrgica */}
+          <div 
+            className={`attachment-card-container ${(isEditable && isFieldEditable('comanda_urls')) ? 'paste-dropzone' : ''}`} 
+            onPaste={(isEditable && isFieldEditable('comanda_urls')) ? handlePasteComandaImages : undefined}
+            onFocus={(isEditable && isFieldEditable('comanda_urls')) ? () => setIsDropzoneFocused2(true) : undefined}
+            onBlur={(isEditable && isFieldEditable('comanda_urls')) ? () => setIsDropzoneFocused2(false) : undefined}
+            tabIndex={(isEditable && isFieldEditable('comanda_urls')) ? 0 : undefined}
+            style={{ 
+              marginTop: '0px', 
             display: 'flex', 
             flexDirection: 'column', 
             gap: '16px',
@@ -2102,6 +2103,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               />
             </>
           )}
+          </div>
         </div>
 
         {/* Hidden Inputs for equipment */}
