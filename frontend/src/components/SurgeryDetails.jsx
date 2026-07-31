@@ -2988,26 +2988,26 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   
                   if (navigator.share && navigator.canShare && navigator.canShare({ files: allFiles })) {
                     try {
+                      // Copia o texto para a área de transferência para que o usuário possa colar no WhatsApp, 
+                      // pois o compartilhamento nativo do Windows com arquivos costuma ignorar textos longos.
+                      try { await navigator.clipboard.writeText(shareModalData.text); } catch(err) { console.error(err); }
+                      
                       await navigator.share({
-                        text: shareModalData.text,
                         files: allFiles,
                         title: `Cirurgia - ${shareModalData.patient}`
+                        // Não passamos o 'text' aqui para garantir que o Windows Share foque apenas nos anexos (como na imagem).
                       });
-                      return; // Compartilhado com sucesso via tela nativa do OS!
+                      return; // Sucesso com a tela nativa!
                     } catch (e) {
                       console.error("Erro ao usar navigator.share:", e);
-                      // Se foi cancelado pelo usuário (AbortError), não faz nada
                       if (e.name === 'AbortError') return;
                     }
                   }
                   
-                  // Fallback para computadores (onde navigator.share de arquivos não é suportado) ou falha no celular:
-                  // 1. Abre a tela do WhatsApp Web IMEDIATAMENTE de forma síncrona com o gesto do usuário
-                  // Isso garante que o navegador NÃO bloqueie a nova aba como popup indesejado
+                  // Fallback
                   const encodedText = encodeURIComponent(shareModalData.text);
-                  window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+                  window.open(`https://web.whatsapp.com/send?text=${encodedText}`, '_blank');
                   
-                  // 2. Dispara o download em background de todos os anexos para que o usuário possa arrastar e soltar
                   shareModalData.files.forEach(file => {
                     const blobUrl = URL.createObjectURL(file);
                     const link = document.createElement('a');
