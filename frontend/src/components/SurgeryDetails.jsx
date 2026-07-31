@@ -3340,7 +3340,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', borderRadius: '8px', overflow: 'hidden' }}>
                     {parsed.url.toLowerCase().includes('.pdf') ? (
                       <iframe 
-                        src={parsed.url} 
+                        src={`https://docs.google.com/viewer?url=${encodeURIComponent(parsed.url)}&embedded=true`} 
                         style={{ width: '100%', height: '100%', border: 'none' }} 
                         title="PDF Viewer"
                       />
