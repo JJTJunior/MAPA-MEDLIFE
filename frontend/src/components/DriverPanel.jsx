@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Calendar, Clock, Camera, Plus, Check, X } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) => {
   return new Promise((resolve) => {
@@ -670,11 +671,20 @@ const DriverPanel = ({ user }) => {
               <X size={32} />
             </button>
             
-            <img 
-              src={parsed.url} 
-              alt="Preview" 
-              style={{ maxWidth: '90%', maxHeight: '75vh', objectFit: 'contain', borderRadius: '8px' }} 
-            />
+            <TransformWrapper
+              initialScale={1}
+              minScale={0.5}
+              maxScale={5}
+              centerOnInit={true}
+            >
+              <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
+                <img 
+                  src={parsed.url} 
+                  alt="Preview" 
+                  style={{ maxWidth: '90vw', maxHeight: '70vh', objectFit: 'contain', borderRadius: '8px' }} 
+                />
+              </TransformComponent>
+            </TransformWrapper>
             
             <div style={{ color: '#fff', marginTop: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>
               {parsed.name}
