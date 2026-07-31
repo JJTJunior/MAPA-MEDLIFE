@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Clock, MapPin, User, FileText, CheckCircle, Activity, Briefcase, Calendar, Image as ImageIcon, Upload, Trash2, MessageCircle, Paperclip, Share2, X, Edit, Save, EyeOff, ClipboardList, Send, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase } from '../supabaseClient';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 const parsePrintUrl = (item) => {
   if (!item) return { url: '', name: '' };
@@ -95,6 +96,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const [isDropzoneFocused2, setIsDropzoneFocused2] = useState(false);
   const [showDeleteIcons, setShowDeleteIcons] = useState(false);
   const [showDeleteIconsComanda, setShowDeleteIconsComanda] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null); // { items: [], currentIndex: number }
   const [isSharingWhatsApp, setIsSharingWhatsApp] = useState(false);
   const [shareModalData, setShareModalData] = useState(null);
   const [collapsedSections, setCollapsedSections] = useState({ anexo1: true, anexo2: true, anexo3: true });
@@ -136,6 +138,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   }, [showAttachmentDropdown, showDeleteIcons, showComandaDropdown, showDeleteIconsComanda]);
 
   if (!localSurgery) return null;
+
+  const handleOpenImage = (items, currentIndex) => {
+    setSelectedImage({ items, currentIndex });
+  };
 
   const isEditable = user?.permissions?.can_view_only ? false : (user?.permissions?.can_edit ?? (user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'TI' || user?.role === 'Administrativo' || user?.role === 'Diretoria'));
 
@@ -1290,13 +1296,13 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             )}
                           </a>
                         ) : (
-                          <a href={url} target="_blank" rel="noopener noreferrer">
+                          <div onClick={() => handleOpenImage(allAttachmentUrls, idx)} style={{ cursor: 'pointer' }}>
                             <img 
                               src={url} 
-                              alt={name || `Solicitacao ${idx + 1}`} 
-                              style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
+                              alt={name || `Solicitação ${idx + 1}`} 
+                              style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain' }} 
                             />
-                          </a>
+                          </div>
                         )}
                         {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons && (
                           <button 
@@ -1758,13 +1764,13 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             )}
                           </a>
                         ) : (
-                          <a href={url} target="_blank" rel="noopener noreferrer">
+                          <div onClick={() => handleOpenImage(allAttachmentUrls, idx)} style={{ cursor: 'pointer' }}>
                             <img 
                               src={url} 
-                              alt={name || `Solicitacao ${idx + 1}`} 
-                              style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
+                              alt={name || `Solicitação ${idx + 1}`} 
+                              style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain' }} 
                             />
-                          </a>
+                          </div>
                         )}
                         {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda && (
                           <button 
@@ -2252,13 +2258,13 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             )}
                           </a>
                         ) : (
-                          <a href={url} target="_blank" rel="noopener noreferrer">
+                          <div onClick={() => handleOpenImage(allEquipmentRaw, idx)} style={{ cursor: 'pointer' }}>
                             <img 
                               src={url} 
                               alt={name || `Equipamento ${idx + 1}`} 
-                              style={{ maxWidth: '200px', maxHeight: '200px', cursor: 'zoom-in', objectFit: 'contain' }} 
+                              style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain' }} 
                             />
-                          </a>
+                          </div>
                         )}
                         {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && showDeleteIconsEquipment && (
                           <button 
@@ -3297,6 +3303,69 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {selectedImage && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 99999, display: 'flex',
+          flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <button 
+            onClick={() => setSelectedImage(null)}
+            style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 99999 }}
+          >
+            <X size={32} />
+          </button>
+          
+          {(() => {
+            let currentItemStr = selectedImage.items[selectedImage.currentIndex];
+            if (currentItemStr.startsWith('[ANEXO_3]|||')) currentItemStr = currentItemStr.replace('[ANEXO_3]|||', '');
+            const parsed = parsePrintUrl(currentItemStr);
+            const hasMultiple = selectedImage.items.length > 1;
+
+            return (
+              <>
+                <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit={true}>
+                  <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
+                    <img 
+                      src={parsed.url} 
+                      alt="Preview" 
+                      style={{ maxWidth: '90vw', maxHeight: '70vh', objectFit: 'contain', borderRadius: '8px' }} 
+                    />
+                  </TransformComponent>
+                </TransformWrapper>
+                
+                <div style={{ color: '#fff', marginTop: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                  {parsed.name}
+                </div>
+                
+                {hasMultiple && (
+                  <div style={{ color: '#aaa', marginTop: '4px', fontSize: '0.9rem' }}>
+                    Foto {selectedImage.currentIndex + 1} de {selectedImage.items.length}
+                  </div>
+                )}
+                
+                {hasMultiple && (
+                  <div style={{ display: 'flex', gap: '16px', marginTop: '24px' }}>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length })); }}
+                      style={{ padding: '10px 20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                    >
+                      Anterior
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex + 1) % prev.items.length })); }}
+                      style={{ padding: '10px 20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                    >
+                      Próxima
+                    </button>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       )}
     </div>
