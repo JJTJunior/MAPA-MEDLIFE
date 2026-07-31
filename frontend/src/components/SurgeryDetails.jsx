@@ -2589,7 +2589,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   <MessageCircle size={22} /> Compartilhar no WhatsApp
                 </h3>
                 <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
-                  Cirurgia de <strong>{shareModalData.patient}</strong> · {shareModalData.files.length} anexo(s)
+                  Cirurgia de <strong>{shareModalData.patient}</strong> · {shareModalData.files.filter(f => f.origin !== 'anexo3').length} anexo(s)
                 </span>
               </div>
               <button 
