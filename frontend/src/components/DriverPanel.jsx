@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Calendar, Clock, Camera, Plus, Check } from 'lucide-react';
+import { Search, Calendar, Clock, Camera, Plus, Check, X } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 
 const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) => {
