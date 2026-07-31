@@ -107,7 +107,7 @@ const DriverPanel = ({ user }) => {
       let query = supabase
         .from('surgeries')
         .select('*')
-        .in('status', ['Separado para entrega', 'Separado para entregar', 'Material entregue']);
+        .in('status', ['Separado para entrega', 'Separado para entregar', 'SEPARADO PARA ENTREGA', 'SEPARADO PARA ENTREGAR', 'Material entregue', 'MATERIAL ENTREGUE']);
 
       const { start, end } = getLocalDateRange(dateFilter);
       if (start && end) {
@@ -212,8 +212,15 @@ const DriverPanel = ({ user }) => {
             s.medico?.toLowerCase().includes(search));
   });
 
-  const pendingCount = filteredSurgeries.filter(s => s.status === 'Separado para entrega' || s.status === 'Separado para entregar').length;
-  const deliveredCount = filteredSurgeries.filter(s => s.status === 'Material entregue').length;
+  const pendingCount = filteredSurgeries.filter(s => {
+    const st = s.status ? s.status.toUpperCase() : '';
+    return st === 'SEPARADO PARA ENTREGA' || st === 'SEPARADO PARA ENTREGAR';
+  }).length;
+  
+  const deliveredCount = filteredSurgeries.filter(s => {
+    const st = s.status ? s.status.toUpperCase() : '';
+    return st === 'MATERIAL ENTREGUE';
+  }).length;
   const totalCount = filteredSurgeries.length;
 
   const getDayName = () => {
@@ -335,7 +342,8 @@ const DriverPanel = ({ user }) => {
           <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Nenhuma entrega encontrada.</div>
         ) : (
           filteredSurgeries.map((surgery) => {
-            const isDelivered = surgery.status === 'Material entregue';
+            const st = surgery.status ? surgery.status.toUpperCase() : '';
+            const isDelivered = st === 'MATERIAL ENTREGUE';
             
             // Get the first image url from comanda_urls to show as thumbnail if delivered
             let firstThumbnail = null;
