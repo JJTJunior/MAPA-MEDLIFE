@@ -60,6 +60,7 @@ const DriverPanel = ({ user }) => {
   const [dateFilter, setDateFilter] = useState('today'); // today, yesterday, last7, all, custom
   const [customDate, setCustomDate] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // all, pending, delivered
+  const [uploadingId, setUploadingId] = useState(null);
   
   const fileInputRef = useRef(null);
   const [selectedSurgeryId, setSelectedSurgeryId] = useState(null);
