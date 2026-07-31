@@ -702,8 +702,11 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     const previousUrls = localSurgery.comanda_urls;
     try {
       const updatedUrls = (localSurgery.comanda_urls || []).filter(url => url !== itemToRemove);
+      
+      const hasAnexo3 = updatedUrls.some(item => item.includes('?anexo=3') || item.startsWith('[ANEXO_3]|||'));
+      
       let updatePayload = { comanda_urls: updatedUrls };
-      if (updatedUrls.length === 0) {
+      if (!hasAnexo3) {
         updatePayload.status = 'SEPARADO PARA ENTREGAR';
         updatePayload.delivery_status = '🟠';
       }

@@ -235,8 +235,10 @@ const DriverPanel = ({ user }) => {
       
       const updatedUrls = (surgeryToUpdate.comanda_urls || []).filter(item => item !== fullString);
       
+      const hasAnexo3 = updatedUrls.some(item => item.includes('?anexo=3') || item.startsWith('[ANEXO_3]|||'));
+      
       let updatePayload = { comanda_urls: updatedUrls };
-      if (updatedUrls.length === 0) {
+      if (!hasAnexo3) {
         updatePayload.status = 'SEPARADO PARA ENTREGAR';
         updatePayload.delivery_status = '🟠';
       }
