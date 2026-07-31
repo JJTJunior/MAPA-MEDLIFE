@@ -666,7 +666,7 @@ const DriverPanel = ({ user }) => {
           }}>
             <button 
               onClick={() => setSelectedImage(null)}
-              style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+              style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 99999 }}
             >
               <X size={32} />
             </button>
