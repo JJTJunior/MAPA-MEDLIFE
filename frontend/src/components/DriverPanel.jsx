@@ -66,6 +66,8 @@ const DriverPanel = ({ user }) => {
   const parsePrintUrl = (item) => {
     if (!item) return { url: '', name: '' };
     let cleanItem = item;
+    
+    // Support old formats if any
     if (cleanItem.startsWith('[ANEXO_3]|||')) {
       cleanItem = cleanItem.replace('[ANEXO_3]|||', '');
       if (!cleanItem.includes('?anexo=3')) {
@@ -74,6 +76,7 @@ const DriverPanel = ({ user }) => {
         cleanItem = parts.join('|||');
       }
     }
+    
     if (cleanItem.includes('|||')) {
       const [url, ...nameParts] = cleanItem.split('|||');
       return { url, name: nameParts.join('|||') };
@@ -189,15 +192,15 @@ const DriverPanel = ({ user }) => {
         .from('attachments')
         .getPublicUrl(fileName);
 
-      const valueToStore = `[ANEXO_3]|||${publicUrl}|||${fileNameInput.trim()}`;
+      const valueToStore = `${publicUrl}?anexo=3|||${fileNameInput.trim()}`;
       
       const surgeryToUpdate = surgeries.find(s => s.id === selectedSurgeryId);
-      const existingUrls = surgeryToUpdate?.print_url || [];
+      const existingUrls = surgeryToUpdate?.comanda_urls || [];
       const updatedUrls = [...existingUrls, valueToStore];
 
       const { error: updateError } = await supabase.from('surgeries')
         .update({ 
-          print_url: updatedUrls,
+          comanda_urls: updatedUrls,
           status: 'Material entregue'
         })
         .eq('id', selectedSurgeryId);
@@ -207,7 +210,7 @@ const DriverPanel = ({ user }) => {
       // Update local state
       setSurgeries(prev => prev.map(s => {
         if (s.id === selectedSurgeryId) {
-          return { ...s, print_url: updatedUrls, status: 'Material entregue' };
+          return { ...s, comanda_urls: updatedUrls, status: 'Material entregue' };
         }
         return s;
       }));
@@ -229,15 +232,15 @@ const DriverPanel = ({ user }) => {
       const surgeryToUpdate = surgeries.find(s => s.id === surgeryId);
       if (!surgeryToUpdate) return;
       
-      const updatedUrls = (surgeryToUpdate.print_url || []).filter(item => item !== fullString);
+      const updatedUrls = (surgeryToUpdate.comanda_urls || []).filter(item => item !== fullString);
       
       const { error } = await supabase.from('surgeries')
-        .update({ print_url: updatedUrls })
+        .update({ comanda_urls: updatedUrls })
         .eq('id', surgeryId);
         
       if (error) throw error;
       
-      setSurgeries(prev => prev.map(s => s.id === surgeryId ? { ...s, print_url: updatedUrls } : s));
+      setSurgeries(prev => prev.map(s => s.id === surgeryId ? { ...s, comanda_urls: updatedUrls } : s));
       setSelectedImage(null);
     } catch (err) {
       console.error('Erro ao excluir anexo:', err);
@@ -426,7 +429,9 @@ const DriverPanel = ({ user }) => {
             }
 
             // Get anexo 3 items
-            const anexo3Items = (surgery.print_url || []).filter(item => item.startsWith('[ANEXO_3]|||'));
+            const anexo3Items = (surgery.comanda_urls || []).filter(item => {
+              return item.includes('?anexo=3') || item.startsWith('[ANEXO_3]|||');
+            });
 
             return (
               <div key={surgery.id} style={{ 
