@@ -1983,15 +1983,13 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
 
               <button
                 onClick={async () => {
-                  if (navigator.share && navigator.canShare && navigator.canShare({ files: shareModalData.files })) {
+                  if (navigator.share) {
                     try {
-                      // Copia o texto para a área de transferência para colar no WhatsApp depois do compartilhamento nativo.
                       try { await navigator.clipboard.writeText(shareModalData.text); } catch(err) { console.error(err); }
                       
                       await navigator.share({
                         files: shareModalData.files,
                         title: `Mapa - ${shareModalData.patient}`
-                        // Retirado o 'text' para que o Windows Native Share foque apenas nos anexos, sem truncar nem dar erro.
                       });
                       return;
                     } catch (e) {

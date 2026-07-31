@@ -2986,21 +2986,20 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 onClick={async () => {
                   const allFiles = shareModalData.files.map(f => new File([f], f.name, { type: f.type }));
                   
-                  if (navigator.share && navigator.canShare && navigator.canShare({ files: allFiles })) {
+                  if (navigator.share) {
                     try {
-                      // Copia o texto para a área de transferência para que o usuário possa colar no WhatsApp, 
-                      // pois o compartilhamento nativo do Windows com arquivos costuma ignorar textos longos.
                       try { await navigator.clipboard.writeText(shareModalData.text); } catch(err) { console.error(err); }
                       
                       await navigator.share({
                         files: allFiles,
                         title: `Cirurgia - ${shareModalData.patient}`
-                        // Não passamos o 'text' aqui para garantir que o Windows Share foque apenas nos anexos (como na imagem).
                       });
                       return; // Sucesso com a tela nativa!
                     } catch (e) {
                       console.error("Erro ao usar navigator.share:", e);
                       if (e.name === 'AbortError') return;
+                      // Se der outro erro (ex: arquivo não suportado), vamos alertar para debug
+                      // alert("O Windows Share recusou estes arquivos. Abrindo WhatsApp Web...");
                     }
                   }
                   
