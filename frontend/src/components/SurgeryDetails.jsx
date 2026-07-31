@@ -2351,7 +2351,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
             {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && (
               <>
                 <button
