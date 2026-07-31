@@ -61,7 +61,8 @@ const DriverPanel = ({ user }) => {
   const [customDate, setCustomDate] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // all, pending, delivered
   const [uploadingId, setUploadingId] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null); // { url, surgeryId, fullString }
+  const [selectedImage, setSelectedImage] = useState(null); // { surgeryId, items: [], currentIndex: number }
+  const [uploadOptionsModal, setUploadOptionsModal] = useState(null); // { surgeryId }
   
   const parsePrintUrl = (item) => {
     if (!item) return { url: '', name: '' };
@@ -85,7 +86,12 @@ const DriverPanel = ({ user }) => {
   };
   
   const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
   const [selectedSurgeryId, setSelectedSurgeryId] = useState(null);
+
+  const handleOpenImage = (surgeryId, items, currentIndex) => {
+    setSelectedImage({ surgeryId, items, currentIndex });
+  };
 
   useEffect(() => {
     fetchSurgeries();
@@ -255,7 +261,7 @@ const DriverPanel = ({ user }) => {
         }
         return s;
       }));
-      setSelectedImage(null);
+      setSelectedImage(null); // Close modal on delete
     } catch (err) {
       console.error('Erro ao excluir anexo:', err);
       alert('Erro ao excluir anexo: ' + err.message);
@@ -263,10 +269,7 @@ const DriverPanel = ({ user }) => {
   };
 
   const openFilePicker = (id) => {
-    setSelectedSurgeryId(id);
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
+    setUploadOptionsModal({ surgeryId: id });
   };
 
   const searchedSurgeries = surgeries.filter(s => {
@@ -512,7 +515,7 @@ const DriverPanel = ({ user }) => {
                     return (
                       <div 
                         key={idx} 
-                        onClick={() => setSelectedImage({ url: parsed.url, name: parsed.name, surgeryId: surgery.id, fullString: itemStr })}
+                        onClick={() => handleOpenImage(surgery.id, anexo3Items, idx)}
                         style={{ width: '50px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative' }}
                       >
                         <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -570,48 +573,158 @@ const DriverPanel = ({ user }) => {
 
       <input 
         type="file" 
+      <input 
+        type="file" 
         accept="image/*" 
-        capture="environment" // allows mobile to open camera directly
         ref={fileInputRef} 
         style={{ display: 'none' }} 
         onChange={handleFileUpload}
       />
+      <input 
+        type="file" 
+        accept="image/*" 
+        capture="environment"
+        ref={cameraInputRef} 
+        style={{ display: 'none' }} 
+        onChange={handleFileUpload}
+      />
 
-      {/* Image Modal */}
-      {selectedImage && (
+      {/* Upload Options Modal */}
+      {uploadOptionsModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
-          backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex',
-          flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+          backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 9999, display: 'flex',
+          alignItems: 'center', justifyContent: 'center'
         }}>
-          <button 
-            onClick={() => setSelectedImage(null)}
-            style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
-          >
-            <X size={32} />
-          </button>
-          
-          <img 
-            src={selectedImage.url} 
-            alt="Preview" 
-            style={{ maxWidth: '90%', maxHeight: '75vh', objectFit: 'contain', borderRadius: '8px' }} 
-          />
-          
-          <div style={{ color: '#fff', marginTop: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>
-            {selectedImage.name}
+          <div style={{
+            backgroundColor: '#fff', borderRadius: '16px', padding: '24px', width: '300px',
+            display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+          }}>
+            <h3 style={{ margin: '0 0 16px 0', textAlign: 'center', color: '#0f172a' }}>Adicionar Foto</h3>
+            
+            <button
+              onClick={() => {
+                setSelectedSurgeryId(uploadOptionsModal.surgeryId);
+                setUploadOptionsModal(null);
+                if (cameraInputRef.current) cameraInputRef.current.click();
+              }}
+              style={{
+                padding: '14px', backgroundColor: '#0f4c5c', color: 'white',
+                borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+              }}
+            >
+              <Camera size={18} /> Câmera
+            </button>
+            
+            <button
+              onClick={() => {
+                setSelectedSurgeryId(uploadOptionsModal.surgeryId);
+                setUploadOptionsModal(null);
+                if (fileInputRef.current) fileInputRef.current.click();
+              }}
+              style={{
+                padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+              }}
+            >
+              Galeria
+            </button>
+            
+            <button
+              onClick={() => setUploadOptionsModal(null)}
+              style={{
+                marginTop: '8px', padding: '10px', backgroundColor: 'transparent', color: '#64748b',
+                border: 'none', fontWeight: 'bold', cursor: 'pointer'
+              }}
+            >
+              Cancelar
+            </button>
           </div>
-          
-          <button
-            onClick={() => handleDeleteImage(selectedImage.surgeryId, selectedImage.fullString)}
-            style={{
-              marginTop: '24px', padding: '12px 24px', backgroundColor: '#ef4444', color: '#fff',
-              border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer'
-            }}
-          >
-            Excluir Anexo
-          </button>
         </div>
       )}
+
+      {/* Image Modal */}
+      {selectedImage && (() => {
+        const currentItemStr = selectedImage.items[selectedImage.currentIndex];
+        const parsed = parsePrintUrl(currentItemStr);
+        const hasMultiple = selectedImage.items.length > 1;
+
+        const handleNext = () => {
+          setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex + 1) % prev.items.length }));
+        };
+
+        const handlePrev = () => {
+          setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length }));
+        };
+
+        return (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 9999, display: 'flex',
+            flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <button 
+              onClick={() => setSelectedImage(null)}
+              style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+            >
+              <X size={32} />
+            </button>
+            
+            <img 
+              src={parsed.url} 
+              alt="Preview" 
+              style={{ maxWidth: '90%', maxHeight: '75vh', objectFit: 'contain', borderRadius: '8px' }} 
+            />
+            
+            <div style={{ color: '#fff', marginTop: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>
+              {parsed.name}
+            </div>
+            <div style={{ color: '#94a3b8', fontSize: '0.9rem', marginTop: '4px' }}>
+              Foto {selectedImage.currentIndex + 1} de {selectedImage.items.length}
+            </div>
+            
+            <div style={{ display: 'flex', gap: '16px', marginTop: '24px', alignItems: 'center' }}>
+              {hasMultiple && (
+                <button
+                  onClick={handlePrev}
+                  style={{
+                    padding: '12px', backgroundColor: '#334155', color: '#fff',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                >
+                  Anterior
+                </button>
+              )}
+              
+              <button
+                onClick={() => handleDeleteImage(selectedImage.surgeryId, currentItemStr)}
+                style={{
+                  padding: '12px 24px', backgroundColor: '#ef4444', color: '#fff',
+                  border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer'
+                }}
+              >
+                Excluir
+              </button>
+
+              {hasMultiple && (
+                <button
+                  onClick={handleNext}
+                  style={{
+                    padding: '12px', backgroundColor: '#334155', color: '#fff',
+                    border: 'none', borderRadius: '8px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                >
+                  Próxima
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
