@@ -183,6 +183,31 @@ export default function App() {
         setIsForcedPasswordChange(false);
       }
 
+      // Determine initial tab based on permissions
+      const isAdminOrManager = role === 'Admin' || role === 'Gerente' || role === 'Administrativo' || role === 'Diretoria' || role === 'TI';
+      const allowed = permissions?.allowed_edit_fields;
+      const hasDashboard = isAdminOrManager || !allowed || allowed.includes('view_dashboard');
+      const hasMap = isAdminOrManager || !allowed || allowed.includes('view_surgical_map');
+      const hasDriver = role === 'Motorista' || allowed?.includes('view_driver');
+      const hasNurse = role === 'Instrumentador' || allowed?.includes('view_scrub_nurse');
+
+      let initialTab = 'dashboard';
+      if (!hasDashboard) {
+        if (hasMap) initialTab = 'surgeries';
+        else if (hasDriver) initialTab = 'driver';
+        else if (hasNurse) initialTab = 'scrub_nurse';
+        else initialTab = 'settings';
+      }
+      
+      // Ajusta o activeTab atual caso o usuário não tenha permissão para vê-lo
+      setActiveTab(prev => {
+        if (prev === 'dashboard' && !hasDashboard) return initialTab;
+        if (prev === 'surgeries' && !hasMap) return initialTab;
+        if (prev === 'driver' && !hasDriver) return initialTab;
+        if (prev === 'scrub_nurse' && !hasNurse) return initialTab;
+        return prev;
+      });
+
       setUser({
         id: session.user.id,
         email: email,
