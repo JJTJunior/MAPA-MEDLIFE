@@ -372,6 +372,17 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         return q;
       };
 
+      const buildQueryDataMissingAnexo2 = () => {
+        let q = supabase.from('surgeries').select('comanda_urls');
+        if (user?.role === 'Instrumentador' || user?.role === 'Vendedor') {
+          q = q.or(`instrumentalist1.eq."${user.name}",instrumentalist2.eq."${user.name}",salesperson.eq."${user.name}"`);
+        }
+        if (startDate) q = q.gte('date', startDate);
+        if (endDate) q = q.lte('date', endDate);
+        q = q.in('status', ['Material entregue', 'MATERIAL ENTREGUE']);
+        return q;
+      };
+
       let qCharts = supabase.from('surgeries').select('*').order('date', { ascending: false }).limit(2000);
       if (startDate) qCharts = qCharts.gte('date', startDate);
       if (endDate) qCharts = qCharts.lte('date', endDate);
@@ -414,7 +425,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         buildQuery('Separado para entregar'),
         buildQuery('Finalizada'),
         buildQuery('Material retornado'),
-        buildQuery().eq('comanda_urls', '{}').not('status', 'ilike', 'SUSPENSA'),
+        buildQueryDataMissingAnexo2(),
         qCharts,
         supabase.from('on_call').select('*').order('start_date', { ascending: true }),
         supabase.from('funcionarios').select('*'),
@@ -545,6 +556,19 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           .slice(0, limit);
       };
 
+      // Processar missingAnexo2 (sincronizado com PENDENTES do Instrumentador)
+      let calculatedMissingAnexo2 = 0;
+      if (missingAnexo2Res && missingAnexo2Res.data) {
+        missingAnexo2Res.data.forEach(item => {
+          const anexo2Items = item.comanda_urls && Array.isArray(item.comanda_urls) 
+            ? item.comanda_urls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]')) 
+            : [];
+          if (anexo2Items.length === 0) {
+            calculatedMissingAnexo2++;
+          }
+        });
+      }
+
       setStats({
         total: totalRes.count || 0,
         delivered: deliveredRes.count || 0,
@@ -555,7 +579,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         sepDelivery: sepEntregaRes.count || 0,
         finalizada: finalizadaRes.count || 0,
         materialRetornado: materialRetornadoRes.count || 0,
-        missingAnexo2: missingAnexo2Res.count || 0,
+        missingAnexo2: calculatedMissingAnexo2,
         topHospitals: sortAndSlice(hospitalCounts),
         topDoctorsOrtopedia: sortAndSlice(doctorOrtopediaCounts),
         topDoctorsBuco: sortAndSlice(doctorBucoCounts),

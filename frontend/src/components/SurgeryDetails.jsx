@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 const parsePrintUrl = (item) => {
-  if (!item) return { url: '', name: '' };
+  if (!item) return { url: '', name: '', userName: null };
   let cleanItem = item;
   if (cleanItem.startsWith('[ANEXO_3]|||')) {
     cleanItem = cleanItem.replace('[ANEXO_3]|||', '');
@@ -14,11 +14,24 @@ const parsePrintUrl = (item) => {
       cleanItem = parts.join('|||');
     }
   }
+  
   if (cleanItem.includes('|||')) {
-    const [url, ...nameParts] = cleanItem.split('|||');
-    return { url, name: nameParts.join('|||') };
+    const parts = cleanItem.split('|||');
+    const url = parts[0];
+    let name = parts[1] || '';
+    let userName = null;
+    
+    // Check if the third part is UPLOADED_BY
+    if (parts.length > 2 && parts[2].startsWith('UPLOADED_BY:')) {
+      userName = parts[2].replace('UPLOADED_BY:', '');
+    } else if (parts.length > 2) {
+      // If there are more parts but not UPLOADED_BY, join them for safety
+      name = parts.slice(1).filter(p => !p.startsWith('UPLOADED_BY:')).join('|||');
+    }
+    
+    return { url, name, userName };
   }
-  return { url: cleanItem, name: '' };
+  return { url: cleanItem, name: '', userName: null };
 };
 
 const isDocumentFile = (url) => {

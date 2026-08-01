@@ -344,7 +344,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
         query = query.ilike('carater', caraterFilter.trim());
       }
       if (missingAnexo2Filter) {
-        query = query.eq('comanda_urls', '{}').not('status', 'ilike', 'SUSPENSA');
+        query = query.in('status', ['Material entregue', 'MATERIAL ENTREGUE']);
       }
 
       // 5. Filtro de Data Inicial e Final
@@ -369,16 +369,39 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
         .order('time', { ascending: true });
 
       // Paginação
-      const from = (currentPage - 1) * pageSize;
-      const to = from + pageSize - 1;
-      query = query.range(from, to);
+      let dataResult = [];
+      let totalResult = 0;
+      
+      if (missingAnexo2Filter) {
+        // Busca todos e filtra localmente para anexo 2 faltante
+        const { data: allData, error: allErr } = await query;
+        if (allErr) throw allErr;
+        
+        const filteredByAnexo2 = (allData || []).filter(item => {
+          const anexo2Items = item.comanda_urls && Array.isArray(item.comanda_urls) 
+            ? item.comanda_urls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]')) 
+            : [];
+          return anexo2Items.length === 0;
+        });
+        
+        totalResult = filteredByAnexo2.length;
+        const from = (currentPage - 1) * pageSize;
+        const to = from + pageSize;
+        dataResult = filteredByAnexo2.slice(from, to);
+      } else {
+        const from = (currentPage - 1) * pageSize;
+        const to = from + pageSize - 1;
+        query = query.range(from, to);
+        
+        const { data, count, error } = await query;
+        if (error) throw error;
+        
+        dataResult = data || [];
+        totalResult = count || 0;
+      }
 
-      const { data, count, error } = await query;
-
-      if (error) throw error;
-
-      setSurgeries(data || []);
-      setTotalCount(count || 0);
+      setSurgeries(dataResult);
+      setTotalCount(totalResult);
     } catch (err) {
       console.error('Erro ao carregar cirurgias:', err);
     } finally {

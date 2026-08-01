@@ -68,6 +68,7 @@ const DriverPanel = ({ user }) => {
   const [customDate, setCustomDate] = useState('');
   const [statusFilter, setStatusFilter] = useState('all'); // all, pending, delivered
   const [uploadingId, setUploadingId] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null); // { surgeryId, items: [], currentIndex: number }
   const [uploadOptionsModal, setUploadOptionsModal] = useState(null); // { surgeryId }
   
@@ -183,43 +184,79 @@ const DriverPanel = ({ user }) => {
   };
 
   const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file || !selectedSurgeryId) return;
+    const files = e.target.files;
+    if (!files || files.length === 0 || !selectedSurgeryId) return;
 
     const fileNameInput = prompt("Digite um nome para este arquivo (Obrigatório):");
     if (!fileNameInput || fileNameInput.trim() === '') {
        alert("Nome do arquivo é obrigatório. Envio cancelado.");
        if (fileInputRef.current) fileInputRef.current.value = '';
+       if (cameraInputRef.current) cameraInputRef.current.value = '';
        return;
     }
 
     try {
       setUploadingId(selectedSurgeryId);
-
-      let fileToUpload = file;
-      if (file.type.startsWith('image/')) {
-        fileToUpload = await compressImage(file, 1200, 1200, 0.7);
-      }
-
-      const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
-      const fileName = `anexo3_${Date.now()}_${Math.floor(Math.random() * 10000)}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('attachments')
-        .upload(fileName, fileToUpload);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('attachments')
-        .getPublicUrl(fileName);
+      setUploadProgress({
+        current: 0,
+        total: files.length,
+        fileName: fileNameInput.trim(),
+        percent: 5,
+        status: `Preparando ${files.length} arquivo(s)...`,
+        isDone: false
+      });
 
       const uploaderName = user?.name || user?.email || 'Desconhecido';
-      const valueToStore = `${publicUrl}?anexo=3|||${fileNameInput.trim()}|||UPLOADED_BY:${uploaderName}`;
-      
       const surgeryToUpdate = surgeries.find(s => s.id === selectedSurgeryId);
       const existingUrls = surgeryToUpdate?.comanda_urls || [];
-      const updatedUrls = [...existingUrls, valueToStore];
+      const newValuesToStore = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const displayName = files.length > 1 ? `${fileNameInput.trim()} (${i + 1})` : fileNameInput.trim();
+        const currentPercent = Math.round((i / files.length) * 85) + 5;
+
+        setUploadProgress({
+          current: i + 1,
+          total: files.length,
+          fileName: displayName,
+          percent: currentPercent,
+          status: `Enviando arquivo ${i + 1} de ${files.length}...`,
+          isDone: false
+        });
+
+        let fileToUpload = file;
+        if (file.type.startsWith('image/')) {
+          fileToUpload = await compressImage(file, 1200, 1200, 0.7);
+        }
+
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileName = `anexo3_${Date.now()}_${Math.floor(Math.random() * 10000)}_${i}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('attachments')
+          .upload(fileName, fileToUpload);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('attachments')
+          .getPublicUrl(fileName);
+
+        const valueToStore = `${publicUrl}?anexo=3|||${displayName}|||UPLOADED_BY:${uploaderName}`;
+        newValuesToStore.push(valueToStore);
+      }
+
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Atualizando registro...',
+        percent: 95,
+        status: 'Salvando alterações no banco de dados...',
+        isDone: false
+      });
+
+      const updatedUrls = [...existingUrls, ...newValuesToStore];
 
       const { error: updateError } = await supabase.from('surgeries')
         .update({ 
@@ -239,13 +276,28 @@ const DriverPanel = ({ user }) => {
         return s;
       }));
 
+      setUploadProgress({
+        current: files.length,
+        total: files.length,
+        fileName: 'Concluído!',
+        percent: 100,
+        status: 'Todos os anexos foram enviados com sucesso!',
+        isDone: true
+      });
+
+      setTimeout(() => {
+        setUploadProgress(null);
+      }, 1200);
+
     } catch (err) {
       console.error('Erro no upload:', err);
       alert('Erro ao enviar comprovante: ' + err.message);
+      setUploadProgress(null);
     } finally {
       setUploadingId(null);
       setSelectedSurgeryId(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
+      if (cameraInputRef.current) cameraInputRef.current.value = '';
     }
   };
 
@@ -341,7 +393,6 @@ const DriverPanel = ({ user }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ef4444' }}></div>
               <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>Entregas de Materiais</h1>
             </div>
             <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.8, marginTop: '4px' }}>{getDayName()}</p>
@@ -602,10 +653,11 @@ const DriverPanel = ({ user }) => {
 
       <input 
         type="file" 
-        accept="image/*" 
         ref={fileInputRef} 
         style={{ display: 'none' }} 
         onChange={handleFileUpload}
+        accept="image/*,.pdf,.doc,.docx"
+        multiple
       />
       <input 
         type="file" 
@@ -799,6 +851,58 @@ const DriverPanel = ({ user }) => {
           </div>
         );
       })()}
+
+      {/* Modal Customizado de Progresso de Upload */}
+      {uploadProgress && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(15, 23, 42, 0.75)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999999
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff', borderRadius: '20px', padding: '32px 28px',
+            maxWidth: '420px', width: '90%', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px'
+          }}>
+            <div style={{
+              width: '64px', height: '64px', borderRadius: '50%',
+              backgroundColor: uploadProgress.isDone ? 'rgba(16, 185, 129, 0.12)' : 'rgba(37, 99, 235, 0.12)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: uploadProgress.isDone ? '#10b981' : '#2563eb', transition: 'all 0.3s'
+            }}>
+              {uploadProgress.isDone ? <Check size={36} /> : <FileText size={32} />}
+            </div>
+
+            <div>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: '#0f172a' }}>
+                {uploadProgress.isDone ? 'Anexos Enviados!' : 'Enviando Anexos'}
+              </h3>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
+                {uploadProgress.status}
+              </p>
+            </div>
+
+            <div style={{ width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>
+                <span>{uploadProgress.fileName}</span>
+                <span>{uploadProgress.percent}%</span>
+              </div>
+              <div style={{ width: '100%', height: '10px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+                <div style={{
+                  width: `${uploadProgress.percent}%`, height: '100%',
+                  background: uploadProgress.isDone ? '#10b981' : 'linear-gradient(90deg, #2563eb, #3b82f6)',
+                  borderRadius: '999px', transition: 'width 0.3s ease-in-out'
+                }} />
+              </div>
+            </div>
+
+            <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
+              Por favor, aguarde a conclusão do carregamento...
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

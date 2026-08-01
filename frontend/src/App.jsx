@@ -10,6 +10,7 @@ import SettingsPage from './components/SettingsPage';
 import TVPanel from './components/TVPanel';
 import DriverPanel from './components/DriverPanel';
 import OnlineUsersModal from './components/OnlineUsersModal';
+import InstrumentalistScreen from './components/InstrumentalistScreen';
 import { Clock, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function App() {
@@ -550,10 +551,7 @@ export default function App() {
       )}
 
       {activeTab === 'scrub_nurse' && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '16px' }}>Área do Instrumentador</h2>
-          <p>Esta tela está em desenvolvimento. Em breve você poderá gerenciar as informações de instrumentação por aqui.</p>
-        </div>
+        <InstrumentalistScreen user={user} />
       )}
 
       {/* Modal único de Criar/Editar */}
