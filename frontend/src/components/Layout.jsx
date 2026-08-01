@@ -5,6 +5,8 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isAdminOrManager = user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'Administrativo' || user?.role === 'Diretoria' || user?.role === 'TI';
   const hasSettingsPermission = user?.permissions?.allowed_edit_fields?.includes('view_settings') || isAdminOrManager;
+  const hasDriverPermission = user?.role === 'Motorista' || user?.permissions?.allowed_edit_fields?.includes('view_driver') || isAdminOrManager;
+  const hasScrubNursePermission = user?.role === 'Instrumentador' || user?.permissions?.allowed_edit_fields?.includes('view_scrub_nurse') || isAdminOrManager;
   
   const handleNavClick = (tab) => {
     setActiveTab(tab);
@@ -81,21 +83,25 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
             Mapa Cirúrgico
           </button>
           
-          <button 
-            className={`nav-item ${activeTab === 'driver' ? 'active' : ''}`}
-            onClick={() => handleNavClick('driver')}
-          >
-            <Truck size={20} />
-            Motorista
-          </button>
+          {hasDriverPermission && (
+            <button 
+              className={`nav-item ${activeTab === 'driver' ? 'active' : ''}`}
+              onClick={() => handleNavClick('driver')}
+            >
+              <Truck size={20} />
+              Motorista
+            </button>
+          )}
           
-          <button 
-            className={`nav-item ${activeTab === 'scrub_nurse' ? 'active' : ''}`}
-            onClick={() => handleNavClick('scrub_nurse')}
-          >
-            <Stethoscope size={20} />
-            Instrumentador
-          </button>
+          {hasScrubNursePermission && (
+            <button 
+              className={`nav-item ${activeTab === 'scrub_nurse' ? 'active' : ''}`}
+              onClick={() => handleNavClick('scrub_nurse')}
+            >
+              <Stethoscope size={20} />
+              Instrumentador
+            </button>
+          )}
           
           {hasSettingsPermission && (
             <button 

@@ -45,6 +45,8 @@ export default function UserManagement({ currentUser }) {
     { id: 'edit_attachments_2_button', label: 'Botão Editar Anexos 2' },
     { id: 'edit_attachments_3_button', label: 'Botão Editar Anexos 3' },
     { id: 'view_settings', label: 'Botão Configurações' },
+    { id: 'view_driver', label: 'Botão Motorista (Sidebar)' },
+    { id: 'view_scrub_nurse', label: 'Botão Instrumentador (Sidebar)' },
     { id: 'cad_vendedores', label: 'Cadastro: Vendedores' },
     { id: 'cad_medicos', label: 'Cadastro: Médicos' },
     { id: 'cad_instrumentadores', label: 'Cadastro: Instrumentadores' },
