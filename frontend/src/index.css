@@ -1112,7 +1112,26 @@ h1, h2, h3, h4, h5, h6 {
   .form-input {
     font-size: 16px !important;
   }
-  
+}
+
+.email-suffix {
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid var(--border-glass, rgba(255,255,255,0.1));
+  background: rgba(0, 0, 0, 0.03);
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .email-suffix {
+    padding: 0 8px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
   .checklist-grid {
     grid-template-columns: 1fr 1fr !important;
   }

@@ -154,15 +154,7 @@ export default function Login({ onLoginSuccess }) {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
-                  <div style={{ 
-                    padding: '0 16px', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    borderLeft: '1px solid var(--border-glass, rgba(255,255,255,0.1))',
-                    background: 'rgba(0, 0, 0, 0.03)',
-                    color: '#6b7280',
-                    whiteSpace: 'nowrap'
-                  }}>
+                  <div className="email-suffix">
                     @medlifebrasil.com
                   </div>
                 </div>
@@ -228,15 +220,7 @@ export default function Login({ onLoginSuccess }) {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
-              <div style={{ 
-                padding: '0 16px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                borderLeft: '1px solid var(--border-glass, rgba(255,255,255,0.1))',
-                background: 'rgba(0, 0, 0, 0.03)',
-                color: '#6b7280',
-                whiteSpace: 'nowrap'
-              }}>
+              <div className="email-suffix">
                 @medlifebrasil.com
               </div>
             </div>
