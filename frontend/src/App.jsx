@@ -132,7 +132,7 @@ export default function App() {
   const resolveUser = async (session) => {
     if (session?.user) {
       const email = session.user.email || '';
-      let role = 'Vendedor';
+      let role = 'Sem Grupo';
       let name = email.split('@')[0].toUpperCase();
       let permissions = { can_edit: true, can_view_only: false };
 

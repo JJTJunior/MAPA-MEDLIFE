@@ -102,7 +102,7 @@ export default function OnlineUsersModal({ isOpen, onClose, onlineUsers, current
               <tr style={{ borderBottom: '2px solid var(--border-color, #e2e8f0)', color: 'var(--text-secondary, #64748b)', textAlign: 'left' }}>
                 <th style={{ padding: '12px 8px', width: '45px', textAlign: 'center' }}>-</th>
                 <th style={{ padding: '12px 8px' }}>Usuário</th>
-                <th style={{ padding: '12px 8px' }}>Tipo</th>
+                <th style={{ padding: '12px 8px' }}>Grupo</th>
                 <th style={{ padding: '12px 8px' }}>Página</th>
                 <th style={{ padding: '12px 8px' }}>Última Ação</th>
                 <th style={{ padding: '12px 8px', textAlign: 'center' }}>Status</th>
