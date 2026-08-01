@@ -547,17 +547,17 @@ function FieldPermissionsModal({ user, onClose, onSave, mapFields }) {
   };
 
   const groups = {
-    "Informações Básicas": ['patient', 'doctor', 'hospital', 'health_insurance', 'date', 'time'],
-    "Cirurgia": ['surgery_type', 'carater', 'material', 'surgery_code'],
-    "Equipe": ['salesperson', 'instrumentalist1', 'instrumentalist2'],
+    "Adicionais (Mapa)": ['observation', 'attachment_url', 'comanda_urls', 'equipment_urls', 'delete', 'manage_on_call', 'create_surgery', 'import_surgery', 'edit_surgery_button', 'edit_attachments_1_button', 'edit_attachments_2_button', 'edit_attachments_3_button'],
     "Checklist e Status": ['status', 'opme', 'cme', 'bloco', 'pos'],
-    "Adicionais (Mapa)": ['observation', 'attachment_url', 'comanda_urls', 'delete', 'manage_on_call', 'create_surgery', 'import_surgery', 'edit_surgery_button', 'edit_attachments_1_button', 'edit_attachments_2_button'],
+    "Cirurgia": ['surgery_type', 'carater', 'material', 'surgery_code'],
     "Configurações (Cadastros Básicos)": [
       'view_settings',
       'cad_vendedores', 'cad_medicos', 'cad_instrumentadores', 'cad_hospitais', 'cad_convenios', 
       'cad_surgery_types', 'cad_carater', 'cad_status', 'cad_funcionarios', 
       'cad_user_groups', 'cad_usuarios', 'cad_logs'
     ],
+    "Equipe": ['salesperson', 'instrumentalist1', 'instrumentalist2'],
+    "Informações Básicas": ['patient', 'doctor', 'hospital', 'health_insurance', 'date', 'time'],
     "Telas Extras": ['view_dashboard', 'view_surgical_map', 'view_driver', 'view_scrub_nurse']
   };
 
