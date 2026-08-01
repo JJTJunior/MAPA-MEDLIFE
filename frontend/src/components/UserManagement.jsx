@@ -83,7 +83,8 @@ export default function UserManagement({ currentUser }) {
       // 1. Fetch groups
       const { data: groupsData, error: gError } = await supabase
         .from('user_groups')
-        .select('*');
+        .select('*')
+        .order('name');
       if (!gError && groupsData) setGroups(groupsData);
 
       // 2. Fetch users (profiles)
@@ -331,8 +332,8 @@ export default function UserManagement({ currentUser }) {
               ) : (
                 <>
                   <option value="Administrativo">Administrativo</option>
-                  <option value="Estoque">Estoque</option>
                   <option value="Diretoria">Diretoria</option>
+                  <option value="Estoque">Estoque</option>
                   <option value="Instrumentador">Instrumentador</option>
                   <option value="Vendedor">Vendedor</option>
                 </>
