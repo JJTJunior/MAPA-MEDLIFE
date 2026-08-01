@@ -8,6 +8,10 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
   const hasDriverPermission = user?.role === 'Motorista' || user?.permissions?.allowed_edit_fields?.includes('view_driver');
   const hasScrubNursePermission = user?.role === 'Instrumentador' || user?.permissions?.allowed_edit_fields?.includes('view_scrub_nurse');
   
+  // Existing users without allowed_edit_fields can see it. If allowed_edit_fields exists, it must explicitly include them.
+  const hasDashboardPermission = isAdminOrManager || !user?.permissions?.allowed_edit_fields || user.permissions.allowed_edit_fields.includes('view_dashboard');
+  const hasSurgicalMapPermission = isAdminOrManager || !user?.permissions?.allowed_edit_fields || user.permissions.allowed_edit_fields.includes('view_surgical_map');
+  
   const handleNavClick = (tab) => {
     setActiveTab(tab);
     setIsMobileMenuOpen(false);
@@ -67,21 +71,25 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
         </div>
         
         <nav className="nav-links">
-          <button 
-            className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
-            onClick={() => handleNavClick('dashboard')}
-          >
-            <LayoutDashboard size={20} />
-            Dashboard
-          </button>
+          {hasDashboardPermission && (
+            <button 
+              className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
+              onClick={() => handleNavClick('dashboard')}
+            >
+              <LayoutDashboard size={20} />
+              Dashboard
+            </button>
+          )}
           
-          <button 
-            className={`nav-item ${activeTab === 'surgeries' ? 'active' : ''}`}
-            onClick={() => handleNavClick('surgeries')}
-          >
-            <Calendar size={20} />
-            Mapa Cirúrgico
-          </button>
+          {hasSurgicalMapPermission && (
+            <button 
+              className={`nav-item ${activeTab === 'surgeries' ? 'active' : ''}`}
+              onClick={() => handleNavClick('surgeries')}
+            >
+              <Calendar size={20} />
+              Mapa Cirúrgico
+            </button>
+          )}
           
           {hasDriverPermission && (
             <button 
