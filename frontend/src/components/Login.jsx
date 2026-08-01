@@ -133,16 +133,39 @@ export default function Login({ onLoginSuccess }) {
           {!resetSuccess ? (
             <form onSubmit={handleResetPassword}>
               <div className="form-group">
-                <label className="form-label" htmlFor="reset-email">E-mail Cadastrado</label>
-                <input
-                  id="reset-email"
-                  type="text"
-                  className="form-input"
-                  placeholder="seu.email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+                <label className="form-label" htmlFor="reset-email">Usuário Cadastrado</label>
+                <div 
+                  className="form-input" 
+                  style={{ display: 'flex', padding: 0, overflow: 'hidden', alignItems: 'stretch' }}
+                >
+                  <input
+                    id="reset-email"
+                    type="text"
+                    style={{ 
+                      flex: 1, 
+                      border: 'none', 
+                      background: 'transparent', 
+                      padding: '12px 16px',
+                      outline: 'none',
+                      color: 'inherit',
+                      width: '100%'
+                    }}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                  <div style={{ 
+                    padding: '0 16px', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    borderLeft: '1px solid var(--border-glass, rgba(255,255,255,0.1))',
+                    background: 'rgba(0, 0, 0, 0.03)',
+                    color: '#6b7280',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    @medlifebrasil.com
+                  </div>
+                </div>
               </div>
 
               <button type="submit" className="btn-primary" disabled={loading} style={{ marginBottom: '15px' }}>
@@ -184,16 +207,39 @@ export default function Login({ onLoginSuccess }) {
 
         <form onSubmit={handleLogin}>
           <div className="form-group">
-            <label className="form-label" htmlFor="email">E-mail</label>
-            <input
-              id="email"
-              type="text"
-              className="form-input"
-              placeholder="seu.email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+            <label className="form-label" htmlFor="email">Usuário</label>
+            <div 
+              className="form-input" 
+              style={{ display: 'flex', padding: 0, overflow: 'hidden', alignItems: 'stretch' }}
+            >
+              <input
+                id="email"
+                type="text"
+                style={{ 
+                  flex: 1, 
+                  border: 'none', 
+                  background: 'transparent', 
+                  padding: '12px 16px',
+                  outline: 'none',
+                  color: 'inherit',
+                  width: '100%'
+                }}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              <div style={{ 
+                padding: '0 16px', 
+                display: 'flex', 
+                alignItems: 'center', 
+                borderLeft: '1px solid var(--border-glass, rgba(255,255,255,0.1))',
+                background: 'rgba(0, 0, 0, 0.03)',
+                color: '#6b7280',
+                whiteSpace: 'nowrap'
+              }}>
+                @medlifebrasil.com
+              </div>
+            </div>
           </div>
 
           <div className="form-group">
