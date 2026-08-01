@@ -134,29 +134,17 @@ export default function Login({ onLoginSuccess }) {
             <form onSubmit={handleResetPassword}>
               <div className="form-group">
                 <label className="form-label" htmlFor="reset-email">Usuário Cadastrado</label>
-                <div 
-                  className="form-input" 
-                  style={{ display: 'flex', padding: 0, overflow: 'hidden', alignItems: 'stretch' }}
-                >
-                  <input
-                    id="reset-email"
-                    type="text"
-                    style={{ 
-                      flex: 1, 
-                      border: 'none', 
-                      background: 'transparent', 
-                      padding: '12px 16px',
-                      outline: 'none',
-                      color: 'inherit',
-                      width: '100%'
-                    }}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                  <div className="email-suffix">
-                    @medlifebrasil.com
-                  </div>
+                <input
+                  id="reset-email"
+                  type="text"
+                  className="form-input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Seu usuário (ex: joao.silva)"
+                  required
+                />
+                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '6px', marginLeft: '4px' }}>
+                  @medlifebrasil.com
                 </div>
               </div>
 
@@ -200,29 +188,17 @@ export default function Login({ onLoginSuccess }) {
         <form onSubmit={handleLogin}>
           <div className="form-group">
             <label className="form-label" htmlFor="email">Usuário</label>
-            <div 
-              className="form-input" 
-              style={{ display: 'flex', padding: 0, overflow: 'hidden', alignItems: 'stretch' }}
-            >
-              <input
-                id="email"
-                type="text"
-                style={{ 
-                  flex: 1, 
-                  border: 'none', 
-                  background: 'transparent', 
-                  padding: '12px 16px',
-                  outline: 'none',
-                  color: 'inherit',
-                  width: '100%'
-                }}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <div className="email-suffix">
-                @medlifebrasil.com
-              </div>
+            <input
+              id="email"
+              type="text"
+              className="form-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Seu usuário (ex: joao.silva)"
+              required
+            />
+            <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '6px', marginLeft: '4px' }}>
+              @medlifebrasil.com
             </div>
           </div>
 
