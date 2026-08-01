@@ -5,8 +5,8 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isAdminOrManager = user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'Administrativo' || user?.role === 'Diretoria' || user?.role === 'TI';
   const hasSettingsPermission = user?.permissions?.allowed_edit_fields?.includes('view_settings') || isAdminOrManager;
-  const hasDriverPermission = user?.role === 'Motorista' || user?.permissions?.allowed_edit_fields?.includes('view_driver') || isAdminOrManager;
-  const hasScrubNursePermission = user?.role === 'Instrumentador' || user?.permissions?.allowed_edit_fields?.includes('view_scrub_nurse') || isAdminOrManager;
+  const hasDriverPermission = user?.role === 'Motorista' || user?.permissions?.allowed_edit_fields?.includes('view_driver');
+  const hasScrubNursePermission = user?.role === 'Instrumentador' || user?.permissions?.allowed_edit_fields?.includes('view_scrub_nurse');
   
   const handleNavClick = (tab) => {
     setActiveTab(tab);
