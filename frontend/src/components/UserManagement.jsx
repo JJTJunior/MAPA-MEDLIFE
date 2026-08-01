@@ -554,7 +554,8 @@ function FieldPermissionsModal({ user, onClose, onSave, mapFields }) {
       'cad_vendedores', 'cad_medicos', 'cad_instrumentadores', 'cad_hospitais', 'cad_convenios', 
       'cad_surgery_types', 'cad_carater', 'cad_status', 'cad_funcionarios', 
       'cad_user_groups', 'cad_usuarios', 'cad_logs'
-    ]
+    ],
+    "Telas Extras": ['view_driver', 'view_scrub_nurse']
   };
 
 
