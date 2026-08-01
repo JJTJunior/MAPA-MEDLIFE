@@ -87,6 +87,42 @@ export default function AuditLogs() {
     }
   };
 
+  const getUpdateDiff = (oldData, newData) => {
+    if (!oldData || !newData) return null;
+    
+    const diffs = [];
+    const ignoreKeys = ['updated_at', 'id', 'created_at', 'password_hash']; // Ignore internal fields
+    
+    Object.keys(newData).forEach(key => {
+      if (ignoreKeys.includes(key)) return;
+      
+      const oldVal = oldData[key];
+      const newVal = newData[key];
+      
+      // Simple stringify comparison to catch differences
+      if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
+        let oldStr = oldVal === null || oldVal === undefined || oldVal === '' ? 'vazio' : String(oldVal);
+        let newStr = newVal === null || newVal === undefined || newVal === '' ? 'vazio' : String(newVal);
+        
+        if (typeof oldVal === 'object' && oldVal !== null) oldStr = JSON.stringify(oldVal).substring(0, 40) + '...';
+        if (typeof newVal === 'object' && newVal !== null) newStr = JSON.stringify(newVal).substring(0, 40) + '...';
+        
+        diffs.push(
+          <div key={key} style={{ fontSize: '0.8rem', marginTop: '4px', display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+            <span style={{ color: 'var(--text-secondary)', minWidth: '100px', fontWeight: '500' }}>{key}: </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              <span style={{ textDecoration: 'line-through', color: '#ef4444', opacity: 0.8 }}>{oldStr}</span>
+              <span style={{ color: 'var(--text-muted)' }}>➔</span>
+              <span style={{ color: '#10b981', fontWeight: '500' }}>{newStr}</span>
+            </div>
+          </div>
+        );
+      }
+    });
+    
+    return diffs.length > 0 ? diffs : <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Nenhuma alteração de valor detectada</div>;
+  };
+
   const getTableName = (table) => {
     const names = {
       'surgeries': 'Cirurgias',
@@ -181,7 +217,12 @@ export default function AuditLogs() {
                         )}
                         {log.action === 'UPDATE' && (
                           <div>
-                            <span style={{ color: '#f59e0b' }}>Atualizado:</span> {formatData(log.new_data, log.target_table)}
+                            <div style={{ marginBottom: '6px' }}>
+                              <span style={{ color: '#f59e0b', fontWeight: 'bold' }}>Registro Alvo:</span> {formatData(log.new_data || log.old_data, log.target_table)}
+                            </div>
+                            <div style={{ padding: '6px 10px', background: 'rgba(255,255,255,0.03)', borderRadius: '6px', borderLeft: '3px solid #f59e0b' }}>
+                               {getUpdateDiff(log.old_data, log.new_data)}
+                            </div>
                           </div>
                         )}
                       </td>
