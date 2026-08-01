@@ -138,8 +138,31 @@ export default function AuditLogs() {
 
         // Special override for known complex fields to avoid scary json
         if (key === 'permissions') {
-          oldStr = '[ Permissões Antigas ]';
-          newStr = '[ Novas Permissões ]';
+          try {
+            const oldPerms = oldVal?.allowed_edit_fields || [];
+            const newPerms = newVal?.allowed_edit_fields || [];
+            const added = newPerms.filter(p => !oldPerms.includes(p));
+            const removed = oldPerms.filter(p => !newPerms.includes(p));
+            
+            let changes = [];
+            if (added.length > 0) changes.push(`+ Acesso liberado (${added.length} item)`);
+            if (removed.length > 0) changes.push(`- Acesso bloqueado (${removed.length} item)`);
+            if (oldVal?.can_edit !== newVal?.can_edit) changes.push(`Edição: ${newVal?.can_edit ? 'Sim' : 'Não'}`);
+            if (oldVal?.can_view_only !== newVal?.can_view_only) changes.push(`Somente Leitura: ${newVal?.can_view_only ? 'Sim' : 'Não'}`);
+            
+            if (changes.length > 0) {
+              diffs.push(
+                <div key={key} style={{ fontSize: '0.8rem', marginTop: '4px', display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                  <span style={{ color: 'var(--text-secondary)', minWidth: '130px', fontWeight: '500' }}>Permissões: </span>
+                  <span style={{ color: '#8b5cf6', fontWeight: '500' }}>{changes.join(' | ')}</span>
+                </div>
+              );
+              return; // skip default render
+            }
+          } catch(e) {
+            oldStr = '[ Permissões Antigas ]';
+            newStr = '[ Novas Permissões ]';
+          }
         }
         
         const friendlyName = fieldTranslations[key] || key;
