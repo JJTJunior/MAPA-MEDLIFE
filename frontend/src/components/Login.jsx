@@ -29,9 +29,11 @@ export default function Login({ onLoginSuccess }) {
     setLoading(true);
     setError(null);
 
+    const fullEmail = email.includes('@') ? email : `${email}@medlifebrasil.com`;
+
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: fullEmail,
         password,
       });
 
@@ -90,8 +92,10 @@ export default function Login({ onLoginSuccess }) {
     setError(null);
     setResetSuccess(false);
 
+    const fullEmail = email.includes('@') ? email : `${email}@medlifebrasil.com`;
+
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(fullEmail, {
         redirectTo: window.location.origin,
       });
       if (error) throw error;
@@ -132,9 +136,9 @@ export default function Login({ onLoginSuccess }) {
                 <label className="form-label" htmlFor="reset-email">E-mail Cadastrado</label>
                 <input
                   id="reset-email"
-                  type="email"
+                  type="text"
                   className="form-input"
-                  placeholder="seu.email@medicpe.com.br"
+                  placeholder="seu.email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -183,9 +187,9 @@ export default function Login({ onLoginSuccess }) {
             <label className="form-label" htmlFor="email">E-mail</label>
             <input
               id="email"
-              type="email"
+              type="text"
               className="form-input"
-              placeholder="seu.email@medicpe.com.br"
+              placeholder="seu.email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
