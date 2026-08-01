@@ -93,6 +93,30 @@ export default function AuditLogs() {
     const diffs = [];
     const ignoreKeys = ['updated_at', 'id', 'created_at', 'password_hash']; // Ignore internal fields
     
+    const fieldTranslations = {
+      name: 'Nome',
+      email: 'E-mail',
+      role: 'Cargo / Perfil',
+      permissions: 'Permissões de Acesso',
+      status: 'Status',
+      patient: 'Paciente',
+      date: 'Data',
+      time: 'Hora',
+      doctor: 'Médico',
+      hospital: 'Hospital',
+      health_insurance: 'Convênio',
+      surgery_type: 'Tipo de Cirurgia',
+      carater: 'Caráter',
+      material: 'Material / Procedimento',
+      salesperson: 'Vendedor',
+      instrumentalist1: 'Instrumentador 1',
+      instrumentalist2: 'Instrumentador 2',
+      comanda_urls: 'Anexos (Comanda/Receita)',
+      equipment_urls: 'Anexos (Equipamentos)',
+      attachment_url: 'Anexo (Upload)',
+      observation: 'Observação'
+    };
+    
     Object.keys(newData).forEach(key => {
       if (ignoreKeys.includes(key)) return;
       
@@ -104,12 +128,25 @@ export default function AuditLogs() {
         let oldStr = oldVal === null || oldVal === undefined || oldVal === '' ? 'vazio' : String(oldVal);
         let newStr = newVal === null || newVal === undefined || newVal === '' ? 'vazio' : String(newVal);
         
-        if (typeof oldVal === 'object' && oldVal !== null) oldStr = JSON.stringify(oldVal).substring(0, 40) + '...';
-        if (typeof newVal === 'object' && newVal !== null) newStr = JSON.stringify(newVal).substring(0, 40) + '...';
+        // Handle complex types elegantly
+        if (typeof oldVal === 'object' && oldVal !== null) {
+          oldStr = Array.isArray(oldVal) ? `[ ${oldVal.length} item(ns) ]` : '[ Dados Complexos ]';
+        }
+        if (typeof newVal === 'object' && newVal !== null) {
+          newStr = Array.isArray(newVal) ? `[ ${newVal.length} item(ns) ]` : '[ Dados Modificados ]';
+        }
+
+        // Special override for known complex fields to avoid scary json
+        if (key === 'permissions') {
+          oldStr = '[ Permissões Antigas ]';
+          newStr = '[ Novas Permissões ]';
+        }
         
+        const friendlyName = fieldTranslations[key] || key;
+
         diffs.push(
           <div key={key} style={{ fontSize: '0.8rem', marginTop: '4px', display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
-            <span style={{ color: 'var(--text-secondary)', minWidth: '100px', fontWeight: '500' }}>{key}: </span>
+            <span style={{ color: 'var(--text-secondary)', minWidth: '130px', fontWeight: '500' }}>{friendlyName}: </span>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
               <span style={{ textDecoration: 'line-through', color: '#ef4444', opacity: 0.8 }}>{oldStr}</span>
               <span style={{ color: 'var(--text-muted)' }}>➔</span>
