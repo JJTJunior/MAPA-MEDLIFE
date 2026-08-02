@@ -643,7 +643,7 @@ const DriverPanel = ({ user }) => {
                       cursor: 'pointer', transition: 'background-color 0.2s'
                     }}
                   >
-                    <Camera size={18} /> {uploadingId === surgery.id ? 'Enviando...' : 'Anexar - [Material / Comprovante]'}
+                    <Camera size={18} /> {uploadingId === surgery.id ? 'Enviando...' : 'Anexar - [foto do material / comprovante de entrega]'}
                   </button>
                 )}
               </div>
