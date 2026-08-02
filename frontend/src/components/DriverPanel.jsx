@@ -746,6 +746,24 @@ const DriverPanel = ({ user }) => {
           setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length }));
         };
 
+        const handleDownload = async () => {
+          try {
+            const response = await fetch(parsed.url);
+            const blob = await response.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = parsed.name || 'download';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(blobUrl);
+          } catch (error) {
+            console.error('Download falhou', error);
+            window.open(parsed.url, '_blank');
+          }
+        };
+
         return (
           <div style={{
             position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
@@ -831,11 +849,8 @@ const DriverPanel = ({ user }) => {
               )}
               
               <div style={{ display: 'flex', gap: '12px' }}>
-                <a 
-                  href={parsed.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  download
+                <button 
+                  onClick={handleDownload}
                   style={{
                     flex: 1, padding: '12px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none',
                     border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
@@ -843,7 +858,7 @@ const DriverPanel = ({ user }) => {
                   }}
                 >
                   Baixar
-                </a>
+                </button>
                 {(!parsed.userName || parsed.userName === user?.username || parsed.userName === user?.name || parsed.userName === user?.email || user?.role === 'Admin' || user?.role === 'Gerente') && (
                   <button
                     onClick={() => handleDeleteImage(selectedImage.surgeryId, currentItemStr)}
