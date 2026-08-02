@@ -76,6 +76,8 @@ export default function InstrumentalistScreen({ user }) {
   const [pendingAttachment, setPendingAttachment] = useState(null);
   const [attachmentNameInput, setAttachmentNameInput] = useState('');
   const [attachmentNameError, setAttachmentNameError] = useState('');
+
+  const [stats, setStats] = useState({
     pacientes: 0,
     pendentes: 0,
     entregues: 0
