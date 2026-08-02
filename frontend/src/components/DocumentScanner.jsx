@@ -70,8 +70,7 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
       setIsFlashOn(!isFlashOn);
     } catch (err) {
       console.error("Erro ao ativar lanterna", err);
-      // Some browsers require the ImageCapture API to be instantiated first for torch to work, or it just might not be supported.
-      alert("O seu navegador bloqueou ou não suporta a lanterna diretamente. Tente usar outro navegador ou iluminar o ambiente.");
+      alert(`Erro: ${err.name} - ${err.message}. O navegador limitou o acesso ao flash nesta câmera.`);
     }
   };
 
