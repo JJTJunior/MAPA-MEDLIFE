@@ -585,37 +585,44 @@ const DriverPanel = ({ user }) => {
                   {isDelivered && anexo3Items.map((itemStr, idx) => {
                     const parsed = parsePrintUrl(itemStr);
                     return (
-                      <div 
-                        key={idx} 
-                        onClick={() => handleOpenImage(surgery.id, anexo3Items, idx)}
-                        style={{ width: '50px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
-                      >
-                        {isDocumentFile(parsed.url) ? (
-                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                            <FileText size={20} style={{ color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }} />
-                            <span style={{ fontSize: '0.55rem', fontWeight: 'bold', color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }}>
-                              {parsed.url.toLowerCase().includes('.pdf') ? 'PDF' : 'WORD'}
-                            </span>
-                          </div>
-                        ) : (
-                          <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                        )}
+                      <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
+                        <div 
+                          onClick={() => handleOpenImage(surgery.id, anexo3Items, idx)}
+                          style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
+                        >
+                          {isDocumentFile(parsed.url) ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                              <FileText size={20} style={{ color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }} />
+                              <span style={{ fontSize: '0.55rem', fontWeight: 'bold', color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }}>
+                                {parsed.url.toLowerCase().includes('.pdf') ? 'PDF' : 'WORD'}
+                              </span>
+                            </div>
+                          ) : (
+                            <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          )}
+                        </div>
+                        <div style={{ fontSize: '0.55rem', color: '#64748b', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
+                          {parsed.name || `Anexo ${idx + 1}`}
+                        </div>
                       </div>
                     );
                   })}
                   
                   {isDelivered && (
-                    <button 
-                      onClick={() => openFilePicker(surgery.id)}
-                      disabled={uploadingId === surgery.id}
-                      style={{ 
-                        width: '50px', height: '60px', borderRadius: '8px', border: '1px dashed #cbd5e1', 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc',
-                        cursor: 'pointer', color: '#0f4c5c', minWidth: '50px'
-                      }}
-                    >
-                      <Plus size={20} />
-                    </button>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
+                      <button 
+                        onClick={() => openFilePicker(surgery.id)}
+                        disabled={uploadingId === surgery.id}
+                        style={{ 
+                          width: '60px', height: '60px', borderRadius: '8px', border: '1px dashed #cbd5e1', 
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc',
+                          cursor: 'pointer', color: '#0f4c5c', minWidth: '60px', padding: 0
+                        }}
+                      >
+                        <Plus size={20} />
+                      </button>
+                      <div style={{ fontSize: '0.55rem', color: 'transparent' }}>+</div>
+                    </div>
                   )}
                 </div>
 
