@@ -66,7 +66,7 @@ const DriverPanel = ({ user }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFilter, setDateFilter] = useState('today'); // today, yesterday, last7, all, custom
   const [customDate, setCustomDate] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all'); // all, pending, delivered
+  const [statusFilter, setStatusFilter] = useState('pending'); // all, pending, delivered
   const [uploadingId, setUploadingId] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null); // { surgeryId, items: [], currentIndex: number }

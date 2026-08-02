@@ -63,7 +63,7 @@ export default function InstrumentalistScreen({ user }) {
   // Filtros: 'hoje', 'ontem', '7dias', 'todos'
   const [activeDateFilter, setActiveDateFilter] = useState('hoje');
   const [customDate, setCustomDate] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all'); // all, pending, delivered
+  const [statusFilter, setStatusFilter] = useState('pending'); // all, pending, delivered
   const [uploadingId, setUploadingId] = useState(null);
   const fileInputRef = React.useRef(null);
   const cameraInputRef = React.useRef(null);
@@ -484,7 +484,7 @@ export default function InstrumentalistScreen({ user }) {
       </div>
 
       {/* FILTER CONTROLS */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '30px', padding: '0 4px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '20px 4px 10px 4px' }}>
         
         {/* Search Input */}
         <input 
