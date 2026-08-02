@@ -844,16 +844,18 @@ const DriverPanel = ({ user }) => {
                 >
                   Baixar
                 </a>
-                <button
-                  onClick={() => handleDeleteImage(selectedImage.surgeryId, currentItemStr)}
-                  style={{
-                    flex: 1, padding: '12px', backgroundColor: '#ef4444', color: '#fff',
-                    border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}
-                >
-                  Excluir
-                </button>
+                {(!parsed.userName || parsed.userName === user?.username || user?.role === 'Admin' || user?.role === 'Gerente') && (
+                  <button
+                    onClick={() => handleDeleteImage(selectedImage.surgeryId, currentItemStr)}
+                    style={{
+                      flex: 1, padding: '12px', backgroundColor: '#ef4444', color: '#fff',
+                      border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}
+                  >
+                    Excluir
+                  </button>
+                )}
               </div>
             </div>
           </div>
