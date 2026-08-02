@@ -424,57 +424,60 @@ export default function InstrumentalistScreen({ user }) {
         </div>
 
         {/* METRICS ROW */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+        <div style={{ display: 'flex', gap: '12px' }}>
           
           {/* Card: Pacientes */}
           <div 
             onClick={() => setStatusFilter('all')}
             style={{ 
+              flex: 1,
               backgroundColor: statusFilter === 'all' ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)', 
-              borderRadius: '8px', 
-              padding: '16px', 
+              borderRadius: '12px', 
+              padding: '12px', 
               display: 'flex', 
               flexDirection: 'column',
               cursor: 'pointer',
-              border: statusFilter === 'all' ? '1px solid rgba(255,255,255,0.4)' : '1px solid transparent',
+              border: statusFilter === 'all' ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.1)',
               transition: 'all 0.2s'
             }}>
-            <span style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1 }}>{stats.pacientes}</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.05em', color: '#ccfbf1', marginTop: '4px' }}>PACIENTES</span>
+            <span style={{ fontSize: '1.2rem', fontWeight: 'bold', lineHeight: 1 }}>{stats.pacientes}</span>
+            <span style={{ fontSize: '0.65rem', fontWeight: '600', letterSpacing: '0.5px', color: '#ccfbf1', marginTop: '6px' }}>PACIENTES</span>
           </div>
 
           {/* Card: Pendentes */}
           <div 
             onClick={() => setStatusFilter('pending')}
             style={{ 
+              flex: 1,
               backgroundColor: statusFilter === 'pending' ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)', 
-              borderRadius: '8px', 
-              padding: '16px', 
+              borderRadius: '12px', 
+              padding: '12px', 
               display: 'flex', 
               flexDirection: 'column',
               cursor: 'pointer',
-              border: statusFilter === 'pending' ? '1px solid rgba(255,255,255,0.4)' : '1px solid transparent',
+              border: statusFilter === 'pending' ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.1)',
               transition: 'all 0.2s'
             }}>
-            <span style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1 }}>{stats.pendentes}</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.05em', color: '#ccfbf1', marginTop: '4px' }}>PENDENTES</span>
+            <span style={{ fontSize: '1.2rem', fontWeight: 'bold', lineHeight: 1 }}>{stats.pendentes}</span>
+            <span style={{ fontSize: '0.65rem', fontWeight: '600', letterSpacing: '0.5px', color: '#ccfbf1', marginTop: '6px' }}>PENDENTES</span>
           </div>
 
           {/* Card: Entregues */}
           <div 
             onClick={() => setStatusFilter('delivered')}
             style={{ 
+              flex: 1,
               backgroundColor: statusFilter === 'delivered' ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)', 
-              borderRadius: '8px', 
-              padding: '16px', 
+              borderRadius: '12px', 
+              padding: '12px', 
               display: 'flex', 
               flexDirection: 'column',
               cursor: 'pointer',
-              border: statusFilter === 'delivered' ? '1px solid rgba(255,255,255,0.4)' : '1px solid transparent',
+              border: statusFilter === 'delivered' ? '1px solid rgba(255,255,255,0.4)' : '1px solid rgba(255,255,255,0.1)',
               transition: 'all 0.2s'
             }}>
-            <span style={{ fontSize: '1.8rem', fontWeight: 'bold', lineHeight: 1 }}>{stats.entregues}</span>
-            <span style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.05em', color: '#ccfbf1', marginTop: '4px' }}>ENTREGUES</span>
+            <span style={{ fontSize: '1.2rem', fontWeight: 'bold', lineHeight: 1 }}>{stats.entregues}</span>
+            <span style={{ fontSize: '0.65rem', fontWeight: '600', letterSpacing: '0.5px', color: '#ccfbf1', marginTop: '6px' }}>ENTREGUES</span>
           </div>
 
         </div>
