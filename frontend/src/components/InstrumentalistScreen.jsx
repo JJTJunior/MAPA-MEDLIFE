@@ -706,7 +706,17 @@ export default function InstrumentalistScreen({ user }) {
                     if (anexo2Items.length > 0) {
                       return (
                         <div style={{ marginBottom: '16px' }}>
-                          <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '8px' }}>COMANDA / DOCUMENTAÇÃO</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>COMANDA / DOCUMENTAÇÃO</div>
+                            {(() => {
+                               const parsedLast = parsePrintUrl(anexo2Items[anexo2Items.length - 1]);
+                               const uploadedBy = parsedLast.userName;
+                               if (uploadedBy) {
+                                 return <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600' }}>• por {uploadedBy}</div>;
+                               }
+                               return null;
+                            })()}
+                          </div>
                           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                             {anexo2Items.map((itemStr, idx) => {
                               const parsed = parsePrintUrl(itemStr);
