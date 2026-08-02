@@ -1201,6 +1201,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             </div>
           </div>
 
+          <span style={{ color: '#cbd5e1', fontSize: '1.5rem', fontWeight: '300', margin: '0 8px' }}>/</span>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button 
               onClick={() => setIsEditingStatus(!isEditingStatus)}
