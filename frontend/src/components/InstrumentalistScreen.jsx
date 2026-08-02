@@ -73,8 +73,9 @@ export default function InstrumentalistScreen({ user }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(null);
   const [showScanner, setShowScanner] = useState(false);
-
-  const [stats, setStats] = useState({
+  const [pendingAttachment, setPendingAttachment] = useState(null);
+  const [attachmentNameInput, setAttachmentNameInput] = useState('');
+  const [attachmentNameError, setAttachmentNameError] = useState('');
     pacientes: 0,
     pendentes: 0,
     entregues: 0
@@ -273,34 +274,43 @@ export default function InstrumentalistScreen({ user }) {
   const handleFileUpload = async (e) => {
     const files = e.target.files;
     if (!files || files.length === 0 || !selectedSurgeryId) return;
+    setAttachmentNameInput('');
+    setAttachmentNameError('');
+    setPendingAttachment({ files: Array.from(files), surgeryId: selectedSurgeryId, isPdfScan: false });
+  };
 
-    const fileNameInput = prompt("Digite um nome para este arquivo (Obrigatório):");
-    if (!fileNameInput || fileNameInput.trim() === '') {
-       alert("Nome do arquivo é obrigatório. Envio cancelado.");
-       if (fileInputRef.current) fileInputRef.current.value = '';
-       if (cameraInputRef.current) cameraInputRef.current.value = '';
-       return;
+  const handleConfirmAttachmentName = async () => {
+    if (!attachmentNameInput || !attachmentNameInput.trim()) {
+      setAttachmentNameError('A identificação do anexo é OBRIGATÓRIA!');
+      return;
     }
+    const nameToUse = attachmentNameInput.trim();
+    const item = pendingAttachment;
+    setPendingAttachment(null);
+    setAttachmentNameError('');
+
+    const files = item.files;
+    const surgeryId = item.surgeryId;
 
     try {
-      setUploadingId(selectedSurgeryId);
+      setUploadingId(surgeryId);
       setUploadProgress({
         current: 0,
         total: files.length,
-        fileName: fileNameInput.trim(),
+        fileName: nameToUse,
         percent: 5,
         status: `Preparando ${files.length} arquivo(s)...`,
         isDone: false
       });
 
       const uploaderName = user?.name || user?.email || 'Desconhecido';
-      const surgeryToUpdate = surgeries.find(s => s.id === selectedSurgeryId);
+      const surgeryToUpdate = surgeries.find(s => s.id === surgeryId);
       const existingUrls = surgeryToUpdate?.comanda_urls || [];
       const newValuesToStore = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const displayName = files.length > 1 ? `${fileNameInput.trim()} (${i + 1})` : fileNameInput.trim();
+        const displayName = files.length > 1 ? `${nameToUse} (${i + 1})` : nameToUse;
         const currentPercent = Math.round((i / files.length) * 85) + 5;
 
         setUploadProgress({
@@ -313,16 +323,18 @@ export default function InstrumentalistScreen({ user }) {
         });
 
         let fileToUpload = file;
-        if (file.type.startsWith('image/')) {
+        if (!item.isPdfScan && file.type && file.type.startsWith('image/')) {
           fileToUpload = await compressImage(file, 1200, 1200, 0.7);
         }
 
-        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : (item.isPdfScan ? 'pdf' : 'png');
         const fileName = `anexo2_${Date.now()}_${Math.floor(Math.random() * 10000)}_${i}.${fileExt}`;
+
+        const uploadOptions = item.isPdfScan ? { contentType: 'application/pdf' } : undefined;
 
         const { error: uploadError } = await supabase.storage
           .from('attachments')
-          .upload(fileName, fileToUpload);
+          .upload(fileName, fileToUpload, uploadOptions);
 
         if (uploadError) throw uploadError;
 
@@ -349,13 +361,13 @@ export default function InstrumentalistScreen({ user }) {
         .update({ 
           comanda_urls: updatedUrls,
         })
-        .eq('id', selectedSurgeryId);
+        .eq('id', surgeryId);
 
       if (updateError) throw updateError;
 
       // Update local state
       setSurgeries(prev => prev.map(s => {
-        if (s.id === selectedSurgeryId) {
+        if (s.id === surgeryId) {
           return { ...s, comanda_urls: updatedUrls };
         }
         return s;
@@ -376,7 +388,7 @@ export default function InstrumentalistScreen({ user }) {
 
     } catch (err) {
       console.error('Erro no upload:', err);
-      alert('Erro ao enviar comprovante: ' + err.message);
+      alert('Erro ao enviar anexo: ' + err.message);
       setUploadProgress(null);
     } finally {
       setUploadingId(null);
@@ -389,95 +401,9 @@ export default function InstrumentalistScreen({ user }) {
   const handlePdfScanFinish = async (pdfBlob) => {
     setShowScanner(false);
     if (!selectedSurgeryId) return;
-
-    const fileNameInput = prompt("Digite um nome para o documento digitalizado (Obrigatório):");
-    if (!fileNameInput || fileNameInput.trim() === '') {
-       alert("Nome do arquivo é obrigatório. Envio cancelado.");
-       return;
-    }
-
-    try {
-      setUploadingId(selectedSurgeryId);
-      setUploadProgress({
-        current: 1,
-        total: 1,
-        fileName: fileNameInput.trim() + '.pdf',
-        percent: 10,
-        status: `Enviando PDF gerado...`,
-        isDone: false
-      });
-
-      const uploaderName = user?.name || user?.email || 'Desconhecido';
-      const surgeryToUpdate = surgeries.find(s => s.id === selectedSurgeryId);
-      const existingUrls = surgeryToUpdate?.comanda_urls || [];
-      
-      const fileName = `anexo2_${Date.now()}_${Math.floor(Math.random() * 10000)}.pdf`;
-
-      setUploadProgress(prev => ({ ...prev, percent: 40 }));
-
-      const { error: uploadError } = await supabase.storage
-        .from('attachments')
-        .upload(fileName, pdfBlob, {
-          contentType: 'application/pdf',
-        });
-
-      if (uploadError) throw uploadError;
-
-      setUploadProgress(prev => ({ ...prev, percent: 80 }));
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('attachments')
-        .getPublicUrl(fileName);
-
-      const valueToStore = `${publicUrl}?anexo=2|||${fileNameInput.trim()}|||UPLOADED_BY:${uploaderName}`;
-      
-      const updatedUrls = [...existingUrls, valueToStore];
-
-      setUploadProgress({
-        current: 1,
-        total: 1,
-        fileName: 'Atualizando registro...',
-        percent: 95,
-        status: 'Salvando alterações no banco de dados...',
-        isDone: false
-      });
-
-      const { error: updateError } = await supabase.from('surgeries')
-        .update({ 
-          comanda_urls: updatedUrls,
-        })
-        .eq('id', selectedSurgeryId);
-
-      if (updateError) throw updateError;
-
-      setSurgeries(prev => prev.map(s => {
-        if (s.id === selectedSurgeryId) {
-          return { ...s, comanda_urls: updatedUrls };
-        }
-        return s;
-      }));
-
-      setUploadProgress({
-        current: 1,
-        total: 1,
-        fileName: 'Concluído!',
-        percent: 100,
-        status: 'PDF enviado com sucesso!',
-        isDone: true
-      });
-
-      setTimeout(() => {
-        setUploadProgress(null);
-      }, 1200);
-
-    } catch (err) {
-      console.error('Erro no upload de PDF:', err);
-      alert('Erro ao enviar documento digitalizado: ' + err.message);
-      setUploadProgress(null);
-    } finally {
-      setUploadingId(null);
-      setSelectedSurgeryId(null);
-    }
+    setAttachmentNameInput('');
+    setAttachmentNameError('');
+    setPendingAttachment({ files: [pdfBlob], surgeryId: selectedSurgeryId, isPdfScan: true });
   };
 
   const openFilePicker = (id) => {
@@ -1180,6 +1106,161 @@ export default function InstrumentalistScreen({ user }) {
 
             <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>
               Por favor, aguarde a conclusão do carregamento...
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* File Identify Modal */}
+      {pendingAttachment && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(15, 23, 42, 0.75)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '16px',
+            padding: '24px',
+            maxWidth: '440px',
+            width: '90%',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '16px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                borderRadius: '8px',
+                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#2563eb'
+              }}>
+                <FileText size={20} />
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+                Identificar Anexo{pendingAttachment.files.length > 1 ? `s (${pendingAttachment.files.length} arquivos)` : ''} (Obrigatório)
+              </h3>
+            </div>
+
+            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: '1.4' }}>
+              {pendingAttachment.files.length > 1 
+                ? `Informe o nome base para identificar os ${pendingAttachment.files.length} arquivos selecionados:`
+                : 'Informe o nome ou escolha uma opção rápida para identificar este arquivo:'}
+            </p>
+
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              {[
+                'Comanda', 'Documentação', 'Prontuário', 'Exame'
+              ].map(chip => (
+                <button
+                  key={chip}
+                  type="button"
+                  onClick={() => {
+                    setAttachmentNameInput(chip);
+                    setAttachmentNameError('');
+                  }}
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '20px',
+                    border: '1px solid #cbd5e1',
+                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : '#f8fafc',
+                    color: attachmentNameInput === chip ? '#ffffff' : '#334155',
+                    fontSize: '0.8rem',
+                    cursor: 'pointer',
+                    fontWeight: 500,
+                    transition: 'all 0.15s'
+                  }}
+                >
+                  {chip}
+                </button>
+              ))}
+            </div>
+
+            <div>
+              <input
+                type="text"
+                autoFocus
+                value={attachmentNameInput}
+                onChange={(e) => {
+                  setAttachmentNameInput(e.target.value);
+                  setAttachmentNameError('');
+                }}
+                placeholder="Ex: Solicitação, Autorização, Comanda..."
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid #cbd5e1',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                  width: '100%',
+                  boxSizing: 'border-box'
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleConfirmAttachmentName();
+                  }
+                }}
+              />
+              {attachmentNameError && (
+                <div style={{ color: '#ef4444', fontSize: '0.8rem', fontWeight: 500, marginTop: '4px' }}>
+                  {attachmentNameError}
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '8px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setPendingAttachment(null);
+                  setAttachmentNameError('');
+                  if (fileInputRef.current) fileInputRef.current.value = '';
+                  if (cameraInputRef.current) cameraInputRef.current.value = '';
+                }}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  backgroundColor: '#f8fafc',
+                  color: '#475569',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 500
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmAttachmentName}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#2563eb',
+                  color: '#ffffff',
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  boxShadow: '0 4px 10px rgba(37, 99, 235, 0.2)'
+                }}
+              >
+                Confirmar e Anexar
+              </button>
             </div>
           </div>
         </div>
