@@ -207,6 +207,13 @@ export default function InstrumentalistScreen({ user }) {
     return [];
   };
 
+  const getAnexo3Items = (item) => {
+    if (item.comanda_urls && Array.isArray(item.comanda_urls)) {
+      return item.comanda_urls.filter(url => url.includes('anexo=3') || url.includes('[ANEXO_3]'));
+    }
+    return [];
+  };
+
   const getAnexo2Url = (item) => {
     const items = getAnexo2Items(item);
     if (items.length > 0) return items[items.length - 1];
@@ -667,12 +674,54 @@ export default function InstrumentalistScreen({ user }) {
                     })()}
                   </div>
 
-                  {/* Render Attachments */}
+                  {/* Render Driver Attachments (anexo3Items) */}
+                  {(() => {
+                    const anexo3Items = getAnexo3Items(surgery);
+                    if (anexo3Items.length > 0) {
+                      return (
+                        <div style={{ marginBottom: '16px' }}>
+                          <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '8px' }}>FOTOS DA ENTREGA (MOTORISTA)</div>
+                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                            {anexo3Items.map((itemStr, idx) => {
+                              const parsed = parsePrintUrl(itemStr);
+                              return (
+                                <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
+                                  <div 
+                                    onClick={() => setSelectedImage({ items: anexo3Items, currentIndex: idx, surgeryId: surgery.id })}
+                                    style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
+                                  >
+                                    {isDocumentFile(parsed.url) ? (
+                                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                                        <FileText size={20} style={{ color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }} />
+                                        <span style={{ fontSize: '0.55rem', fontWeight: 'bold', color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }}>
+                                          {parsed.url.toLowerCase().includes('.pdf') ? 'PDF' : 'WORD'}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    )}
+                                  </div>
+                                  <div style={{ fontSize: '0.55rem', color: '#64748b', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
+                                    {parsed.name || `Anexo ${idx + 1}`}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+
+                  {/* Render Attachments (Instrumentalist - Comanda/Documentação) */}
                   {(() => {
                     const anexo2Items = getAnexo2Items(surgery);
                     if (anexo2Items.length > 0) {
                       return (
-                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
+                        <div style={{ marginBottom: '16px' }}>
+                          <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '8px' }}>COMANDA / DOCUMENTAÇÃO</div>
+                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                           {anexo2Items.map((itemStr, idx) => {
                             const parsed = parsePrintUrl(itemStr);
                             return (
@@ -706,6 +755,7 @@ export default function InstrumentalistScreen({ user }) {
                           >
                             <Plus size={20} />
                           </button>
+                          </div>
                         </div>
                       );
                     }
