@@ -804,57 +804,57 @@ const DriverPanel = ({ user }) => {
               Foto {selectedImage.currentIndex + 1} de {selectedImage.items.length}
             </div>
             
-            <div style={{ display: 'flex', gap: '16px', marginTop: '24px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px', width: '100%', maxWidth: '300px' }}>
               {hasMultiple && (
-                <button
-                  onClick={handlePrev}
-                  style={{
-                    padding: '12px 20px', backgroundColor: '#334155', color: '#fff',
-                    border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}
-                >
-                  Anterior
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    onClick={handlePrev}
+                    style={{
+                      flex: 1, padding: '12px', backgroundColor: '#334155', color: '#fff',
+                      border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    onClick={handleNext}
+                    style={{
+                      flex: 1, padding: '12px', backgroundColor: '#334155', color: '#fff',
+                      border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}
+                  >
+                    Próxima
+                  </button>
+                </div>
               )}
               
-              <a 
-                href={parsed.url} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                download
-                style={{
-                  padding: '12px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none',
-                  border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}
-              >
-                Baixar
-              </a>
-
-              <button
-                onClick={() => handleDeleteImage(selectedImage.surgeryId, currentItemStr)}
-                style={{
-                  padding: '12px 24px', backgroundColor: '#ef4444', color: '#fff',
-                  border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}
-              >
-                Excluir
-              </button>
-
-              {hasMultiple && (
-                <button
-                  onClick={handleNext}
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <a 
+                  href={parsed.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  download
                   style={{
-                    padding: '12px 20px', backgroundColor: '#334155', color: '#fff',
-                    border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
+                    flex: 1, padding: '12px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none',
+                    border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}
                 >
-                  Próxima
+                  Baixar
+                </a>
+                <button
+                  onClick={() => handleDeleteImage(selectedImage.surgeryId, currentItemStr)}
+                  style={{
+                    flex: 1, padding: '12px', backgroundColor: '#ef4444', color: '#fff',
+                    border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}
+                >
+                  Excluir
                 </button>
-              )}
+              </div>
             </div>
           </div>
         );
