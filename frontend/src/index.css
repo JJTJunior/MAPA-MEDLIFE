@@ -1050,6 +1050,11 @@ h1, h2, h3, h4, h5, h6 {
   .mobile-menu-overlay {
     display: block;
   }
+
+  .mobile-edge-to-edge {
+    margin: -15px;
+    min-height: calc(100vh - 60px) !important;
+  }
 }
 
 @media (max-width: 768px) {
