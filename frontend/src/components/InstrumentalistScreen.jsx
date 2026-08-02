@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Search, Calendar as CalendarIcon, FileText, Camera, X, Plus } from 'lucide-react';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import DocumentScanner from './DocumentScanner';
 
 const compressImage = (file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) => {
   return new Promise((resolve) => {
@@ -71,6 +72,7 @@ export default function InstrumentalistScreen({ user }) {
   const [uploadOptionsModal, setUploadOptionsModal] = useState(null); // { surgeryId }
   const [selectedImage, setSelectedImage] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(null);
+  const [showScanner, setShowScanner] = useState(false);
 
   const [stats, setStats] = useState({
     pacientes: 0,
@@ -381,6 +383,100 @@ export default function InstrumentalistScreen({ user }) {
       setSelectedSurgeryId(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       if (cameraInputRef.current) cameraInputRef.current.value = '';
+    }
+  };
+
+  const handlePdfScanFinish = async (pdfBlob) => {
+    setShowScanner(false);
+    if (!selectedSurgeryId) return;
+
+    const fileNameInput = prompt("Digite um nome para o documento digitalizado (Obrigatório):");
+    if (!fileNameInput || fileNameInput.trim() === '') {
+       alert("Nome do arquivo é obrigatório. Envio cancelado.");
+       return;
+    }
+
+    try {
+      setUploadingId(selectedSurgeryId);
+      setUploadProgress({
+        current: 1,
+        total: 1,
+        fileName: fileNameInput.trim() + '.pdf',
+        percent: 10,
+        status: `Enviando PDF gerado...`,
+        isDone: false
+      });
+
+      const uploaderName = user?.name || user?.email || 'Desconhecido';
+      const surgeryToUpdate = surgeries.find(s => s.id === selectedSurgeryId);
+      const existingUrls = surgeryToUpdate?.comanda_urls || [];
+      
+      const fileName = `anexo2_${Date.now()}_${Math.floor(Math.random() * 10000)}.pdf`;
+
+      setUploadProgress(prev => ({ ...prev, percent: 40 }));
+
+      const { error: uploadError } = await supabase.storage
+        .from('attachments')
+        .upload(fileName, pdfBlob, {
+          contentType: 'application/pdf',
+        });
+
+      if (uploadError) throw uploadError;
+
+      setUploadProgress(prev => ({ ...prev, percent: 80 }));
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('attachments')
+        .getPublicUrl(fileName);
+
+      const valueToStore = `${publicUrl}?anexo=2|||${fileNameInput.trim()}|||UPLOADED_BY:${uploaderName}`;
+      
+      const updatedUrls = [...existingUrls, valueToStore];
+
+      setUploadProgress({
+        current: 1,
+        total: 1,
+        fileName: 'Atualizando registro...',
+        percent: 95,
+        status: 'Salvando alterações no banco de dados...',
+        isDone: false
+      });
+
+      const { error: updateError } = await supabase.from('surgeries')
+        .update({ 
+          comanda_urls: updatedUrls,
+        })
+        .eq('id', selectedSurgeryId);
+
+      if (updateError) throw updateError;
+
+      setSurgeries(prev => prev.map(s => {
+        if (s.id === selectedSurgeryId) {
+          return { ...s, comanda_urls: updatedUrls };
+        }
+        return s;
+      }));
+
+      setUploadProgress({
+        current: 1,
+        total: 1,
+        fileName: 'Concluído!',
+        percent: 100,
+        status: 'PDF enviado com sucesso!',
+        isDone: true
+      });
+
+      setTimeout(() => {
+        setUploadProgress(null);
+      }, 1200);
+
+    } catch (err) {
+      console.error('Erro no upload de PDF:', err);
+      alert('Erro ao enviar documento digitalizado: ' + err.message);
+      setUploadProgress(null);
+    } finally {
+      setUploadingId(null);
+      setSelectedSurgeryId(null);
     }
   };
 
@@ -862,6 +958,21 @@ export default function InstrumentalistScreen({ user }) {
             </button>
             
             <button
+              onClick={() => {
+                setSelectedSurgeryId(uploadOptionsModal.surgeryId);
+                setUploadOptionsModal(null);
+                setShowScanner(true);
+              }}
+              style={{
+                padding: '14px', backgroundColor: '#10b981', color: 'white',
+                borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+              }}
+            >
+              <FileText size={18} /> Digitalizar PDF
+            </button>
+            
+            <button
               onClick={() => setUploadOptionsModal(null)}
               style={{
                 marginTop: '8px', padding: '10px', backgroundColor: 'transparent', color: '#64748b',
@@ -1072,6 +1183,16 @@ export default function InstrumentalistScreen({ user }) {
             </div>
           </div>
         </div>
+      )}
+
+      {showScanner && (
+        <DocumentScanner 
+          onFinish={handlePdfScanFinish}
+          onCancel={() => {
+            setShowScanner(false);
+            setSelectedSurgeryId(null);
+          }}
+        />
       )}
     </div>
   );
