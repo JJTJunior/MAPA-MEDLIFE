@@ -531,19 +531,6 @@ const DriverPanel = ({ user }) => {
                 border: '1px solid #f1f5f9'
               }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '16px', gap: '12px' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }}>
-                    <span 
-                      className={`status-badge ${isDelivered ? 'status-delivered' : 'status-ready'}`} 
-                      style={{ padding: '6px 12px', whiteSpace: 'normal', textAlign: 'left' }}
-                    >
-                      {isDelivered ? '🟢 MATERIAL ENTREGUE' : '🟠 SEPARADO PARA ENTREGAR'}
-                    </span>
-                    {isDelivered && deliveredBy && (
-                      <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600', marginLeft: '4px' }}>
-                        por {deliveredBy}
-                      </div>
-                    )}
-                  </div>
                   <div style={{ width: '100%' }}>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>PACIENTE</div>
                     <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px', wordBreak: 'break-word' }}>{surgery.patient}</div>
@@ -577,6 +564,20 @@ const DriverPanel = ({ user }) => {
                       <Clock size={14} color="#64748b" /> {surgery.time || '--'}
                     </div>
                   </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', marginBottom: '16px' }}>
+                  <span 
+                    className={`status-badge ${isDelivered ? 'status-delivered' : 'status-ready'}`} 
+                    style={{ padding: '6px 12px', whiteSpace: 'normal', textAlign: 'left' }}
+                  >
+                    {isDelivered ? '🟢 MATERIAL ENTREGUE' : '🟠 SEPARADO PARA ENTREGAR'}
+                  </span>
+                  {isDelivered && deliveredBy && (
+                    <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600', marginLeft: '4px' }}>
+                      por {deliveredBy}
+                    </div>
+                  )}
                 </div>
 
                 {/* Render Attachments */}
