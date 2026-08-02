@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Camera, X, Check, FlipHorizontal, Trash2, Zap, ZapOff } from 'lucide-react';
+import { Camera, X, Check, FlipHorizontal, Trash2 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 const DocumentScanner = ({ onFinish, onCancel }) => {
@@ -10,8 +10,6 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
   const [capturedImages, setCapturedImages] = useState([]);
   const [facingMode, setFacingMode] = useState('environment'); // 'environment' or 'user'
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
-  const [isFlashOn, setIsFlashOn] = useState(false);
-  const [hasFlash, setHasFlash] = useState(false);
 
   const [availableCameras, setAvailableCameras] = useState([]);
   const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
@@ -68,10 +66,6 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
       }
       
       const track = mediaStream.getVideoTracks()[0];
-      const capabilities = track.getCapabilities ? track.getCapabilities() : {};
-      setHasFlash(!!capabilities.torch);
-      setIsFlashOn(false);
-
     } catch (err) {
       console.error("Error accessing camera: ", err);
     }
@@ -80,26 +74,8 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
   const stopCamera = () => {
     if (stream) {
       stream.getTracks().forEach(track => {
-        if (isFlashOn && track.applyConstraints) {
-           track.applyConstraints({ advanced: [{ torch: false }] }).catch(e => console.error(e));
-        }
         track.stop();
       });
-    }
-  };
-
-  const toggleFlash = async () => {
-    if (!stream) return;
-    const track = stream.getVideoTracks()[0];
-
-    try {
-      await track.applyConstraints({
-        advanced: [{ torch: !isFlashOn }]
-      });
-      setIsFlashOn(!isFlashOn);
-    } catch (err) {
-      console.error("Erro ao ativar lanterna", err);
-      alert(`Erro: ${err.name} - ${err.message}. O navegador limitou o acesso ao flash nesta câmera.`);
     }
   };
 
@@ -218,14 +194,9 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
         <span style={{ color: 'white', fontWeight: 'bold' }}>
           {capturedImages.length} {capturedImages.length === 1 ? 'página' : 'páginas'}
         </span>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <button onClick={toggleFlash} style={{ background: 'none', border: 'none', color: isFlashOn ? '#eab308' : 'white', cursor: 'pointer' }}>
-            {isFlashOn ? <Zap size={28} /> : <ZapOff size={28} />}
-          </button>
-          <button onClick={toggleCamera} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
-            <FlipHorizontal size={28} />
-          </button>
-        </div>
+        <button onClick={toggleCamera} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
+          <FlipHorizontal size={28} />
+        </button>
       </div>
 
       {/* Camera View */}
