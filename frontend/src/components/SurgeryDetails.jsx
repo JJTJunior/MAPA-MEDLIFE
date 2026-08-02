@@ -1151,6 +1151,23 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'var(--background-color)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+            <button 
+              onClick={() => setIsEditingChecklists(!isEditingChecklists)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: isEditingChecklists ? '#3b82f6' : 'var(--text-secondary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+                borderRadius: '4px'
+              }}
+              title={isEditingChecklists ? "Concluir Edição" : "Editar Checklists"}
+            >
+              {isEditingChecklists ? <CheckCircle size={18} /> : <Edit size={18} />}
+            </button>
             <span style={{ color: 'var(--text-secondary)', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <ClipboardList size={16} /> CHECKLISTS:
             </span>
@@ -1182,25 +1199,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 </div>
               ))}
             </div>
-            
-            <button 
-              onClick={() => setIsEditingChecklists(!isEditingChecklists)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: isEditingChecklists ? '#3b82f6' : 'var(--text-secondary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '4px',
-                borderRadius: '4px',
-                marginLeft: '4px'
-              }}
-              title={isEditingChecklists ? "Concluir Edição" : "Editar Checklists"}
-            >
-              {isEditingChecklists ? <CheckCircle size={18} /> : <Edit size={18} />}
-            </button>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
