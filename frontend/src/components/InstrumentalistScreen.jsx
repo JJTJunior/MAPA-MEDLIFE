@@ -612,29 +612,6 @@ export default function InstrumentalistScreen({ user }) {
                       <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>PACIENTE</div>
                       <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px', textTransform: 'uppercase' }}>{surgery.patient || 'PACIENTE NÃO INFORMADO'}</div>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
-                      <span 
-                        className={`status-badge ${isDelivered ? 'status-delivered' : 'status-ready'}`} 
-                        style={{ padding: '6px 12px', fontSize: '0.65rem' }}
-                      >
-                        {isDelivered ? '🟢 MATERIAL ENTREGUE' : (surgery.status ? `🟠 ${surgery.status.toUpperCase()}` : '⚪ SEM STATUS')}
-                      </span>
-                      {(() => {
-                        const anexo2Items = getAnexo2Items(surgery);
-                        if (anexo2Items.length > 0) {
-                          const parsedLast = parsePrintUrl(anexo2Items[anexo2Items.length - 1]);
-                          const deliveredBy = parsedLast.userName;
-                          if (deliveredBy) {
-                            return (
-                              <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600' }}>
-                                por {deliveredBy}
-                              </div>
-                            );
-                          }
-                        }
-                        return null;
-                      })()}
-                    </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
@@ -665,6 +642,31 @@ export default function InstrumentalistScreen({ user }) {
                       </div>
                     </div>
                   </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px', marginBottom: '16px' }}>
+                    <span 
+                      className={`status-badge ${isDelivered ? 'status-delivered' : 'status-ready'}`} 
+                      style={{ padding: '6px 12px', whiteSpace: 'normal', textAlign: 'left' }}
+                    >
+                      {isDelivered ? '🟢 MATERIAL ENTREGUE' : (surgery.status ? `🟠 ${surgery.status.toUpperCase()}` : '⚪ SEM STATUS')}
+                    </span>
+                    {(() => {
+                      const anexo2Items = getAnexo2Items(surgery);
+                      if (anexo2Items.length > 0) {
+                        const parsedLast = parsePrintUrl(anexo2Items[anexo2Items.length - 1]);
+                        const deliveredBy = parsedLast.userName;
+                        if (deliveredBy) {
+                          return (
+                            <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600', marginLeft: '4px' }}>
+                              por {deliveredBy}
+                            </div>
+                          );
+                        }
+                      }
+                      return null;
+                    })()}
+                  </div>
+
                   {/* Render Attachments */}
                   {(() => {
                     const anexo2Items = getAnexo2Items(surgery);
