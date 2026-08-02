@@ -1150,7 +1150,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         <h2 style={{ margin: 0 }}>Detalhes da Cirurgia</h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'var(--background-color)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', backgroundColor: 'var(--background-color)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
             <button 
               onClick={() => setIsEditingChecklists(!isEditingChecklists)}
               style={{
@@ -1172,7 +1172,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               <ClipboardList size={16} /> CHECKLISTS:
             </span>
             
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
               {[
                 { key: 'opme_checked', label: 'OPME' },
                 { key: 'cme_checked', label: 'CME' },
@@ -1201,9 +1201,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             </div>
           </div>
 
-          <span style={{ color: '#cbd5e1', fontSize: '1.5rem', fontWeight: '300', margin: '0 8px' }}>/</span>
+          <span style={{ color: '#cbd5e1', fontSize: '1.5rem', fontWeight: '300', margin: '0 4px' }}>/</span>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <button 
               onClick={() => setIsEditingStatus(!isEditingStatus)}
               style={{
