@@ -121,6 +121,35 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const [showEquipmentDropdown, setShowEquipmentDropdown] = useState(false);
   const [showDeleteIconsEquipment, setShowDeleteIconsEquipment] = useState(false);
   const [isDropzoneFocused3, setIsDropzoneFocused3] = useState(false);
+  const [isEditingChecklists, setIsEditingChecklists] = useState(false);
+
+  const handleToggleChecklist = async (field) => {
+    if (!isEditingChecklists) return;
+    
+    const newValue = !localSurgery[field];
+    
+    setLocalSurgery(prev => ({ ...prev, [field]: newValue }));
+    
+    if (onUpdate) {
+       onUpdate({ ...localSurgery, [field]: newValue });
+    }
+
+    try {
+      const { error } = await supabase
+        .from('surgeries')
+        .update({ [field]: newValue })
+        .eq('id', localSurgery.id);
+        
+      if (error) throw error;
+    } catch (error) {
+      console.error('Erro ao atualizar checklist:', error);
+      setLocalSurgery(prev => ({ ...prev, [field]: !newValue }));
+      if (onUpdate) {
+         onUpdate({ ...localSurgery, [field]: !newValue });
+      }
+      alert('Erro ao atualizar o checklist.');
+    }
+  };
 
   useEffect(() => {
     setLocalSurgery(surgery);
@@ -1048,11 +1077,67 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
       <div className="modal-header" style={{ borderRadius: '8px 8px 0 0', display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ margin: 0 }}>Detalhes da Cirurgia</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <span style={{ color: 'var(--text-secondary)', fontWeight: 'bold', fontSize: '0.9rem', textTransform: 'uppercase' }}>Status:</span>
-          <span className={`status-badge ${getStatusClass(localSurgery.status)}`} style={{ fontSize: '1rem', padding: '6px 12px' }}>
-            {localSurgery.delivery_status || getLegacyIcon(localSurgery.status)} {localSurgery.status}
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'var(--background-color)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <ClipboardList size={16} /> CHECKLISTS:
+            </span>
+            
+            <div style={{ display: 'flex', gap: '12px' }}>
+              {[
+                { key: 'opme_checked', label: 'OPME' },
+                { key: 'cme_checked', label: 'CME' },
+                { key: 'bloco_checked', label: 'BLOCO' },
+                { key: 'pos_checked', label: 'PÓS' },
+              ].map(item => (
+                <div 
+                  key={item.key}
+                  onClick={() => handleToggleChecklist(item.key)}
+                  style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '4px', 
+                    color: localSurgery[item.key] ? '#10b981' : 'var(--text-secondary)',
+                    cursor: isEditingChecklists ? 'pointer' : 'default',
+                    padding: isEditingChecklists ? '4px 8px' : '0',
+                    borderRadius: '4px',
+                    backgroundColor: isEditingChecklists ? (localSurgery[item.key] ? 'rgba(16, 185, 129, 0.1)' : 'rgba(0,0,0,0.05)') : 'transparent',
+                    transition: 'all 0.2s',
+                    fontWeight: isEditingChecklists ? 'bold' : 'normal'
+                  }}
+                >
+                  <CheckCircle size={18} /> {item.label}
+                </div>
+              ))}
+            </div>
+            
+            <button 
+              onClick={() => setIsEditingChecklists(!isEditingChecklists)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: isEditingChecklists ? '#3b82f6' : 'var(--text-secondary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+                borderRadius: '4px',
+                marginLeft: '4px'
+              }}
+              title={isEditingChecklists ? "Concluir Edição" : "Editar Checklists"}
+            >
+              {isEditingChecklists ? <CheckCircle size={18} /> : <Edit size={18} />}
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ color: 'var(--text-secondary)', fontWeight: 'bold', fontSize: '0.9rem', textTransform: 'uppercase' }}>Status:</span>
+            <span className={`status-badge ${getStatusClass(localSurgery.status)}`} style={{ fontSize: '1rem', padding: '6px 12px' }}>
+              {localSurgery.delivery_status || getLegacyIcon(localSurgery.status)} {localSurgery.status}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -1154,23 +1239,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               </div>
             )}
 
-            <div className="detail-item">
-              <label style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 'bold' }}>Checklists</label>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: surgery.opme_checked ? '#10b981' : 'var(--text-secondary)' }}>
-                  <CheckCircle size={18} /> OPME
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: surgery.cme_checked ? '#10b981' : 'var(--text-secondary)' }}>
-                  <CheckCircle size={18} /> CME
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: surgery.bloco_checked ? '#10b981' : 'var(--text-secondary)' }}>
-                  <CheckCircle size={18} /> BLOCO
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: surgery.pos_checked ? '#10b981' : 'var(--text-secondary)' }}>
-                  <CheckCircle size={18} /> PÓS
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
