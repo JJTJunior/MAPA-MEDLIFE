@@ -62,6 +62,13 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
   const toggleFlash = async () => {
     if (!stream) return;
     const track = stream.getVideoTracks()[0];
+    const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+    
+    if (!capabilities.torch) {
+      alert("Seu dispositivo ou navegador não suporta ativar o flash por aqui.");
+      return;
+    }
+
     try {
       await track.applyConstraints({
         advanced: [{ torch: !isFlashOn }]
@@ -69,6 +76,7 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
       setIsFlashOn(!isFlashOn);
     } catch (err) {
       console.error("Erro ao ativar lanterna", err);
+      alert("Erro ao ativar a lanterna.");
     }
   };
 
@@ -180,11 +188,9 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
           {capturedImages.length} {capturedImages.length === 1 ? 'página' : 'páginas'}
         </span>
         <div style={{ display: 'flex', gap: '16px' }}>
-          {hasFlash && facingMode === 'environment' && (
-            <button onClick={toggleFlash} style={{ background: 'none', border: 'none', color: isFlashOn ? '#eab308' : 'white', cursor: 'pointer' }}>
-              {isFlashOn ? <Zap size={28} /> : <ZapOff size={28} />}
-            </button>
-          )}
+          <button onClick={toggleFlash} style={{ background: 'none', border: 'none', color: isFlashOn ? '#eab308' : 'white', cursor: 'pointer' }}>
+            {isFlashOn ? <Zap size={28} /> : <ZapOff size={28} />}
+          </button>
           <button onClick={toggleCamera} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
             <FlipHorizontal size={28} />
           </button>
