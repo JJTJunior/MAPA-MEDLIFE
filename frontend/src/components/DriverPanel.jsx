@@ -844,7 +844,7 @@ const DriverPanel = ({ user }) => {
                 >
                   Baixar
                 </a>
-                {(!parsed.userName || parsed.userName === user?.username || user?.role === 'Admin' || user?.role === 'Gerente') && (
+                {(!parsed.userName || parsed.userName === user?.username || parsed.userName === user?.name || parsed.userName === user?.email || user?.role === 'Admin' || user?.role === 'Gerente') && (
                   <button
                     onClick={() => handleDeleteImage(selectedImage.surgeryId, currentItemStr)}
                     style={{
