@@ -11,63 +11,31 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
   const [facingMode, setFacingMode] = useState('environment'); // 'environment' or 'user'
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
-  const [availableCameras, setAvailableCameras] = useState([]);
-  const [currentCameraIndex, setCurrentCameraIndex] = useState(0);
-
   // Initialize camera
   useEffect(() => {
-    const initCameras = async () => {
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true }); // Request permission first
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(d => d.kind === 'videoinput');
-        setAvailableCameras(videoDevices);
-        
-        if (videoDevices.length > 0) {
-          // Let's try to find a back camera first
-          const backCameraIndex = videoDevices.findIndex(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('traseira'));
-          const startIndex = backCameraIndex !== -1 ? backCameraIndex : 0;
-          setCurrentCameraIndex(startIndex);
-          startCamera(videoDevices[startIndex].deviceId);
-        } else {
-          startCamera(null, facingMode);
-        }
-      } catch (err) {
-        console.error("Failed to enumerate devices", err);
-        startCamera(null, facingMode);
-      }
-    };
-    
-    initCameras();
-
+    startCamera(facingMode);
     return () => stopCamera();
-  }, []);
+  }, [facingMode]);
 
-  const startCamera = async (deviceId = null, mode = 'environment') => {
+  const startCamera = async (mode) => {
     stopCamera();
     try {
       const constraints = {
         video: {
+          facingMode: mode,
           width: { ideal: 1920 },
           height: { ideal: 1080 }
         }
       };
-
-      if (deviceId) {
-        constraints.video.deviceId = { exact: deviceId };
-      } else {
-        constraints.video.facingMode = mode;
-      }
 
       const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
       }
-      
-      const track = mediaStream.getVideoTracks()[0];
     } catch (err) {
       console.error("Error accessing camera: ", err);
+      alert("Não foi possível acessar a câmera. Verifique se o navegador tem permissão.");
     }
   };
 
@@ -80,15 +48,7 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
   };
 
   const toggleCamera = () => {
-    if (availableCameras.length > 1) {
-      const nextIndex = (currentCameraIndex + 1) % availableCameras.length;
-      setCurrentCameraIndex(nextIndex);
-      startCamera(availableCameras[nextIndex].deviceId);
-    } else {
-      setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
-      // If we fallback to facingMode, we should re-trigger startCamera
-      startCamera(null, facingMode === 'environment' ? 'user' : 'environment');
-    }
+    setFacingMode(prev => prev === 'environment' ? 'user' : 'environment');
   };
 
   const capturePhoto = () => {
