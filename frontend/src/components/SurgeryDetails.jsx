@@ -197,15 +197,19 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
       setIsEditingStatus(false);
       return;
     }
-    setLocalSurgery(prev => ({ ...prev, status: newStatus }));
+
+    const selected = statusList.find(s => s.name === newStatus);
+    const newIcon = selected ? selected.icon : '';
+
+    setLocalSurgery(prev => ({ ...prev, status: newStatus, delivery_status: newIcon }));
     if (onUpdate) {
-      onUpdate({ ...localSurgery, status: newStatus });
+      onUpdate({ ...localSurgery, status: newStatus, delivery_status: newIcon });
     }
     setIsEditingStatus(false);
     try {
       const { error } = await supabase
         .from('surgeries')
-        .update({ status: newStatus })
+        .update({ status: newStatus, delivery_status: newIcon })
         .eq('id', localSurgery.id);
       if (error) throw error;
     } catch (error) {
