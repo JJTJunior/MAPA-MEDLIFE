@@ -151,6 +151,52 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     }
   };
 
+  const [isEditingStatus, setIsEditingStatus] = useState(false);
+  const [statusList, setStatusList] = useState([]);
+
+  const fetchStatusList = async () => {
+    try {
+      const { data } = await supabase.from('status').select('name').order('name', { ascending: true });
+      if (data && data.length > 0) {
+        setStatusList(data.map(s => {
+          if (s.name.includes('|')) return s.name.split('|')[1].trim();
+          return s.name.trim();
+        }));
+      } else {
+        setStatusList(['AUTORIZADAS', 'ELETIVA', 'EM SEPARAÇÃO', 'MATERIAL ENTREGUE', 'SEPARADO PARA ENTREGAR', 'SUSPENSA', 'URGÊNCIA']);
+      }
+    } catch (e) {
+      console.error('Erro ao buscar status', e);
+      setStatusList(['AUTORIZADAS', 'ELETIVA', 'EM SEPARAÇÃO', 'MATERIAL ENTREGUE', 'SEPARADO PARA ENTREGAR', 'SUSPENSA', 'URGÊNCIA']);
+    }
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    if (!newStatus) {
+      setIsEditingStatus(false);
+      return;
+    }
+    setLocalSurgery(prev => ({ ...prev, status: newStatus }));
+    if (onUpdate) {
+      onUpdate({ ...localSurgery, status: newStatus });
+    }
+    setIsEditingStatus(false);
+    try {
+      const { error } = await supabase
+        .from('surgeries')
+        .update({ status: newStatus })
+        .eq('id', localSurgery.id);
+      if (error) throw error;
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+      alert('Erro ao atualizar o status.');
+    }
+  };
+
+  useEffect(() => {
+    fetchStatusList();
+  }, []);
+
   useEffect(() => {
     setLocalSurgery(surgery);
   }, [surgery]);
@@ -1133,10 +1179,50 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button 
+              onClick={() => setIsEditingStatus(!isEditingStatus)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: isEditingStatus ? '#3b82f6' : 'var(--text-secondary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '4px',
+                borderRadius: '4px'
+              }}
+              title="Editar Status"
+            >
+              {isEditingStatus ? <CheckCircle size={18} /> : <Edit size={18} />}
+            </button>
             <span style={{ color: 'var(--text-secondary)', fontWeight: 'bold', fontSize: '0.9rem', textTransform: 'uppercase' }}>Status:</span>
-            <span className={`status-badge ${getStatusClass(localSurgery.status)}`} style={{ fontSize: '1rem', padding: '6px 12px' }}>
-              {localSurgery.delivery_status || getLegacyIcon(localSurgery.status)} {localSurgery.status}
-            </span>
+            
+            {isEditingStatus ? (
+              <select
+                value={localSurgery.status || ''}
+                onChange={(e) => handleStatusChange(e.target.value)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '20px',
+                  border: '1px solid var(--border-color)',
+                  backgroundColor: 'var(--surface-color)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                <option value="">Selecione...</option>
+                {statusList.map(st => (
+                  <option key={st} value={st}>{st}</option>
+                ))}
+              </select>
+            ) : (
+              <span className={`status-badge ${getStatusClass(localSurgery.status)}`} style={{ fontSize: '1rem', padding: '6px 12px' }}>
+                {localSurgery.delivery_status || getLegacyIcon(localSurgery.status)} {localSurgery.status}
+              </span>
+            )}
           </div>
         </div>
       </div>
