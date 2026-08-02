@@ -643,21 +643,7 @@ export default function InstrumentalistScreen({ user }) {
                     >
                       {isDelivered ? '🟢 MATERIAL ENTREGUE' : (surgery.status ? `🟠 ${surgery.status.toUpperCase()}` : '⚪ SEM STATUS')}
                     </span>
-                    {(() => {
-                      const anexo2Items = getAnexo2Items(surgery);
-                      if (anexo2Items.length > 0) {
-                        const parsedLast = parsePrintUrl(anexo2Items[anexo2Items.length - 1]);
-                        const deliveredBy = parsedLast.userName;
-                        if (deliveredBy) {
-                          return (
-                            <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600', marginLeft: '4px' }}>
-                              por {deliveredBy}
-                            </div>
-                          );
-                        }
-                      }
-                      return null;
-                    })()}
+                    {/* Name below status badge removed as requested */}
                   </div>
 
                   {/* Render Driver Attachments (anexo3Items) */}
@@ -666,7 +652,17 @@ export default function InstrumentalistScreen({ user }) {
                     if (anexo3Items.length > 0) {
                       return (
                         <div style={{ marginBottom: '16px' }}>
-                          <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '8px' }}>FOTOS DA ENTREGA (MOTORISTA)</div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>FOTOS DA ENTREGA (MOTORISTA)</div>
+                            {(() => {
+                               const parsedLast = parsePrintUrl(anexo3Items[anexo3Items.length - 1]);
+                               const deliveredBy = parsedLast.userName;
+                               if (deliveredBy) {
+                                 return <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600' }}>• por {deliveredBy}</div>;
+                               }
+                               return null;
+                            })()}
+                          </div>
                           <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                             {anexo3Items.map((itemStr, idx) => {
                               const parsed = parsePrintUrl(itemStr);
