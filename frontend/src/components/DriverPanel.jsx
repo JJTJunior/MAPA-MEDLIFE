@@ -426,7 +426,7 @@ const DriverPanel = ({ user }) => {
       </div>
 
       {/* Filters & Search */}
-      <div style={{ padding: '20px' }}>
+      <div style={{ padding: '20px 10px' }}>
         <input
           type="text"
           placeholder="Buscar paciente"
@@ -488,7 +488,7 @@ const DriverPanel = ({ user }) => {
       </div>
 
       {/* List */}
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ padding: '0 10px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {loading ? (
           <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Carregando entregas...</div>
         ) : filteredSurgeries.length === 0 ? (
