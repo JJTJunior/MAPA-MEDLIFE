@@ -62,12 +62,6 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
   const toggleFlash = async () => {
     if (!stream) return;
     const track = stream.getVideoTracks()[0];
-    const capabilities = track.getCapabilities ? track.getCapabilities() : {};
-    
-    if (!capabilities.torch) {
-      alert("Seu dispositivo ou navegador não suporta ativar o flash por aqui.");
-      return;
-    }
 
     try {
       await track.applyConstraints({
@@ -76,7 +70,8 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
       setIsFlashOn(!isFlashOn);
     } catch (err) {
       console.error("Erro ao ativar lanterna", err);
-      alert("Erro ao ativar a lanterna.");
+      // Some browsers require the ImageCapture API to be instantiated first for torch to work, or it just might not be supported.
+      alert("O seu navegador bloqueou ou não suporta a lanterna diretamente. Tente usar outro navegador ou iluminar o ambiente.");
     }
   };
 
