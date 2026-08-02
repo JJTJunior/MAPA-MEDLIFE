@@ -397,7 +397,7 @@ const DriverPanel = ({ user }) => {
             </div>
             <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.8, marginTop: '4px' }}>{getDayName()}</p>
           </div>
-          <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px' }}>
+          <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', flexShrink: 0, marginLeft: '12px' }}>
             <Search size={20} color="white" />
           </div>
         </div>
@@ -530,15 +530,15 @@ const DriverPanel = ({ user }) => {
                 boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
                 border: '1px solid #f1f5f9'
               }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                  <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+                  <div style={{ flex: '1 1 auto', minWidth: '0' }}>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>PACIENTE</div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px' }}>{surgery.patient}</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px', wordBreak: 'break-word' }}>{surgery.patient}</div>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', flexShrink: 0 }}>
                     <span 
                       className={`status-badge ${isDelivered ? 'status-delivered' : 'status-ready'}`} 
-                      style={{ padding: '6px 12px' }}
+                      style={{ padding: '6px 12px', whiteSpace: 'normal', textAlign: 'right' }}
                     >
                       {isDelivered ? '🟢 MATERIAL ENTREGUE' : '🟠 SEPARADO PARA ENTREGAR'}
                     </span>
@@ -553,13 +553,13 @@ const DriverPanel = ({ user }) => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>HOSPITAL</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span style={{ color: '#94a3b8' }}>♡</span> {surgery.hospital}
+                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
+                      <span style={{ color: '#94a3b8', marginTop: '2px' }}>♡</span> <span style={{ wordBreak: 'break-word' }}>{surgery.hospital}</span>
                     </div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>MÉDICO</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500' }}>{surgery.doctor}</div>
+                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', wordBreak: 'break-word' }}>{surgery.doctor}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>DATA</div>
