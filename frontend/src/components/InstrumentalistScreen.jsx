@@ -382,13 +382,14 @@ export default function InstrumentalistScreen({ user }) {
   };
 
   return (
-    <div style={{ backgroundColor: '#f3f4f6', minHeight: '100%', padding: '20px' }}>
+    <div className="mobile-edge-to-edge" style={{ backgroundColor: '#f3f4f6', minHeight: '100%', paddingBottom: '80px' }}>
       
       {/* HEADER CARD */}
       <div style={{ 
         backgroundColor: '#1e40af', // Azul da logo
-        borderRadius: '12px',
-        padding: '24px',
+        borderBottomLeftRadius: '20px',
+        borderBottomRightRadius: '20px',
+        padding: '24px 20px',
         color: '#fff',
         boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
         marginBottom: '20px',
@@ -480,7 +481,7 @@ export default function InstrumentalistScreen({ user }) {
       </div>
 
       {/* FILTER CONTROLS */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '30px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '30px', padding: '0 4px' }}>
         
         {/* Search Input */}
         <input 
@@ -573,7 +574,7 @@ export default function InstrumentalistScreen({ user }) {
             Nenhuma entrega encontrada.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '0 4px' }}>
             {filteredSurgeries.filter(s => {
               const anexo2Items = s.comanda_urls && Array.isArray(s.comanda_urls) 
                 ? s.comanda_urls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]')) 
