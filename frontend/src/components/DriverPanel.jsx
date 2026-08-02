@@ -397,9 +397,7 @@ const DriverPanel = ({ user }) => {
             </div>
             <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.8, marginTop: '4px' }}>{getDayName()}</p>
           </div>
-          <div style={{ backgroundColor: 'rgba(255,255,255,0.1)', padding: '10px', borderRadius: '12px', flexShrink: 0, marginLeft: '12px' }}>
-            <Search size={20} color="white" />
-          </div>
+          <div style={{ width: '40px' }}></div>
         </div>
 
         {/* Summary Cards */}

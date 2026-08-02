@@ -413,21 +413,7 @@ export default function InstrumentalistScreen({ user }) {
               {getFormatDisplayDate()}
             </p>
           </div>
-          
-          <button style={{
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            border: 'none',
-            borderRadius: '8px',
-            width: '40px',
-            height: '40px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: '#fff'
-          }}>
-            <Search size={20} />
-          </button>
+          <div style={{ width: '40px' }}></div>
         </div>
 
         {/* METRICS ROW */}
