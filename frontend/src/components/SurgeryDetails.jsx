@@ -158,16 +158,37 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
     try {
       const { data } = await supabase.from('status').select('name').order('name', { ascending: true });
       if (data && data.length > 0) {
-        setStatusList(data.map(s => {
-          if (s.name.includes('|')) return s.name.split('|')[1].trim();
-          return s.name.trim();
-        }));
+        const fetchedStatuses = data.map(s => {
+          if (s.name.includes('|')) {
+            const [icon, name] = s.name.split('|');
+            return { icon, name: name.trim() };
+          }
+          return { icon: '⚪', name: s.name.trim() };
+        });
+        fetchedStatuses.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+        setStatusList(fetchedStatuses);
       } else {
-        setStatusList(['AUTORIZADAS', 'ELETIVA', 'EM SEPARAÇÃO', 'MATERIAL ENTREGUE', 'SEPARADO PARA ENTREGAR', 'SUSPENSA', 'URGÊNCIA']);
+        setStatusList([
+          { icon: '🟡', name: 'AUTORIZADAS' },
+          { icon: '⚪', name: 'ELETIVA' },
+          { icon: '🔵', name: 'EM SEPARAÇÃO' },
+          { icon: '🟢', name: 'MATERIAL ENTREGUE' },
+          { icon: '🟠', name: 'SEPARADO PARA ENTREGAR' },
+          { icon: '🔴', name: 'SUSPENSA' },
+          { icon: '🟣', name: 'URGÊNCIA' }
+        ]);
       }
     } catch (e) {
       console.error('Erro ao buscar status', e);
-      setStatusList(['AUTORIZADAS', 'ELETIVA', 'EM SEPARAÇÃO', 'MATERIAL ENTREGUE', 'SEPARADO PARA ENTREGAR', 'SUSPENSA', 'URGÊNCIA']);
+      setStatusList([
+        { icon: '🟡', name: 'AUTORIZADAS' },
+        { icon: '⚪', name: 'ELETIVA' },
+        { icon: '🔵', name: 'EM SEPARAÇÃO' },
+        { icon: '🟢', name: 'MATERIAL ENTREGUE' },
+        { icon: '🟠', name: 'SEPARADO PARA ENTREGAR' },
+        { icon: '🔴', name: 'SUSPENSA' },
+        { icon: '🟣', name: 'URGÊNCIA' }
+      ]);
     }
   };
 
@@ -1214,8 +1235,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 }}
               >
                 <option value="">Selecione...</option>
-                {statusList.map(st => (
-                  <option key={st} value={st}>{st}</option>
+                {statusList.map((st, idx) => (
+                  <option key={idx} value={st.name}>{st.icon} {st.name}</option>
                 ))}
               </select>
             ) : (
