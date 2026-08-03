@@ -63,7 +63,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
   const [isOnCallModalOpen, setIsOnCallModalOpen] = useState(false);
   const [isOnCallHistoryModalOpen, setIsOnCallHistoryModalOpen] = useState(false);
   const [periodFilter, setPeriodFilter] = useState('current_month');
-  const [exportModalState, setExportModalState] = useState({ isOpen: false, surgeryType: '' });
+  const [exportModalState, setExportModalState] = useState({ isOpen: false, filters: null, title: '' });
   const [printData, setPrintData] = useState(null);
   const [printTitle, setPrintTitle] = useState('');
   const [isExporting, setIsExporting] = useState(null);
@@ -177,6 +177,19 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
     fetchStats();
   }, [user, periodFilter]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('dashboard_surgeries_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'surgeries' }, () => {
+        fetchStats();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const getStartDate = () => {
     const d = new Date();
     if (periodFilter === 'current_month') d.setDate(1);
@@ -253,7 +266,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
     return labels[periodFilter] || 'Período Personalizado';
   };
 
-  const exportData = async (format, type) => {
+  const exportData = async (format, filters) => {
     setIsExporting(format);
     try {
       let q = supabase.from('surgeries').select('*');
@@ -264,7 +277,20 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       const endDate = getEndDate();
       if (startDate) q = q.gte('date', startDate);
       if (endDate) q = q.lte('date', endDate);
-      if (type) q = q.ilike('surgery_type', type);
+      
+      if (filters) {
+        if (filters.hospital) q = q.ilike('hospital', `%${filters.hospital}%`);
+        if (filters.insurance) q = q.ilike('insurance', `%${filters.insurance}%`);
+        if (filters.surgery_type) q = q.ilike('surgery_type', `%${filters.surgery_type}%`);
+        if (filters.doctor) q = q.ilike('doctor', `%${filters.doctor}%`);
+        if (filters.carater) {
+          if (filters.carater === 'URGÊNCIA' || filters.carater === 'URGENCIA') {
+            q = q.eq('urgency', true);
+          } else if (filters.carater === 'JUDICIAL') {
+            q = q.eq('judicial', true);
+          }
+        }
+      }
       
       q = q.order('date', { ascending: true }).order('time', { ascending: true }).limit(5000);
       
@@ -278,7 +304,8 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       }
 
       const periodLabel = getPeriodLabel();
-      const title = `Relação de Cirurgia por tipo - ${type} - ${periodLabel}`;
+      const exportTitle = exportModalState.title ? exportModalState.title : (filters?.surgery_type || 'Geral');
+      const title = `Relatorio - ${exportTitle} - ${periodLabel}`;
 
       if (format === 'excel') {
         const exportDataRows = data.map(item => ({
@@ -311,7 +338,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
         const fileName = `${title}.xlsx`;
         XLSX.writeFile(workbook, fileName);
         setIsExporting(null);
-        setExportModalState({ isOpen: false, surgeryType: '' });
+        setExportModalState({ isOpen: false, filters: null, title: '' });
       } else if (format === 'pdf') {
         setPrintTitle(title);
         setPrintData(data);
@@ -331,7 +358,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
           html2pdf().set(opt).from(element).save().then(() => {
             setPrintData(null);
             setIsExporting(null);
-            setExportModalState({ isOpen: false, surgeryType: '' });
+            setExportModalState({ isOpen: false, filters: null, title: '' });
           });
         }, 500);
       }
@@ -664,7 +691,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             {stats.topHospitals.length > 0 ? (
               <div className="chart-bar-list">
                 {stats.topHospitals.map((item, idx) => (
-                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ hospital: item.name })}>
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => setExportModalState({ isOpen: true, filters: { hospital: item.name }, title: item.name })}>
                     <span className="chart-bar-label" title={item.name}>{item.name}</span>
                     <div className="chart-bar-progress-bg">
                       <div 
@@ -691,7 +718,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             {stats.topDoctorsOrtopedia && stats.topDoctorsOrtopedia.length > 0 ? (
               <div className="chart-bar-list">
                 {stats.topDoctorsOrtopedia.map((item, idx) => (
-                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name, surgery_type: 'ORTOPEDIA' })}>
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => setExportModalState({ isOpen: true, filters: { doctor: item.name, surgery_type: 'ORTOPEDIA' }, title: item.name })}>
                     <span className="chart-bar-label" title={item.name}>{item.name}</span>
                     <div className="chart-bar-progress-bg">
                       <div 
@@ -718,7 +745,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             {stats.topDoctorsBuco && stats.topDoctorsBuco.length > 0 ? (
               <div className="chart-bar-list">
                 {stats.topDoctorsBuco.map((item, idx) => (
-                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ doctor: item.name, surgery_type: 'BUCOMAXILO' })}>
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => setExportModalState({ isOpen: true, filters: { doctor: item.name, surgery_type: 'BUCOMAXILO' }, title: item.name })}>
                     <span className="chart-bar-label" title={item.name}>{item.name}</span>
                     <div className="chart-bar-progress-bg">
                       <div 
@@ -823,7 +850,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             {stats.topInsurances.length > 0 ? (
               <div className="chart-bar-list">
                 {stats.topInsurances.map((item, idx) => (
-                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ insurance: item.name })}>
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => setExportModalState({ isOpen: true, filters: { insurance: item.name }, title: item.name })}>
                     <span className="chart-bar-label" title={item.name}>{item.name}</span>
                     <div className="chart-bar-progress-bg">
                       <div 
@@ -852,7 +879,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             {stats.topSurgeryTypes.length > 0 ? (
               <div className="chart-bar-list">
                 {stats.topSurgeryTypes.map((item, idx) => {
-                  const isSelected = exportModalState.isOpen && exportModalState.surgeryType === item.name;
+                  const isSelected = exportModalState.isOpen && exportModalState.filters?.surgery_type === item.name;
                   const nameUpper = item.name.toUpperCase();
                   const getBarColor = () => {
                     if (nameUpper.includes('ORTOPEDIA') || nameUpper.includes('ORTOPÉDICA')) return 'linear-gradient(90deg, #8b5cf6 0%, #6d28d9 100%)';
@@ -878,7 +905,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
                         boxShadow: isSelected ? `0 4px 12px ${selColors.shadow}` : 'none',
                         border: isSelected ? `1px solid ${selColors.border}` : '1px solid transparent'
                       }} 
-                      onClick={() => setExportModalState({ isOpen: true, surgeryType: item.name })}
+                      onClick={() => setExportModalState({ isOpen: true, filters: { surgery_type: item.name }, title: item.name })}
                     >
                       <span className="chart-bar-label" title={item.name}>{item.name}</span>
                       <div className="chart-bar-progress-bg">
@@ -909,7 +936,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
             {stats.topCaraters && stats.topCaraters.length > 0 ? (
               <div className="chart-bar-list">
                 {stats.topCaraters.map((item, idx) => (
-                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => handleNavigate({ carater: item.name })}>
+                  <div key={idx} className="chart-bar-item" style={{ cursor: 'pointer' }} onClick={() => setExportModalState({ isOpen: true, filters: { carater: item.name }, title: item.name })}>
                     <span className="chart-bar-label" title={item.name}>{item.name}</span>
                     <div className="chart-bar-progress-bg">
                       <div 
@@ -1045,13 +1072,13 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       {exportModalState.isOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div className="glass-panel" style={{ width: '90%', maxWidth: '320px', padding: '24px', textAlign: 'center', borderRadius: '16px', background: 'var(--bg-primary)' }}>
-            <h3 style={{ marginBottom: '10px', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}>Exportar {exportModalState.surgeryType}</h3>
+            <h3 style={{ marginBottom: '10px', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}>Exportar {exportModalState.title}</h3>
             <p style={{ marginBottom: '24px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Como deseja exportar os dados filtrados?</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button 
                 className="btn-primary" 
                 style={{ background: '#ef4444', border: 'none' }} 
-                onClick={() => exportData('pdf', exportModalState.surgeryType)}
+                onClick={() => exportData('pdf', exportModalState.filters)}
                 disabled={!!isExporting}
               >
                 {isExporting === 'pdf' ? 'Gerando PDF...' : 'Gerar PDF'}
@@ -1059,7 +1086,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
               <button 
                 className="btn-primary" 
                 style={{ background: '#10b981', border: 'none' }}
-                onClick={() => exportData('excel', exportModalState.surgeryType)}
+                onClick={() => exportData('excel', exportModalState.filters)}
                 disabled={!!isExporting}
               >
                 {isExporting === 'excel' ? 'Gerando Excel...' : 'Gerar Excel'}
@@ -1068,15 +1095,15 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
                 className="btn-primary" 
                 style={{ background: '#3b82f6', border: 'none' }}
                 onClick={() => {
-                  handleNavigate({ surgery_type: exportModalState.surgeryType });
-                  setExportModalState({ isOpen: false, surgeryType: '' });
+                  handleNavigate(exportModalState.filters);
+                  setExportModalState({ isOpen: false, filters: null, title: '' });
                 }}
               >
                 <Map size={16} /> Dados no Mapa
               </button>
               <button 
                 className="btn-secondary" 
-                onClick={() => setExportModalState({ isOpen: false, surgeryType: '' })}
+                onClick={() => setExportModalState({ isOpen: false, filters: null, title: '' })}
                 disabled={!!isExporting}
               >
                 Cancelar

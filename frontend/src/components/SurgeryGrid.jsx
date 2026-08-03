@@ -15,7 +15,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
   const [totalCount, setTotalCount] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
   const [viewMode, setViewMode] = useState('full'); // 'full' ou 'compact'
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
   const [shareModalData, setShareModalData] = useState(null);
   const pageSize = viewMode === 'compact' ? 200 : 15;
   
@@ -246,6 +246,25 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
   }, [currentPage]);
 
   useEffect(() => {
+    const channel = supabase
+      .channel('grid_surgeries_changes')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'surgeries' }, (payload) => {
+        setSurgeries(prev => prev.map(s => s.id === payload.new.id ? { ...s, ...payload.new } : s));
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'surgeries' }, () => {
+        fetchSurgeries();
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'surgeries' }, (payload) => {
+        setSurgeries(prev => prev.filter(s => s.id !== payload.old.id));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!loading && autoExportAction) {
       const action = autoExportAction;
       setAutoExportAction(null); // Clear to avoid loop
@@ -413,7 +432,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
   const handleDownloadTemplate = () => {
     const templateData = [{
       'Paciente': 'Nome Exemplo',
-      'Médico / Buco': 'Dr. Exemplo',
+      'Médico': 'Dr. Exemplo',
       'Hospital': 'Hospital Exemplo',
       'Data (DD/MM/AAAA)': '30/12/2026',
       'Hora (HH:MM)': '08:30',

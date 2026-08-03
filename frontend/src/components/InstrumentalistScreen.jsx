@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import { Search, Calendar as CalendarIcon, FileText, Camera, X, Plus } from 'lucide-react';
+import { Search, Calendar as CalendarIcon, FileText, Camera, X, Plus, Check } from 'lucide-react';
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import DocumentScanner from './DocumentScanner';
 
@@ -87,6 +87,19 @@ export default function InstrumentalistScreen({ user }) {
     if (user?.name) {
       fetchData();
     }
+    
+    const channel = supabase
+      .channel('instrumentalist_surgeries_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'surgeries' }, () => {
+        if (user?.name) {
+          fetchData();
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const fetchData = async () => {
@@ -173,11 +186,9 @@ export default function InstrumentalistScreen({ user }) {
     let pendentesCount = 0;
     
     filtered.forEach(item => {
-      const anexo2Items = item.comanda_urls && Array.isArray(item.comanda_urls) 
-        ? item.comanda_urls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]')) 
-        : [];
+      const isDeliv = item.comanda_urls && item.comanda_urls.includes('[FINALIZADO_INSTRUMENTADOR]');
       
-      if (anexo2Items.length > 0) {
+      if (isDeliv) {
         entreguesCount++;
       } else {
         pendentesCount++;
@@ -207,7 +218,7 @@ export default function InstrumentalistScreen({ user }) {
   // Funções para Anexo 2
   const getAnexo2Items = (item) => {
     if (item.comanda_urls && Array.isArray(item.comanda_urls)) {
-      return item.comanda_urls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]'));
+      return item.comanda_urls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]') && url !== '[FINALIZADO_INSTRUMENTADOR]');
     }
     return [];
   };
@@ -252,7 +263,13 @@ export default function InstrumentalistScreen({ user }) {
       const surgeryToUpdate = surgeries.find(s => s.id === surgeryId);
       if (!surgeryToUpdate) return;
       
-      const updatedUrls = (surgeryToUpdate.comanda_urls || []).filter(item => item !== fullString);
+      let updatedUrls = (surgeryToUpdate.comanda_urls || []).filter(item => item !== fullString);
+      
+      const remainingAnexo2 = updatedUrls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]') && url !== '[FINALIZADO_INSTRUMENTADOR]');
+      
+      if (remainingAnexo2.length === 0) {
+        updatedUrls = updatedUrls.filter(url => url !== '[FINALIZADO_INSTRUMENTADOR]');
+      }
       
       const { error } = await supabase.from('surgeries')
         .update({ comanda_urls: updatedUrls })
@@ -270,6 +287,34 @@ export default function InstrumentalistScreen({ user }) {
     } catch (err) {
       console.error('Erro ao excluir anexo:', err);
       alert('Erro ao excluir anexo: ' + err.message);
+    }
+  };
+
+  const handleFinalizeSurgery = async (surgeryId) => {
+    if (!window.confirm('Tem certeza que deseja finalizar a anexação desta cirurgia?')) return;
+    
+    try {
+      const surgeryToUpdate = surgeries.find(s => s.id === surgeryId);
+      const existingUrls = surgeryToUpdate?.comanda_urls || [];
+      const newUrls = [...existingUrls, '[FINALIZADO_INSTRUMENTADOR]'];
+
+      const { error } = await supabase.from('surgeries')
+        .update({ 
+          comanda_urls: newUrls
+        })
+        .eq('id', surgeryId);
+        
+      if (error) throw error;
+      
+      setSurgeries(prev => prev.map(s => {
+        if (s.id === surgeryId) {
+          return { ...s, comanda_urls: newUrls };
+        }
+        return s;
+      }));
+    } catch (err) {
+      console.error('Erro ao finalizar:', err);
+      alert('Erro ao finalizar: ' + err.message);
     }
   };
 
@@ -581,11 +626,8 @@ export default function InstrumentalistScreen({ user }) {
             Carregando dados...
           </div>
         ) : filteredSurgeries.filter(s => {
-          const anexo2Items = s.comanda_urls && Array.isArray(s.comanda_urls) 
-            ? s.comanda_urls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]')) 
-            : [];
-          const isPending = anexo2Items.length === 0;
-          const isDelivered = anexo2Items.length > 0;
+          const isDelivered = s.comanda_urls && s.comanda_urls.includes('[FINALIZADO_INSTRUMENTADOR]');
+          const isPending = !isDelivered;
           if (statusFilter === 'pending') return isPending;
           if (statusFilter === 'delivered') return isDelivered;
           return true; // all
@@ -596,11 +638,8 @@ export default function InstrumentalistScreen({ user }) {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '0 4px' }}>
             {filteredSurgeries.filter(s => {
-              const anexo2Items = s.comanda_urls && Array.isArray(s.comanda_urls) 
-                ? s.comanda_urls.filter(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]')) 
-                : [];
-              const isPending = anexo2Items.length === 0;
-              const isDelivered = anexo2Items.length > 0;
+              const isDelivered = s.comanda_urls && s.comanda_urls.includes('[FINALIZADO_INSTRUMENTADOR]');
+              const isPending = !isDelivered;
               if (statusFilter === 'pending') return isPending;
               if (statusFilter === 'delivered') return isDelivered;
               return true; // all
@@ -786,20 +825,79 @@ export default function InstrumentalistScreen({ user }) {
 
                   {(() => {
                     const anexo2Items = getAnexo2Items(surgery);
-                    if (anexo2Items.length > 0) {
+                    const isDeliv = surgery.comanda_urls && surgery.comanda_urls.includes('[FINALIZADO_INSTRUMENTADOR]');
+
+                    if (isDeliv) {
                       return (
-                        <button 
-                          onClick={() => openFilePicker(surgery.id)}
-                          disabled={uploadingId === surgery.id}
-                          style={{
-                            width: '100%', padding: '12px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
-                            borderRadius: '8px', border: 'none', fontWeight: '600', fontSize: '0.9rem',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                            cursor: 'pointer', transition: 'background-color 0.2s'
-                          }}
-                        >
-                          <Camera size={18} /> {uploadingId === surgery.id ? 'Enviando...' : 'Ver / adicionar fotos'}
-                        </button>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button 
+                            onClick={async () => {
+                              if(!window.confirm('Tem certeza que deseja reverter a finalização e voltar para Pendentes?')) return;
+                              try {
+                                const surgeryToUpdate = surgeries.find(s => s.id === surgery.id);
+                                const updatedUrls = (surgeryToUpdate?.comanda_urls || []).filter(url => url !== '[FINALIZADO_INSTRUMENTADOR]');
+                                const { error } = await supabase.from('surgeries').update({ comanda_urls: updatedUrls }).eq('id', surgery.id);
+                                if (error) throw error;
+                                setSurgeries(prev => prev.map(s => s.id === surgery.id ? { ...s, comanda_urls: updatedUrls } : s));
+                              } catch (err) {
+                                console.error('Erro ao reverter finalização:', err);
+                                alert('Erro ao reverter: ' + err.message);
+                              }
+                            }}
+                            disabled={uploadingId === surgery.id}
+                            style={{
+                              flex: 1, padding: '14px', backgroundColor: '#ef4444', color: 'white',
+                              borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                              cursor: 'pointer', transition: 'background-color 0.2s',
+                              boxShadow: '0 4px 6px rgba(239, 68, 68, 0.2)'
+                            }}
+                          >
+                            <X size={18} /> Reverter
+                          </button>
+                          <button 
+                            onClick={() => openFilePicker(surgery.id)}
+                            disabled={uploadingId === surgery.id}
+                            style={{
+                              flex: 2, padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                              borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                              cursor: 'pointer', transition: 'background-color 0.2s'
+                            }}
+                          >
+                            <Camera size={18} /> {uploadingId === surgery.id ? 'Enviando...' : 'Mais Fotos'}
+                          </button>
+                        </div>
+                      );
+                    } else if (anexo2Items.length > 0) {
+                      return (
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          <button 
+                            onClick={() => handleFinalizeSurgery(surgery.id)}
+                            disabled={uploadingId === surgery.id}
+                            style={{
+                              flex: 2, padding: '14px', backgroundColor: '#10b981', color: 'white',
+                              borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                              cursor: 'pointer', transition: 'background-color 0.2s',
+                              boxShadow: '0 4px 6px rgba(16, 185, 129, 0.2)'
+                            }}
+                          >
+                            <Check size={18} /> Finalizar
+                          </button>
+                          <button 
+                            onClick={() => openFilePicker(surgery.id)}
+                            disabled={uploadingId === surgery.id}
+                            style={{
+                              flex: 1, padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                              borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                              cursor: 'pointer', transition: 'background-color 0.2s'
+                            }}
+                          >
+                            <Camera size={18} /> Mais Fotos
+                          </button>
+                        </div>
                       );
                     }
                     return (

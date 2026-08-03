@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Search, Calendar, Clock, Camera, Plus, Check, X, FileText } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import DocumentScanner from './DocumentScanner';
 
 const isDocumentFile = (url) => {
   if (!url) return false;
@@ -74,6 +75,7 @@ const DriverPanel = ({ user }) => {
   const [pendingAttachment, setPendingAttachment] = useState(null);
   const [attachmentNameInput, setAttachmentNameInput] = useState('');
   const [attachmentNameError, setAttachmentNameError] = useState('');
+  const [showScanner, setShowScanner] = useState(false);
   
   const parsePrintUrl = (item) => {
     if (!item) return { url: '', name: '' };
@@ -116,6 +118,25 @@ const DriverPanel = ({ user }) => {
   useEffect(() => {
     fetchSurgeries();
   }, [dateFilter, customDate]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('driver_surgeries_changes')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'surgeries' }, (payload) => {
+        setSurgeries(prev => prev.map(s => s.id === payload.new.id ? { ...s, ...payload.new } : s));
+      })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'surgeries' }, () => {
+        fetchSurgeries();
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'surgeries' }, (payload) => {
+        setSurgeries(prev => prev.filter(s => s.id !== payload.old.id));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const getLocalDateRange = (filter) => {
     const now = new Date();
@@ -191,7 +212,15 @@ const DriverPanel = ({ user }) => {
     if (!files || files.length === 0 || !selectedSurgeryId) return;
     setAttachmentNameInput('');
     setAttachmentNameError('');
-    setPendingAttachment({ files: Array.from(files), surgeryId: selectedSurgeryId });
+    setPendingAttachment({ files: Array.from(files), surgeryId: selectedSurgeryId, isPdfScan: false });
+  };
+
+  const handlePdfScanFinish = async (pdfBlob) => {
+    setShowScanner(false);
+    if (!selectedSurgeryId) return;
+    setAttachmentNameInput('');
+    setAttachmentNameError('');
+    setPendingAttachment({ files: [pdfBlob], surgeryId: selectedSurgeryId, isPdfScan: true });
   };
 
   const handleConfirmAttachmentName = async () => {
@@ -238,16 +267,18 @@ const DriverPanel = ({ user }) => {
         });
 
         let fileToUpload = file;
-        if (file.type.startsWith('image/')) {
+        if (!item.isPdfScan && file.type && file.type.startsWith('image/')) {
           fileToUpload = await compressImage(file, 1200, 1200, 0.7);
         }
 
-        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : 'png';
+        const fileExt = fileToUpload.name ? fileToUpload.name.split('.').pop() : (item.isPdfScan ? 'pdf' : 'png');
         const fileName = `anexo3_${Date.now()}_${Math.floor(Math.random() * 10000)}_${i}.${fileExt}`;
+
+        const uploadOptions = item.isPdfScan ? { contentType: 'application/pdf' } : undefined;
 
         const { error: uploadError } = await supabase.storage
           .from('attachments')
-          .upload(fileName, fileToUpload);
+          .upload(fileName, fileToUpload, uploadOptions);
 
         if (uploadError) throw uploadError;
 
@@ -272,9 +303,7 @@ const DriverPanel = ({ user }) => {
 
       const { error: updateError } = await supabase.from('surgeries')
         .update({ 
-          comanda_urls: updatedUrls,
-          status: 'MATERIAL ENTREGUE',
-          delivery_status: '🟢'
+          comanda_urls: updatedUrls
         })
         .eq('id', surgeryId);
 
@@ -283,7 +312,7 @@ const DriverPanel = ({ user }) => {
       // Update local state
       setSurgeries(prev => prev.map(s => {
         if (s.id === surgeryId) {
-          return { ...s, comanda_urls: updatedUrls, status: 'MATERIAL ENTREGUE', delivery_status: '🟢' };
+          return { ...s, comanda_urls: updatedUrls };
         }
         return s;
       }));
@@ -346,6 +375,31 @@ const DriverPanel = ({ user }) => {
     } catch (err) {
       console.error('Erro ao excluir anexo:', err);
       alert('Erro ao excluir anexo: ' + err.message);
+    }
+  };
+
+  const handleFinalizeDelivery = async (surgeryId) => {
+    if (!window.confirm('Tem certeza que deseja finalizar a entrega deste material?')) return;
+    
+    try {
+      const { error } = await supabase.from('surgeries')
+        .update({ 
+          status: 'MATERIAL ENTREGUE',
+          delivery_status: '🟢'
+        })
+        .eq('id', surgeryId);
+        
+      if (error) throw error;
+      
+      setSurgeries(prev => prev.map(s => {
+        if (s.id === surgeryId) {
+          return { ...s, status: 'MATERIAL ENTREGUE', delivery_status: '🟢' };
+        }
+        return s;
+      }));
+    } catch (err) {
+      console.error('Erro ao finalizar entrega:', err);
+      alert('Erro ao finalizar entrega: ' + err.message);
     }
   };
 
@@ -483,16 +537,30 @@ const DriverPanel = ({ user }) => {
           ))}
         </div>
 
-        <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '10px 16px' }}>
-          <Calendar size={16} color="#64748b" style={{ marginRight: '8px' }} />
+        <div style={{ marginTop: '12px', position: 'relative' }}>
+          <Calendar size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           <input 
             type="date" 
+            className="form-input"
             value={customDate}
             onChange={(e) => {
               setCustomDate(e.target.value);
               setDateFilter('custom');
             }}
-            style={{ border: 'none', outline: 'none', fontSize: '0.85rem', color: '#475569', width: '100%', background: 'transparent' }}
+            style={{ 
+              width: '100%', 
+              paddingLeft: '36px',
+              paddingRight: '16px',
+              height: '46px', 
+              borderRadius: '12px', 
+              border: '1px solid #e2e8f0',
+              backgroundColor: '#ffffff',
+              color: '#475569',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              fontFamily: 'inherit',
+              appearance: 'none',
+              WebkitAppearance: 'none'
+            }}
           />
         </div>
       </div>
@@ -591,34 +659,34 @@ const DriverPanel = ({ user }) => {
                 </div>
 
                 {/* Render Attachments */}
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
-                  {isDelivered && anexo3Items.map((itemStr, idx) => {
-                    const parsed = parsePrintUrl(itemStr);
-                    return (
-                      <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
-                        <div 
-                          onClick={() => handleOpenImage(surgery.id, anexo3Items, idx)}
-                          style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
-                        >
-                          {isDocumentFile(parsed.url) ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                              <FileText size={20} style={{ color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }} />
-                              <span style={{ fontSize: '0.55rem', fontWeight: 'bold', color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }}>
-                                {parsed.url.toLowerCase().includes('.pdf') ? 'PDF' : 'WORD'}
-                              </span>
-                            </div>
-                          ) : (
-                            <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          )}
+                {anexo3Items.length > 0 && (
+                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap' }}>
+                    {anexo3Items.map((itemStr, idx) => {
+                      const parsed = parsePrintUrl(itemStr);
+                      return (
+                        <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
+                          <div 
+                            onClick={() => handleOpenImage(surgery.id, anexo3Items, idx)}
+                            style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
+                          >
+                            {isDocumentFile(parsed.url) ? (
+                              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                                <FileText size={20} style={{ color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }} />
+                                <span style={{ fontSize: '0.55rem', fontWeight: 'bold', color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }}>
+                                  {parsed.url.toLowerCase().includes('.pdf') ? 'PDF' : 'WORD'}
+                                </span>
+                              </div>
+                            ) : (
+                              <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            )}
+                          </div>
+                          <div style={{ fontSize: '0.55rem', color: '#64748b', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
+                            {parsed.name || `Anexo ${idx + 1}`}
+                          </div>
                         </div>
-                        <div style={{ fontSize: '0.55rem', color: '#64748b', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
-                          {parsed.name || `Anexo ${idx + 1}`}
-                        </div>
-                      </div>
-                    );
-                  })}
-                  
-                  {isDelivered && (
+                      );
+                    })}
+                    
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
                       <button 
                         onClick={() => openFilePicker(surgery.id)}
@@ -633,8 +701,8 @@ const DriverPanel = ({ user }) => {
                       </button>
                       <div style={{ fontSize: '0.55rem', color: 'transparent' }}>+</div>
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {isDelivered ? (
                   <button 
@@ -649,6 +717,34 @@ const DriverPanel = ({ user }) => {
                   >
                     <Camera size={18} /> {uploadingId === surgery.id ? 'Enviando...' : 'Ver / adicionar fotos'}
                   </button>
+                ) : anexo3Items.length > 0 ? (
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button 
+                      onClick={() => handleFinalizeDelivery(surgery.id)}
+                      disabled={uploadingId === surgery.id}
+                      style={{
+                        flex: 2, padding: '14px', backgroundColor: '#10b981', color: 'white',
+                        borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                        cursor: 'pointer', transition: 'background-color 0.2s',
+                        boxShadow: '0 4px 6px rgba(16, 185, 129, 0.2)'
+                      }}
+                    >
+                      <Check size={18} /> Finalizar Entrega
+                    </button>
+                    <button 
+                      onClick={() => openFilePicker(surgery.id)}
+                      disabled={uploadingId === surgery.id}
+                      style={{
+                        flex: 1, padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                        borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                        cursor: 'pointer', transition: 'background-color 0.2s'
+                      }}
+                    >
+                      <Camera size={18} /> Mais Fotos
+                    </button>
+                  </div>
                 ) : (
                   <button 
                     onClick={() => openFilePicker(surgery.id)}
@@ -885,6 +981,21 @@ const DriverPanel = ({ user }) => {
             </button>
             
             <button
+              onClick={() => {
+                setSelectedSurgeryId(uploadOptionsModal.surgeryId);
+                setUploadOptionsModal(null);
+                setShowScanner(true);
+              }}
+              style={{
+                padding: '14px', backgroundColor: '#10b981', color: 'white',
+                borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
+              }}
+            >
+              <FileText size={18} /> Digitalizar PDF
+            </button>
+            
+            <button
               onClick={() => setUploadOptionsModal(null)}
               style={{
                 marginTop: '8px', padding: '10px', backgroundColor: 'transparent', color: '#64748b',
@@ -1091,6 +1202,16 @@ const DriverPanel = ({ user }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {showScanner && (
+        <DocumentScanner 
+          onFinish={handlePdfScanFinish}
+          onCancel={() => {
+            setShowScanner(false);
+            setSelectedSurgeryId(null);
+          }}
+        />
       )}
 
     </div>

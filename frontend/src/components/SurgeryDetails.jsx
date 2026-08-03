@@ -123,8 +123,16 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
   const [isDropzoneFocused3, setIsDropzoneFocused3] = useState(false);
   const [isEditingChecklists, setIsEditingChecklists] = useState(false);
 
-  const handleToggleChecklist = async (field) => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const handleToggleChecklist = async (field, permKey) => {
     if (!isEditingChecklists) return;
+    if (!isFieldEditable(permKey)) {
+      alert('Você não tem permissão para editar este checklist.');
+      return;
+    }
     
     const newValue = !localSurgery[field];
     
@@ -463,7 +471,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const valueToStore = displayName ? `${publicUrl}|||${displayName}` : publicUrl;
+        const uName = user?.name || user?.username || 'Usuário';
+        const valueToStore = displayName ? `${publicUrl}|||${displayName}|||UPLOADED_BY:${uName}` : `${publicUrl}|||${fileName}|||UPLOADED_BY:${uName}`;
         newValuesToStore.push(valueToStore);
       }
 
@@ -642,7 +651,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const valueToStore = displayName ? `${publicUrl}?anexo=3|||${displayName}` : `${publicUrl}?anexo=3`;
+        const uName = user?.name || user?.username || 'Usuário';
+        const valueToStore = displayName ? `${publicUrl}?anexo=3|||${displayName}|||UPLOADED_BY:${uName}` : `${publicUrl}?anexo=3|||${fileName}|||UPLOADED_BY:${uName}`;
         newValuesToStore.push(valueToStore);
       }
 
@@ -744,7 +754,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const valueToStore = displayName ? `${publicUrl}|||${displayName}` : publicUrl;
+        const uName = user?.name || user?.username || 'Usuário';
+        const valueToStore = displayName ? `${publicUrl}|||${displayName}|||UPLOADED_BY:${uName}` : `${publicUrl}|||${fileName}|||UPLOADED_BY:${uName}`;
         newValuesToStore.push(valueToStore);
       }
 
@@ -1151,44 +1162,47 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', backgroundColor: 'var(--background-color)', padding: '6px 12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-            <button 
-              onClick={() => setIsEditingChecklists(!isEditingChecklists)}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                color: isEditingChecklists ? '#3b82f6' : 'var(--text-secondary)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '4px',
-                borderRadius: '4px'
-              }}
-              title={isEditingChecklists ? "Concluir Edição" : "Editar Checklists"}
-            >
-              {isEditingChecklists ? <CheckCircle size={18} /> : <Edit size={18} />}
-            </button>
+            {['opme', 'cme', 'bloco', 'pos'].some(f => isFieldEditable(f)) && (
+              <button 
+                onClick={() => setIsEditingChecklists(!isEditingChecklists)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: isEditingChecklists ? '#3b82f6' : 'var(--text-secondary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '4px',
+                  borderRadius: '4px'
+                }}
+                title={isEditingChecklists ? "Concluir Edição" : "Editar Checklists"}
+              >
+                {isEditingChecklists ? <CheckCircle size={18} /> : <Edit size={18} />}
+              </button>
+            )}
             <span style={{ color: 'var(--text-secondary)', fontWeight: 'bold', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <ClipboardList size={16} /> CHECKLISTS:
             </span>
             
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
               {[
-                { key: 'opme_checked', label: 'OPME' },
-                { key: 'cme_checked', label: 'CME' },
-                { key: 'bloco_checked', label: 'BLOCO' },
-                { key: 'pos_checked', label: 'PÓS' },
+                { key: 'opme_checked', permKey: 'opme', label: 'OPME' },
+                { key: 'cme_checked', permKey: 'cme', label: 'CME' },
+                { key: 'bloco_checked', permKey: 'bloco', label: 'BLOCO' },
+                { key: 'pos_checked', permKey: 'pos', label: 'PÓS' },
               ].map(item => (
                 <div 
                   key={item.key}
-                  onClick={() => handleToggleChecklist(item.key)}
+                  onClick={() => handleToggleChecklist(item.key, item.permKey)}
                   style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
                     gap: '4px', 
                     color: localSurgery[item.key] ? '#10b981' : 'var(--text-secondary)',
-                    cursor: isEditingChecklists ? 'pointer' : 'default',
+                    cursor: (isEditingChecklists && isFieldEditable(item.permKey)) ? 'pointer' : (isEditingChecklists ? 'not-allowed' : 'default'),
                     padding: isEditingChecklists ? '4px 8px' : '0',
+                    opacity: (isEditingChecklists && !isFieldEditable(item.permKey)) ? 0.5 : 1,
                     borderRadius: '4px',
                     backgroundColor: isEditingChecklists ? (localSurgery[item.key] ? 'rgba(16, 185, 129, 0.1)' : 'rgba(0,0,0,0.05)') : 'transparent',
                     transition: 'all 0.2s',
@@ -1470,12 +1484,15 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               return (
                 <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', width: '100%' }}>
                   {allAttachmentUrls.map((item, idx) => {
-                    const { url, name } = parsePrintUrl(item);
+                    const { url, name, userName } = parsePrintUrl(item);
                     return (
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
                         {isDocumentFile(url) ? (
-                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+                          <div 
+                            onClick={() => handleOpenImage(allAttachmentUrls, idx)} 
+                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}
+                          >
                             {url.toLowerCase().includes('.pdf') ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                 <FileText size={32} style={{ color: '#ef4444' }} />
@@ -1487,7 +1504,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                                 <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
                               </div>
                             )}
-                          </a>
+                          </div>
                         ) : (
                           <div 
                             onClick={() => handleOpenImage(allAttachmentUrls, idx)} 
@@ -1557,11 +1574,18 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           }}
                         />
                       ) : (
-                        name && (
-                          <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
-                            {name}
-                          </span>
-                        )
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                          {name && (
+                            <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                              {name}
+                            </span>
+                          )}
+                          {userName && (
+                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: '#64748b', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                              por {userName}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
                   );
@@ -1877,7 +1901,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
             <div>
               {(() => {
-                const comandaFiles = (localSurgery.comanda_urls || []).filter(url => !url.startsWith('[ANEXO_3]|||') && !url.includes('?anexo=3'));
+                const comandaFiles = (localSurgery.comanda_urls || []).filter(url => !url.startsWith('[ANEXO_3]|||') && !url.includes('?anexo=3') && url !== '[FINALIZADO_INSTRUMENTADOR]');
                 const hasFiles = comandaFiles.length > 0 || !!localSurgery.comanda_url;
                 return hasFiles ? (
                   <span style={{
@@ -1925,7 +1949,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             boxShadow: (isEditable && isFieldEditable('comanda_urls') && isDropzoneFocused2) ? '0 0 0 3px rgba(37, 99, 235, 0.15)' : 'none'
           }}>
             {(() => {
-              const allAttachmentUrls = (localSurgery.comanda_urls || []).filter(url => !url.startsWith('[ANEXO_3]|||') && !url.includes('?anexo=3'));
+              const allAttachmentUrls = (localSurgery.comanda_urls || []).filter(url => !url.startsWith('[ANEXO_3]|||') && !url.includes('?anexo=3') && url !== '[FINALIZADO_INSTRUMENTADOR]');
               
               if (allAttachmentUrls.length === 0) {
                 return (
@@ -1941,12 +1965,15 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               return (
                 <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', width: '100%' }}>
                   {allAttachmentUrls.map((item, idx) => {
-                    const { url, name } = parsePrintUrl(item);
+                    const { url, name, userName } = parsePrintUrl(item);
                     return (
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
                         {isDocumentFile(url) ? (
-                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+                          <div 
+                            onClick={() => handleOpenImage(allAttachmentUrls, idx)} 
+                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}
+                          >
                             {url.toLowerCase().includes('.pdf') ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                 <FileText size={32} style={{ color: '#ef4444' }} />
@@ -1958,7 +1985,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                                 <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
                               </div>
                             )}
-                          </a>
+                          </div>
                         ) : (
                           <div 
                             onClick={() => handleOpenImage(allAttachmentUrls, idx)} 
@@ -2028,11 +2055,18 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           }}
                         />
                       ) : (
-                        name && (
-                          <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
-                            {name}
-                          </span>
-                        )
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                          {name && (
+                            <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                              {name}
+                            </span>
+                          )}
+                          {userName && (
+                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: '#64748b', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                              por {userName}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
                   );
@@ -2187,12 +2221,15 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', width: '100%' }}>
                   {allEquipmentRaw.map((rawItem, idx) => {
                     const cleanItem = rawItem.replace('[ANEXO_3]|||', '');
-                    const { url, name } = parsePrintUrl(cleanItem);
+                    const { url, name, userName } = parsePrintUrl(cleanItem);
                     return (
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
                         {isDocumentFile(url) ? (
-                          <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', textDecoration: 'none' }}>
+                          <div 
+                            onClick={() => handleOpenImage(allEquipmentRaw, idx)} 
+                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}
+                          >
                             {url.toLowerCase().includes('.pdf') ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                 <FileText size={32} style={{ color: '#ef4444' }} />
@@ -2204,7 +2241,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                                 <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
                               </div>
                             )}
-                          </a>
+                          </div>
                         ) : (
                           <div 
                             onClick={() => handleOpenImage(allEquipmentRaw, idx)} 
@@ -2276,11 +2313,18 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           }}
                         />
                       ) : (
-                        name && (
-                          <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '140px' }}>
-                            {name}
-                          </span>
-                        )
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                          {name && (
+                            <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '140px' }}>
+                              {name}
+                            </span>
+                          )}
+                          {userName && (
+                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: '#64748b', textAlign: 'center', maxWidth: '140px' }}>
+                              por {userName}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
                     );

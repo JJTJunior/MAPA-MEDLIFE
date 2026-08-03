@@ -17,7 +17,7 @@ export default function UserManagement({ currentUser }) {
     { id: 'status', label: 'Status' },
     { id: 'date', label: 'Data' },
     { id: 'time', label: 'Hora' },
-    { id: 'doctor', label: 'Médico / Buco' },
+    { id: 'doctor', label: 'Médico' },
     { id: 'hospital', label: 'Hospital' },
     { id: 'patient', label: 'Paciente' },
     { id: 'health_insurance', label: 'Convênio' },
