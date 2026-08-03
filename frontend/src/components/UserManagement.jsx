@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { supabase } from '../supabaseClient';
 import bcrypt from 'bcryptjs';
-import { Users, Plus, Shield, Check, X, ShieldAlert, Edit, UserX, UserCheck, Settings, KeyRound, Download } from 'lucide-react';
+import { Users, Plus, Shield, Check, X, ShieldAlert, Edit, UserX, UserCheck, Settings, KeyRound, Download, Copy } from 'lucide-react';
 import * as XLSX from 'xlsx';
 export default function UserManagement({ currentUser }) {
   const [users, setUsers] = useState([]);
@@ -11,6 +11,7 @@ export default function UserManagement({ currentUser }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [fieldModalUser, setFieldModalUser] = useState(null);
+  const [replicateModalUser, setReplicateModalUser] = useState(null);
   const [filterGroup, setFilterGroup] = useState('');
   
   const MAP_FIELDS = [
@@ -282,6 +283,31 @@ export default function UserManagement({ currentUser }) {
     }
   };
 
+  const handleReplicatePermissions = async (sourceUser, targetUserId) => {
+    try {
+      const targetUser = users.find(u => u.id === targetUserId);
+      if (!targetUser) return;
+  
+      if (!window.confirm(`Deseja realmente substituir as permissões de ${targetUser.name} pelas permissões de ${sourceUser.name}?`)) {
+        return;
+      }
+  
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ permissions: sourceUser.permissions })
+        .eq('id', targetUserId);
+  
+      if (error) throw error;
+      
+      alert('Permissões replicadas com sucesso!');
+      setReplicateModalUser(null);
+      fetchData();
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao replicar permissões: ' + e.message);
+    }
+  };
+
   const filteredUsers = filterGroup 
     ? users.filter(u => u.group_id === filterGroup) 
     : users;
@@ -491,6 +517,14 @@ export default function UserManagement({ currentUser }) {
                             </button>
                             <button
                               className="btn-icon"
+                              onClick={() => setReplicateModalUser(u)}
+                              title="Replicar Permissões"
+                              style={{ color: '#8b5cf6' }}
+                            >
+                              <Copy size={16} />
+                            </button>
+                            <button
+                              className="btn-icon"
                               onClick={() => handleResetPassword(u)}
                               title="Resetar para Senha Padrão (123456)"
                               style={{ color: '#f59e0b' }}
@@ -515,6 +549,15 @@ export default function UserManagement({ currentUser }) {
           onClose={() => setFieldModalUser(null)}
           onSave={handleSaveFieldPermissions}
           mapFields={MAP_FIELDS}
+        />
+      )}
+
+      {replicateModalUser && (
+        <ReplicatePermissionsModal
+          sourceUser={replicateModalUser}
+          users={users}
+          onClose={() => setReplicateModalUser(null)}
+          onSave={handleReplicatePermissions}
         />
       )}
     </div>
@@ -658,6 +701,57 @@ function FieldPermissionsModal({ user, onClose, onSave, mapFields }) {
         <div className="modal-footer" style={{ padding: '20px', borderTop: '1px solid var(--border-glass)', background: 'var(--bg-primary)', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
           <button className="btn-secondary" onClick={onClose}>Cancelar</button>
           <button className="btn-primary" onClick={() => onSave(user.id, selectedFields)}>Salvar Permissões</button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+function ReplicatePermissionsModal({ sourceUser, users, onClose, onSave }) {
+  const [targetUserId, setTargetUserId] = useState('');
+
+  return createPortal(
+    <div className="modal-overlay" style={{ backdropFilter: 'none', WebkitBackdropFilter: 'none', background: 'rgba(0,0,0,0.5)' }}>
+      <div className="modal-content" style={{ maxWidth: '500px', width: '90%', background: 'var(--bg-secondary)' }}>
+        <div className="modal-header" style={{ padding: '20px', borderBottom: '1px solid var(--border-glass)', background: 'var(--bg-primary)' }}>
+          <h2 style={{ fontSize: '1.2rem', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+            <Copy size={20} style={{ color: '#8b5cf6' }} />
+            Replicar Permissões
+          </h2>
+          <button className="btn-icon" onClick={onClose}><X size={20} /></button>
+        </div>
+        
+        <div className="modal-body" style={{ padding: '20px' }}>
+          <p style={{ marginBottom: '15px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            Copiar as permissões de <strong>{sourceUser.name}</strong> para outro usuário. Isso substituirá as permissões atuais do usuário destino.
+          </p>
+          
+          <div>
+            <label style={{ display: 'block', marginBottom: '5px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Usuário Destino</label>
+            <select 
+              className="form-input" 
+              value={targetUserId} 
+              onChange={e => setTargetUserId(e.target.value)}
+              style={{ width: '100%', padding: '10px' }}
+            >
+              <option value="">Selecione um usuário...</option>
+              {users.filter(u => u.id !== sourceUser.id).map(u => (
+                <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        
+        <div className="modal-footer" style={{ padding: '20px', borderTop: '1px solid var(--border-glass)', background: 'var(--bg-primary)', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+          <button className="btn-secondary" onClick={onClose}>Cancelar</button>
+          <button 
+            className="btn-primary" 
+            onClick={() => onSave(sourceUser, targetUserId)}
+            disabled={!targetUserId}
+          >
+            Replicar
+          </button>
         </div>
       </div>
     </div>,
