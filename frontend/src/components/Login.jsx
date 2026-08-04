@@ -73,15 +73,12 @@ export default function Login({ onLoginSuccess }) {
           localStorage.removeItem('medlife_saved_password');
         }
 
-        onLoginSuccess({
-          id: data.user.id,
-          email: userEmail,
-          role: role
-        });
+        if (onLoginSuccess) {
+          onLoginSuccess();
+        }
       }
     } catch (err) {
       setError(err.message || 'Erro ao realizar login. Verifique suas credenciais.');
-    } finally {
       setLoading(false);
     }
   };

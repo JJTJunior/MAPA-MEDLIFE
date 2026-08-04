@@ -229,6 +229,7 @@ export default function App() {
     setUser(null);
     setIsRecovery(false);
     setIsForcedPasswordChange(false);
+    setActiveTab('dashboard');
     setLoading(false);
     setIsLoggingOut(false);
   };
@@ -510,7 +511,7 @@ export default function App() {
   }
 
   if (!session || !user) {
-    return <Login onLoginSuccess={(u) => setUser(u)} />;
+    return <Login onLoginSuccess={() => {}} />;
   }
 
   if (activeTab === 'tv_panel') {
