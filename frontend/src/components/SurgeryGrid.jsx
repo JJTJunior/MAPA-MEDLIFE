@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from '../supabaseClient';
-import { Search, ChevronLeft, ChevronRight, Edit2, Plus, Filter, Check, X, RefreshCw, Clock, Download, ArrowLeft, Printer, FileText, MessageCircle, List, LayoutGrid, Info, Eye, Stethoscope, Building2, CreditCard, User, Smartphone, Calendar, Upload, Activity, Paperclip, Share2, Tag } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Edit2, Plus, Filter, Check, X, RefreshCw, Clock, Download, ArrowLeft, Printer, FileText, MessageCircle, List, LayoutGrid, Info, Eye, Stethoscope, Building2, CreditCard, User, Smartphone, Calendar, Upload, Activity, Paperclip, Share2, Tag, FileSpreadsheet } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import html2pdf from 'html2pdf.js';
 
