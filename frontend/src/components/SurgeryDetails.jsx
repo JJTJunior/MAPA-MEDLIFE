@@ -1485,6 +1485,12 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', width: '100%' }}>
                   {allAttachmentUrls.map((item, idx) => {
                     const { url, name, userName } = parsePrintUrl(item);
+                    
+                    const currentUser = user?.name || user?.username || 'Usuário';
+                    const isCreator = userName === currentUser;
+                    const isAdmin = user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'TI';
+                    const canDelete = (isEditable && isFieldEditable('attachment_url')) && (isAdmin || isCreator);
+
                     return (
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
@@ -1517,7 +1523,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
-                        {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons && (
+                        {canDelete && showDeleteIcons && (
                           <button 
                             type="button" 
                             onClick={(e) => {
@@ -1551,7 +1557,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           </button>
                         )}
                       </div>
-                      {(isEditable && isFieldEditable('attachment_url')) && showDeleteIcons ? (
+                      {canDelete && showDeleteIcons ? (
                         <input
                           type="text"
                           key={`${idx}`}
@@ -1966,6 +1972,12 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 <div id="details-attachment-previews-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'center', width: '100%' }}>
                   {allAttachmentUrls.map((item, idx) => {
                     const { url, name, userName } = parsePrintUrl(item);
+
+                    const currentUser = user?.name || user?.username || 'Usuário';
+                    const isCreator = userName === currentUser;
+                    const isAdmin = user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'TI';
+                    const canDelete = (isEditable && isFieldEditable('comanda_urls')) && (isAdmin || isCreator);
+
                     return (
                     <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                       <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
@@ -1998,7 +2010,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
-                        {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda && (
+                        {canDelete && showDeleteIconsComanda && (
                           <button 
                             type="button" 
                             onClick={(e) => {
@@ -2032,7 +2044,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           </button>
                         )}
                       </div>
-                      {(isEditable && isFieldEditable('comanda_urls')) && showDeleteIconsComanda ? (
+                      {canDelete && showDeleteIconsComanda ? (
                         <input
                           type="text"
                           key={`${idx}`}

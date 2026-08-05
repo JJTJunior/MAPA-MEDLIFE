@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import { X, Save, Trash2, Upload, Image, FileText, CheckCircle } from 'lucide-react';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 const parsePrintUrl = (item) => {
   if (!item) return { url: '', name: '', userName: null };
@@ -198,6 +199,11 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
 
   const [pendingAttachment, setPendingAttachment] = useState(null);
   const [attachmentNameInput, setAttachmentNameInput] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleOpenImage = (items, index) => {
+    setSelectedImage({ items, currentIndex: index });
+  };
   const [attachmentNameError, setAttachmentNameError] = useState('');
   const [uploadProgress, setUploadProgress] = useState(null);
   const [pendingDeleteAttachment, setPendingDeleteAttachment] = useState(null);
@@ -1361,7 +1367,10 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                       <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '110px', gap: '6px' }}>
                         <div style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color, var(--border-glass))' }}>
                           {isDocumentFile(url) ? (
-                            <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', textDecoration: 'none' }}>
+                            <div 
+                              onClick={() => handleOpenImage(allAttachmentUrls, index)} 
+                              style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', cursor: 'pointer', textDecoration: 'none' }}
+                            >
                               {url.toLowerCase().includes('.pdf') ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                   <FileText size={32} style={{ color: '#ef4444' }} />
@@ -1373,11 +1382,14 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                                   <span style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#3b82f6' }}>WORD</span>
                                 </div>
                               )}
-                            </a>
+                            </div>
                           ) : (
-                            <a href={url} target="_blank" rel="noopener noreferrer">
+                            <div 
+                              onClick={() => handleOpenImage(allAttachmentUrls, index)} 
+                              style={{ width: '100%', height: '100%', cursor: 'pointer', position: 'relative' }}
+                            >
                               <img src={url} alt={name || `print-${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }} />
-                            </a>
+                            </div>
                           )}
                           {canDelete && (
                             <button 
@@ -1412,30 +1424,32 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                             </button>
                           )}
                         </div>
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => {
-                            const newName = e.target.value;
-                            const updatedUrls = [...formData.medical_request_urls];
-                            updatedUrls[index] = newName ? `${url}|||${newName}` : url;
-                            setFormData(prev => ({
-                              ...prev,
-                              medical_request_urls: updatedUrls
-                            }));
-                          }}
-                          placeholder="Identificação..."
-                          style={{
-                            width: '100px',
-                            fontSize: '0.75rem',
-                            padding: '4px 6px',
-                            border: '1px solid var(--border-color, var(--border-glass))',
-                            borderRadius: '6px',
-                            textAlign: 'center',
-                            background: 'var(--bg-primary, #fff)',
-                            color: 'var(--text-primary, var(--text-primary))'
-                          }}
-                        />
+                        {canDelete && (
+                          <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => {
+                              const newName = e.target.value;
+                              const updatedUrls = [...formData.medical_request_urls];
+                              updatedUrls[index] = newName ? `${url}|||${newName}` : url;
+                              setFormData(prev => ({
+                                ...prev,
+                                medical_request_urls: updatedUrls
+                              }));
+                            }}
+                            placeholder="Identificação..."
+                            style={{
+                              width: '100px',
+                              fontSize: '0.75rem',
+                              padding: '4px 6px',
+                              border: '1px solid var(--border-color, var(--border-glass))',
+                              borderRadius: '6px',
+                              textAlign: 'center',
+                              background: 'var(--bg-primary, #fff)',
+                              color: 'var(--text-primary, var(--text-primary))'
+                            }}
+                          />
+                        )}
                       </div>
                     );
                   })}
@@ -1874,6 +1888,106 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
           </div>
         </div>
       )}
+
+      {selectedImage && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+          backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 99999, display: 'flex',
+          flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <button 
+            onClick={() => setSelectedImage(null)}
+            style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#fff', cursor: 'pointer', zIndex: 99999 }}
+          >
+            <X size={32} />
+          </button>
+          
+          {(() => {
+            let currentItemStr = selectedImage.items[selectedImage.currentIndex];
+            if (currentItemStr.startsWith('[ANEXO_3]|||')) currentItemStr = currentItemStr.replace('[ANEXO_3]|||', '');
+            const parsed = parsePrintUrl(currentItemStr);
+            const hasMultiple = selectedImage.items.length > 1;
+
+            return (
+              <>
+                {isDocumentFile(parsed.url) ? (
+                  <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', borderRadius: '8px', overflow: 'hidden' }}>
+                    {parsed.url.toLowerCase().includes('.pdf') ? (
+                      <iframe 
+                        src={`https://docs.google.com/viewer?url=${encodeURIComponent(parsed.url)}&embedded=true`} 
+                        style={{ width: '100%', height: '100%', border: 'none' }} 
+                        title="PDF Viewer"
+                      />
+                    ) : (
+                      <div style={{ textAlign: 'center' }}>
+                        <div style={{ marginBottom: '16px', display: 'flex', justifyContent: 'center' }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <h3 style={{ margin: 0, color: '#334155', fontSize: '1.2rem' }}>Documento de Texto</h3>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '8px' }}>Visualização direta não suportada.</p>
+                        <a href={parsed.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '16px', padding: '10px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' }}>
+                          Baixar / Abrir
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <TransformWrapper initialScale={1} minScale={0.5} maxScale={5} centerOnInit={true}>
+                    <TransformComponent wrapperStyle={{ width: '100%', height: '100%' }}>
+                      <img 
+                        src={parsed.url} 
+                        alt="Preview" 
+                        style={{ maxWidth: '90vw', maxHeight: '70vh', objectFit: 'contain', borderRadius: '8px' }} 
+                      />
+                    </TransformComponent>
+                  </TransformWrapper>
+                )}
+                
+                <div style={{ color: '#fff', marginTop: '16px', fontSize: '1.2rem', fontWeight: 'bold' }}>
+                  {parsed.name}
+                </div>
+                
+                {hasMultiple && (
+                  <div style={{ color: '#aaa', marginTop: '4px', fontSize: '0.9rem' }}>
+                    Foto {selectedImage.currentIndex + 1} de {selectedImage.items.length}
+                  </div>
+                )}
+                
+            <div style={{ display: 'flex', gap: '16px', marginTop: '24px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+              {hasMultiple && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length })); }}
+                  style={{ padding: '10px 20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  Anterior
+                </button>
+              )}
+              
+              <a 
+                href={parsed.url} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                download
+                style={{ padding: '10px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                Baixar
+              </a>
+
+              {hasMultiple && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex + 1) % prev.items.length })); }}
+                  style={{ padding: '10px 20px', backgroundColor: '#334155', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                >
+                  Próxima
+                </button>
+              )}
+            </div>
+              </>
+            );
+          })()}
+        </div>
+      )}
+
     </div>
   );
 }
