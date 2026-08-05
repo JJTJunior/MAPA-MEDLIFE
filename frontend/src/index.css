@@ -641,7 +641,6 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-secondary);
   border-bottom: 1px solid var(--border-glass);
   background: rgba(255, 255, 255, 0.02);
-  white-space: normal;
 }
 
 .data-table td {
@@ -650,12 +649,6 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid var(--border-glass);
   color: var(--text-primary);
   vertical-align: middle;
-  white-space: normal;
-}
-
-.data-table td div, .data-table th div {
-  white-space: normal !important;
-  text-overflow: clip !important;
 }
 
 /* Color Coding based on Status */
@@ -1377,7 +1370,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family, 'Inter', sans-serif);
   font-size: 0.75rem;
   color: var(--text-primary);
-  white-space: normal;
+  white-space: nowrap;
 }
 
 .compact-table th {
@@ -1393,7 +1386,6 @@ h1, h2, h3, h4, h5, h6 {
   position: sticky;
   top: 0;
   z-index: 10;
-  white-space: normal;
 }
 
 .compact-table td {
@@ -1402,12 +1394,6 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid var(--border-glass);
   font-weight: 500;
   color: var(--text-primary);
-  white-space: normal;
-}
-
-.compact-table td div, .compact-table th div {
-  white-space: normal !important;
-  text-overflow: clip !important;
 }
 
 .compact-table tr:nth-child(even) {
