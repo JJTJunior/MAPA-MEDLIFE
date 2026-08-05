@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { supabase } from './supabaseClient';
 import Login from './components/Login';
 import Layout from './components/Layout';
@@ -16,6 +16,7 @@ import { Clock, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
 export default function App() {
   const [session, setSession] = useState(null);
   const [user, setUser] = useState(null);
+  const userIdRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -208,7 +209,7 @@ export default function App() {
         if (prev === 'scrub_nurse' && !hasNurse) return initialTab;
         
         // Se mudou de usuário, forçamos a aba inicial para evitar que o usuário caia em abas aleatórias da sessão anterior
-        if (!user || user.id !== session.user.id) {
+        if (!userIdRef.current || userIdRef.current !== session.user.id) {
           return initialTab;
         }
         
@@ -222,8 +223,10 @@ export default function App() {
         role: role,
         permissions: permissions
       });
+      userIdRef.current = session.user.id;
     } else {
       setUser(null);
+      userIdRef.current = null;
     }
     setLoading(false);
   };
@@ -234,6 +237,7 @@ export default function App() {
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);
+    userIdRef.current = null;
     setIsRecovery(false);
     setIsForcedPasswordChange(false);
     setActiveTab('dashboard');
