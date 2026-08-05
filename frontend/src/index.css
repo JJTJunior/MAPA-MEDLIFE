@@ -607,20 +607,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .data-table th {
-  padding: 10px 16px;
+  padding: 8px 8px;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-secondary);
   border-bottom: 1px solid var(--border-glass);
   background: rgba(255, 255, 255, 0.02);
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .data-table td {
-  padding: 8px 16px;
+  padding: 6px 8px;
+  font-size: 0.85rem;
   border-bottom: 1px solid var(--border-glass);
   color: var(--text-primary);
   vertical-align: middle;
-  white-space: nowrap;
+  white-space: normal;
+}
+
+.data-table td div, .data-table th div {
+  white-space: normal !important;
+  text-overflow: clip !important;
 }
 
 /* Color Coding based on Status */
