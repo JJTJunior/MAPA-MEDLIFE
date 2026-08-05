@@ -1922,76 +1922,18 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
-                        {canDelete && showDeleteIconsComanda && (
-                          <button 
-                            type="button" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              setPendingDeleteAttachment({ item, isComanda: true });
-                            }}
-                            style={{
-                              position: 'absolute',
-                              top: '4px',
-                              right: '4px',
-                              background: 'rgba(239, 68, 68, 0.9)',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '22px',
-                              height: '22px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '13px',
-                              lineHeight: '1',
-                              fontWeight: 'bold',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                              zIndex: 10
-                            }}
-                            title="Remover anexo"
-                          >
-                            ×
-                          </button>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                        {name && (
+                          <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                            {name}
+                          </span>
+                        )}
+                        {userName && (
+                          <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                            por {userName}
+                          </span>
                         )}
                       </div>
-                      {canDelete && showDeleteIconsComanda ? (
-                        <input
-                          type="text"
-                          key={`${idx}`}
-                          value={name || ''}
-                          onChange={(e) => {
-                            const newName = e.target.value;
-                            const updatedUrls = [...(localSurgery.comanda_urls || [])];
-                            updatedUrls[idx] = newName ? `${url}|||${newName}` : url;
-                            setLocalSurgery(prev => ({ ...prev, comanda_urls: updatedUrls }));
-                          }}
-                          placeholder="Identificação..."
-                          style={{
-                            width: '120px',
-                            fontSize: '0.75rem',
-                            padding: '4px 6px',
-                            border: '1px solid var(--border-color, var(--border-glass))',
-                            borderRadius: '6px',
-                            textAlign: 'center',
-                            marginTop: '4px'
-                          }}
-                        />
-                      ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                          {name && (
-                            <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
-                              {name}
-                            </span>
-                          )}
-                          {userName && (
-                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
-                              por {userName}
-                            </span>
-                          )}
-                        </div>
-                      )}
                     </div>
                   );
                 })}
@@ -2178,78 +2120,18 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
-                        {(isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls'))) && showDeleteIconsEquipment && (
-                          <button 
-                            type="button" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              setPendingDeleteAttachment({ item: rawItem, isComanda: true });
-                            }}
-                            style={{
-                              position: 'absolute',
-                              top: '4px',
-                              right: '4px',
-                              background: 'rgba(239, 68, 68, 0.9)',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '22px',
-                              height: '22px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '13px',
-                              lineHeight: '1',
-                              fontWeight: 'bold',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                              zIndex: 10
-                            }}
-                            title="Remover anexo"
-                          >
-                            ×
-                          </button>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                        {name && (
+                          <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '140px' }}>
+                            {name}
+                          </span>
+                        )}
+                        {userName && (
+                          <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '140px' }}>
+                            por {userName}
+                          </span>
                         )}
                       </div>
-
-                      {showDeleteIconsEquipment ? (
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => {
-                            const newName = e.target.value;
-                            const updatedUrls = [...(localSurgery.comanda_urls || [])];
-                            const realIdx = updatedUrls.indexOf(rawItem);
-                            if (realIdx !== -1) {
-                              updatedUrls[realIdx] = newName ? `[ANEXO_3]|||${url}|||${newName.trim()}` : `[ANEXO_3]|||${url}`;
-                              setLocalSurgery(prev => ({ ...prev, comanda_urls: updatedUrls }));
-                            }
-                          }}
-                          placeholder="Identificação..."
-                          style={{
-                            fontSize: '0.78rem',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            border: '1px solid var(--border-color, var(--border-glass))',
-                            width: '110px',
-                            textAlign: 'center'
-                          }}
-                        />
-                      ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                          {name && (
-                            <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '140px' }}>
-                              {name}
-                            </span>
-                          )}
-                          {userName && (
-                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '140px' }}>
-                              por {userName}
-                            </span>
-                          )}
-                        </div>
-                      )}
                     </div>
                     );
                   })}
