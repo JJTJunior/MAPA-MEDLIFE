@@ -1922,6 +1922,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
+                      </div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
                         {name && (
                           <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
@@ -2120,6 +2121,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
+                      </div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
                         {name && (
                           <span style={{ fontSize: '0.8rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '140px' }}>
