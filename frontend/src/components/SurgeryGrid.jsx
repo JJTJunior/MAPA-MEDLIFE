@@ -1112,26 +1112,30 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 userSelect: 'none',
                 borderBottom: showFilters ? '1px solid #f1f5f9' : 'none',
                 paddingBottom: showFilters ? '16px' : '0',
-                marginBottom: showFilters ? '24px' : '0'
+                marginBottom: showFilters ? '24px' : '0',
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '16px',
+                alignItems: 'center'
               }} 
               onClick={() => setShowFilters(!showFilters)}
             >
-              <div className="agenda-filter-title">
+              <div className="agenda-filter-title" style={{ flex: '1 1 auto', minWidth: '250px', flexWrap: 'wrap' }}>
                 <div className="agenda-filter-icon"><Filter size={20} /></div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                     Filtros e Ações
                     <ChevronRight size={18} style={{ color: '#64748b', transition: 'transform 0.3s', transform: showFilters ? 'rotate(90deg)' : 'rotate(0deg)' }} />
                   </h3>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Refine a agenda por equipe, período e status</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
-                <div className="agenda-input-wrapper">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', flex: '1 1 auto', justifyContent: 'flex-start' }} onClick={e => e.stopPropagation()}>
+                <div className="agenda-input-wrapper" style={{ width: '100%', maxWidth: '300px' }}>
                   <Search size={16} />
                   <input type="text" className="agenda-search-input" placeholder="Buscar paciente..." value={patientFilter} onChange={(e) => setPatientFilter(e.target.value.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))} />
                 </div>
-                <div className="agenda-badge-count">{totalCount} registros</div>
+                <div className="agenda-badge-count" style={{ whiteSpace: 'nowrap' }}>{totalCount} registros</div>
               </div>
             </div>
 
