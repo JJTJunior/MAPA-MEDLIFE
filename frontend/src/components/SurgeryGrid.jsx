@@ -1372,6 +1372,9 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                             <span className={`agenda-pill ${surgery.cme_checked ? 'active' : 'inactive'}`}>CME</span>
                             <span className={`agenda-pill ${surgery.bloco_checked ? 'active' : 'inactive'}`}>BLOCO</span>
                             <span className={`agenda-pill ${surgery.pos_checked ? 'active' : 'inactive'}`}>PÓS</span>
+                            <span className={`agenda-pill ${(surgery.medical_request_urls && surgery.medical_request_urls.length > 0) || surgery.attachment_url ? 'active' : 'inactive'}`}>ANEXO 1</span>
+                            <span className={`agenda-pill ${surgery.comanda_urls && surgery.comanda_urls.some(url => !url.includes('anexo=3') && !url.includes('[ANEXO_3]')) ? 'active' : 'inactive'}`}>ANEXO 2</span>
+                            <span className={`agenda-pill ${surgery.comanda_urls && surgery.comanda_urls.some(url => url.includes('anexo=3') || url.includes('[ANEXO_3]')) ? 'active' : 'inactive'}`}>ANEXO 3</span>
                           </div>
                         </div>
                       )
