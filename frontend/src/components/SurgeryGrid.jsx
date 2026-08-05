@@ -1363,7 +1363,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                             <span className={`agenda-pill ${surgery.opme_checked ? 'active' : 'inactive'}`}>OPME</span>
                             <span className={`agenda-pill ${surgery.cme_checked ? 'active' : 'inactive'}`}>CME</span>
                             <span className={`agenda-pill ${surgery.bloco_checked ? 'active' : 'inactive'}`}>BLOCO</span>
-                            <span className={`agenda-pill ${surgery.pos_checked ? 'active' : 'inactive'}`}>Pós</span>
+                            <span className={`agenda-pill ${surgery.pos_checked ? 'active' : 'inactive'}`}>PÓS</span>
                           </div>
                         </div>
                       )
