@@ -1381,7 +1381,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
           </div>
           
           <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#fff', padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border-glass)', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'var(--bg-secondary)', padding: '8px 16px', borderRadius: '20px', border: '1px solid var(--border-glass)', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
               <button 
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
                 disabled={currentPage === 1}

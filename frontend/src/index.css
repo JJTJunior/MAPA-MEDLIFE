@@ -1717,7 +1717,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .agenda-container {
   padding: 10px 20px 40px;
-  background-color: #f8f9fc;
+  background-color: transparent;
   min-height: 100vh;
 }
 

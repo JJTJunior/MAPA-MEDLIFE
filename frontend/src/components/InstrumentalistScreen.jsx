@@ -458,7 +458,7 @@ export default function InstrumentalistScreen({ user }) {
   };
 
   return (
-    <div className="mobile-edge-to-edge" style={{ backgroundColor: '#f3f4f6', minHeight: '100%', paddingBottom: '80px' }}>
+    <div className="mobile-edge-to-edge" style={{ backgroundColor: 'var(--bg-primary)', minHeight: '100%', paddingBottom: '80px' }}>
       
       {/* HEADER CARD */}
       <div style={{ 
@@ -558,8 +558,8 @@ export default function InstrumentalistScreen({ user }) {
             width: '100%',
             padding: '14px 16px',
             borderRadius: '12px',
-            border: '1px solid #e5e7eb',
-            backgroundColor: '#fff',
+            border: '1px solid var(--border-glass)',
+            backgroundColor: 'var(--bg-secondary)',
             fontSize: '1rem',
             outline: 'none',
             boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
@@ -580,9 +580,9 @@ export default function InstrumentalistScreen({ user }) {
               style={{
                 padding: '8px 16px',
                 borderRadius: '20px',
-                border: activeDateFilter === btn.id ? 'none' : '1px solid #e5e7eb',
-                backgroundColor: activeDateFilter === btn.id ? '#1e40af' : '#fff',
-                color: activeDateFilter === btn.id ? '#fff' : '#374151',
+                border: activeDateFilter === btn.id ? 'none' : '1px solid var(--border-glass)',
+                backgroundColor: activeDateFilter === btn.id ? '#1e40af' : 'var(--bg-secondary)',
+                color: activeDateFilter === btn.id ? '#fff' : 'var(--text-primary)',
                 fontSize: '0.85rem',
                 cursor: 'pointer',
                 whiteSpace: 'nowrap',
@@ -597,7 +597,7 @@ export default function InstrumentalistScreen({ user }) {
 
         {/* Date Picker Customizado */}
         <div style={{ position: 'relative' }}>
-          <CalendarIcon size={18} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: '#6b7280', pointerEvents: 'none' }} />
+          <CalendarIcon size={18} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)', pointerEvents: 'none' }} />
           <input 
             type="date"
             value={customDate}
@@ -607,12 +607,12 @@ export default function InstrumentalistScreen({ user }) {
               padding: '14px 16px',
               paddingRight: '40px',
               borderRadius: '12px',
-              border: '1px solid #e5e7eb',
-              backgroundColor: '#fff',
+              border: '1px solid var(--border-glass)',
+              backgroundColor: 'var(--bg-secondary)',
               fontSize: '1rem',
               outline: 'none',
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-              color: '#374151',
+              color: 'var(--text-primary)',
               // Esconder o ícone nativo em alguns browsers via css seria ideal, mas usaremos aparência padronizada aqui
             }}
           />
@@ -622,7 +622,7 @@ export default function InstrumentalistScreen({ user }) {
       {/* LISTAGEM */}
       <div>
         {loading ? (
-          <div style={{ textAlign: 'center', color: '#6b7280', padding: '40px' }}>
+          <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px' }}>
             Carregando dados...
           </div>
         ) : filteredSurgeries.filter(s => {
@@ -632,7 +632,7 @@ export default function InstrumentalistScreen({ user }) {
           if (statusFilter === 'delivered') return isDelivered;
           return true; // all
         }).length === 0 ? (
-          <div style={{ textAlign: 'center', color: '#6b7280', padding: '40px', backgroundColor: 'transparent' }}>
+          <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px', backgroundColor: 'transparent' }}>
             Nenhuma entrega encontrada.
           </div>
         ) : (
@@ -948,7 +948,7 @@ export default function InstrumentalistScreen({ user }) {
           alignItems: 'center', justifyContent: 'center'
         }}>
           <div style={{
-            backgroundColor: '#fff', borderRadius: '16px', padding: '24px', width: '300px',
+            backgroundColor: 'var(--bg-secondary)', borderRadius: '16px', padding: '24px', width: '300px',
             display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
           }}>
             <h3 style={{ margin: '0 0 16px 0', textAlign: 'center', color: 'var(--text-primary)' }}>Adicionar Foto</h3>
