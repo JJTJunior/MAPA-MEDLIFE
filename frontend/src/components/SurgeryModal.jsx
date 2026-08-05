@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient';
 import { X, Save, Trash2, Upload, Image, FileText, CheckCircle } from 'lucide-react';
 
 const parsePrintUrl = (item) => {
-  if (!item) return { url: '', name: '' };
+  if (!item) return { url: '', name: '', userName: null };
   let cleanItem = item;
   if (cleanItem.startsWith('[ANEXO_3]|||')) {
     cleanItem = cleanItem.replace('[ANEXO_3]|||', '');
@@ -13,11 +13,22 @@ const parsePrintUrl = (item) => {
       cleanItem = parts.join('|||');
     }
   }
+  
   if (cleanItem.includes('|||')) {
-    const [url, ...nameParts] = cleanItem.split('|||');
-    return { url, name: nameParts.join('|||') };
+    const parts = cleanItem.split('|||');
+    const url = parts[0];
+    let name = parts[1] || '';
+    let userName = null;
+    
+    if (parts.length > 2 && parts[2].startsWith('UPLOADED_BY:')) {
+      userName = parts[2].replace('UPLOADED_BY:', '');
+    } else if (parts.length > 2) {
+      name = parts.slice(1).filter(p => !p.startsWith('UPLOADED_BY:')).join('|||');
+    }
+    
+    return { url, name, userName };
   }
-  return { url: cleanItem, name: '' };
+  return { url: cleanItem, name: '', userName: null };
 };
 
 const isDocumentFile = (url) => {
@@ -469,7 +480,8 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const valueToStore = displayName ? `${publicUrl}|||${displayName}` : publicUrl;
+        const uName = user?.name || user?.username || 'Usuário';
+        const valueToStore = displayName ? `${publicUrl}|||${displayName}|||UPLOADED_BY:${uName}` : `${publicUrl}|||Arquivo|||UPLOADED_BY:${uName}`;
         newValuesToStore.push(valueToStore);
       }
 
@@ -550,7 +562,8 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const valueToStore = displayName ? `${publicUrl}?anexo=3|||${displayName}` : `${publicUrl}?anexo=3`;
+        const uName = user?.name || user?.username || 'Usuário';
+        const valueToStore = displayName ? `${publicUrl}?anexo=3|||${displayName}|||UPLOADED_BY:${uName}` : `${publicUrl}?anexo=3|||Arquivo|||UPLOADED_BY:${uName}`;
         newValuesToStore.push(valueToStore);
       }
 
@@ -627,7 +640,8 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
           .from('attachments')
           .getPublicUrl(fileName);
 
-        const valueToStore = displayName ? `${publicUrl}|||${displayName}` : publicUrl;
+        const uName = user?.name || user?.username || 'Usuário';
+        const valueToStore = displayName ? `${publicUrl}|||${displayName}|||UPLOADED_BY:${uName}` : `${publicUrl}|||Arquivo|||UPLOADED_BY:${uName}`;
         newValuesToStore.push(valueToStore);
       }
 
@@ -1336,7 +1350,13 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 return (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '15px', marginTop: '10px' }}>
                     {allAttachmentUrls.map((item, index) => {
-                      const { url, name } = parsePrintUrl(item);
+                      const { url, name, userName } = parsePrintUrl(item);
+                      
+                      const currentUser = user?.name || user?.username || 'Usuário';
+                      const isCreator = userName === currentUser;
+                      const isAdmin = user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'TI';
+                      const canDelete = isEditable && (isAdmin || isCreator);
+                      
                       return (
                       <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '110px', gap: '6px' }}>
                         <div style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color, var(--border-glass))' }}>
@@ -1359,36 +1379,38 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                               <img src={url} alt={name || `print-${index}`} style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'zoom-in' }} />
                             </a>
                           )}
-                          <button 
-                            type="button" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              setPendingDeleteAttachment({ item, isComanda: false });
-                            }}
-                            style={{
-                              position: 'absolute',
-                              top: '4px',
-                              right: '4px',
-                              background: 'rgba(239, 68, 68, 0.9)',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '20px',
-                              height: '20px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '12px',
-                              lineHeight: '1',
-                              fontWeight: 'bold',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
-                            }}
-                            title="Remover anexo"
-                          >
-                            ×
-                          </button>
+                          {canDelete && (
+                            <button 
+                              type="button" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                setPendingDeleteAttachment({ item, isComanda: false });
+                              }}
+                              style={{
+                                position: 'absolute',
+                                top: '4px',
+                                right: '4px',
+                                background: 'rgba(239, 68, 68, 0.9)',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '50%',
+                                width: '20px',
+                                height: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                fontSize: '12px',
+                                lineHeight: '1',
+                                fontWeight: 'bold',
+                                boxShadow: '0 1px 3px rgba(0,0,0,0.3)'
+                              }}
+                              title="Remover anexo"
+                            >
+                              ×
+                            </button>
+                          )}
                         </div>
                         <input
                           type="text"
