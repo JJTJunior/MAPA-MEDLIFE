@@ -1341,16 +1341,18 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                           
                           <div className="agenda-patient-name">{surgery.patient}</div>
                           
-                          <div className="agenda-info-grid">
+                          <div className="agenda-info-grid" style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
                             <div className="agenda-info-item"><Building2 size={14}/> {surgery.hospital || '-'}</div>
-                            <div className="agenda-info-item"><CreditCard size={14}/> {surgery.insurance || '-'}</div>
-                            <div className="agenda-info-item"><User size={14}/> {surgery.doctor || '-'}</div>
-                            <div className="agenda-info-item"><Activity size={14}/> 
+                            <div style={{ display: 'flex', gap: '16px' }}>
+                              <div className="agenda-info-item" style={{ flex: 1 }}><User size={14}/> {surgery.doctor || '-'}</div>
+                              <div className="agenda-info-item" style={{ flex: 1 }}><CreditCard size={14}/> {surgery.insurance || '-'}</div>
+                            </div>
+                            <div className="agenda-info-item"><Tag size={14}/> 
                               <span style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                                 {surgery.surgery_type || 'Geral'} 
                                 {surgery.carater && (
                                   <span className={surgery.carater === 'URGÊNCIA' || surgery.carater === 'URGENCIA' ? 'agenda-carater-urgencia' : 'agenda-carater-eletiva'}>
-                                    - {surgery.carater}
+                                    • {surgery.carater}
                                   </span>
                                 )}
                               </span>
