@@ -1251,10 +1251,10 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 <button className="agenda-btn" onClick={() => window.print()}>
                   <Printer size={16} /> Imprimir
                 </button>
-                <button className="agenda-btn agenda-btn-excel" onClick={exportToExcel}>
+                <button className="agenda-btn agenda-btn-excel" onClick={handleExportExcel} disabled={isExporting}>
                   <FileSpreadsheet size={16} /> Excel
                 </button>
-                <button className="agenda-btn agenda-btn-pdf" onClick={exportToPDF}>
+                <button className="agenda-btn agenda-btn-pdf" onClick={handleExportPDF} disabled={isExporting}>
                   <FileText size={16} /> PDF
                 </button>
                 <button className="agenda-btn" onClick={() => {}}>
