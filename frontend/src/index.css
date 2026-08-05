@@ -289,8 +289,8 @@ h1, h2, h3, h4, h5, h6 {
 .main-content {
   flex: 1;
   margin-left: 260px;
-  padding: 15px;
-  max-width: 100%;
+  padding: 40px;
+  max-width: 1600px;
   width: calc(100% - 260px);
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
@@ -635,8 +635,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .data-table th {
-  padding: 4px 4px;
-  font-size: 0.75rem;
+  padding: 8px 8px;
+  font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-secondary);
   border-bottom: 1px solid var(--border-glass);
@@ -645,8 +645,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .data-table td {
-  padding: 4px 4px;
-  font-size: 0.75rem;
+  padding: 6px 8px;
+  font-size: 0.85rem;
   border-bottom: 1px solid var(--border-glass);
   color: var(--text-primary);
   vertical-align: middle;
@@ -738,10 +738,10 @@ h1, h2, h3, h4, h5, h6 {
 .checkbox-pill {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 2px 4px;
+  gap: 6px;
+  padding: 4px 10px;
   border-radius: 8px;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 500;
   border: 1px solid var(--border-glass);
 }
