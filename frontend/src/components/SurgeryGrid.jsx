@@ -1202,35 +1202,32 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
             </div>
 
             <div className="agenda-filter-row">
-              <div style={{ flex: 1, minWidth: '300px' }}>
+              <div style={{ flex: 1, width: '100%' }}>
                 <div className="agenda-filter-section-title">
                   <span style={{ color: '#8b5cf6', fontSize: '1.2rem', lineHeight: 0, marginRight: '6px' }}>•</span> CLASSIFICAÇÃO
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                    <div className="agenda-input-group">
-                      <label className="agenda-input-label">TIPO DE CIRURGIA</label>
-                      <div className="agenda-input-wrapper">
-                        <Activity size={16} />
-                        <select className="agenda-select" value={surgeryTypeFilter} onChange={e => setSurgeryTypeFilter(e.target.value)}>
-                          <option value="">Todos</option>
-                          {surgeryTypeOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                        </select>
-                      </div>
-                    </div>
-                    <div className="agenda-input-group">
-                      <label className="agenda-input-label">STATUS</label>
-                      <div className="agenda-input-wrapper">
-                        <Check size={16} />
-                        <select className="agenda-select" value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)}>
-                          <option value="">Todos</option>
-                          {statusList.map((s, idx) => <option key={idx} value={s.name}>{s.name}</option>)}
-                        </select>
-                      </div>
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">TIPO DE CIRURGIA</label>
+                    <div className="agenda-input-wrapper">
+                      <Activity size={16} />
+                      <select className="agenda-select" value={surgeryTypeFilter} onChange={e => setSurgeryTypeFilter(e.target.value)}>
+                        <option value="">Todos</option>
+                        {surgeryTypeOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                    <div className="agenda-input-group">
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">STATUS</label>
+                    <div className="agenda-input-wrapper">
+                      <Check size={16} />
+                      <select className="agenda-select" value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)}>
+                        <option value="">Todos</option>
+                        {statusList.map((s, idx) => <option key={idx} value={s.name}>{s.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="agenda-input-group">
                     <label className="agenda-input-label">CARÁTER</label>
                     <div className="agenda-input-wrapper">
                       <Tag size={16} />
@@ -1240,10 +1237,12 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                       </select>
                     </div>
                   </div>
-                  </div>
                 </div>
               </div>
-              <div style={{ flex: 1, minWidth: '300px' }}>
+            </div>
+
+            <div className="agenda-filter-row">
+              <div style={{ flex: 1, width: '100%' }}>
                 <div className="agenda-filter-section-title">
                   <span style={{ color: '#f59e0b', fontSize: '1.2rem', lineHeight: 0, marginRight: '6px' }}>•</span> PERÍODO
                 </div>
@@ -1262,11 +1261,13 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                       <input type="date" className="agenda-select" value={endDateFilter} onChange={e => setEndDateFilter(e.target.value)} />
                     </div>
                   </div>
-                  <div className="agenda-input-group" style={{ display: 'flex', alignItems: 'center', height: '42px', paddingLeft: '8px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>
-                      <input type="checkbox" checked={noDateOnly} onChange={e => setNoDateOnly(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: '#8b5cf6' }} />
-                      SEM DATA DEFINIDA
-                    </label>
+                  <div className="agenda-input-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+                    <div className="agenda-input-wrapper" style={{ height: '36px', padding: '0 12px', cursor: 'pointer', background: noDateOnly ? '#f8fafc' : '#ffffff' }} onClick={() => setNoDateOnly(!noDateOnly)}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#64748b', width: '100%', height: '100%' }} onClick={e => e.stopPropagation()}>
+                        <input type="checkbox" checked={noDateOnly} onChange={e => setNoDateOnly(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: '#8b5cf6', margin: 0 }} />
+                        SEM DATA DEFINIDA
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
