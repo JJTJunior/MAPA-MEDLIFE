@@ -709,6 +709,59 @@ export default function InstrumentalistScreen({ user }) {
                     {/* Name below status badge removed as requested */}
                   </div>
 
+                  {/* Render Medical Request Attachments (Anexo 1 - Solicitação / Autorização) */}
+                  {(() => {
+                    const medicalRequestUrls = (surgery.medical_request_urls && surgery.medical_request_urls.length > 0)
+                      ? surgery.medical_request_urls
+                      : (surgery.attachment_url ? [surgery.attachment_url] : []);
+
+                    if (medicalRequestUrls.length > 0) {
+                      return (
+                        <div style={{ marginBottom: '16px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                            <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>SOLICITAÇÃO MÉDICA / AUTORIZAÇÃO</div>
+                            {(() => {
+                               const parsedLast = parsePrintUrl(medicalRequestUrls[medicalRequestUrls.length - 1]);
+                               const uploadedBy = parsedLast.userName;
+                               if (uploadedBy) {
+                                 return <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600' }}>• por {uploadedBy}</div>;
+                               }
+                               return null;
+                            })()}
+                          </div>
+                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                            {medicalRequestUrls.map((itemStr, idx) => {
+                              const parsed = parsePrintUrl(itemStr);
+                              return (
+                                <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
+                                  <div 
+                                    onClick={() => setSelectedImage({ items: medicalRequestUrls, currentIndex: idx, surgeryId: surgery.id })}
+                                    style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-glass)', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)' }}
+                                  >
+                                    {isDocumentFile(parsed.url) ? (
+                                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                                        <FileText size={20} style={{ color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }} />
+                                        <span style={{ fontSize: '0.55rem', fontWeight: 'bold', color: parsed.url.toLowerCase().includes('.pdf') ? '#ef4444' : '#3b82f6' }}>
+                                          {parsed.url.toLowerCase().includes('.pdf') ? 'PDF' : 'WORD'}
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    )}
+                                  </div>
+                                  <div style={{ fontSize: '0.55rem', color: 'var(--text-secondary)', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
+                                    {parsed.name || `Anexo ${idx + 1}`}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
+
                   {/* Render Driver Attachments (anexo3Items) */}
                   {(() => {
                     const anexo3Items = getAnexo3Items(surgery);
