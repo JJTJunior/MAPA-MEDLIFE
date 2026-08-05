@@ -1325,16 +1325,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                   
                   <div className="agenda-card-grid">
                     {daySurgeries.map(surgery => {
-                      const isPending = surgery.status === 'PENDENTE';
-                      const isScheduled = surgery.status === 'AGENDADA';
-                      const isConfirmed = surgery.status === 'CONFIRMADA';
-                      const isCanceled = surgery.status === 'CANCELADA';
-                      
-                      let statusClass = '';
-                      if (isPending) statusClass = 'agenda-status-pendente';
-                      else if (isScheduled) statusClass = 'agenda-status-agendada';
-                      else if (isConfirmed) statusClass = 'agenda-status-confirmada';
-                      else if (isCanceled) statusClass = 'agenda-status-cancelada';
+                      const statusClass = getStatusClass(surgery.status);
                       
                       return (
                         <div key={surgery.id} className="agenda-card" onClick={() => onViewClick && onViewClick(surgery)} style={{ cursor: 'pointer' }}>

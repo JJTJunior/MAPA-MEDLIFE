@@ -2002,6 +2002,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
+  border: none !important;
 }
 
 .agenda-status-badge::before {
@@ -2012,17 +2013,16 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 50%;
 }
 
-.agenda-status-pendente { background: #fef9c3; color: #ca8a04; }
-.agenda-status-pendente::before { background: #eab308; }
+.agenda-status-badge.status-delivered::before { background: var(--status-delivered-text); }
+.agenda-status-badge.status-suspended::before { background: var(--status-suspended-text); }
+.agenda-status-badge.status-preparing::before { background: var(--status-preparing-text); }
+.agenda-status-badge.status-ready::before { background: var(--status-ready-text); }
+.agenda-status-badge.status-urgent::before { background: var(--status-urgent-text); }
+.agenda-status-badge.status-pending::before { background: var(--status-pending-text); }
+.agenda-status-badge.status-eletiva::before { background: var(--status-eletiva-text); }
+.agenda-status-badge.status-returned::before { background: var(--status-returned-text); }
+.agenda-status-badge.status-default::before { background: var(--status-default-text); }
 
-.agenda-status-agendada { background: #e0e7ff; color: #4f46e5; }
-.agenda-status-agendada::before { background: #6366f1; }
-
-.agenda-status-confirmada { background: #d1fae5; color: #059669; }
-.agenda-status-confirmada::before { background: #10b981; }
-
-.agenda-status-cancelada { background: #ffe4e6; color: #e11d48; }
-.agenda-status-cancelada::before { background: #f43f5e; }
 
 .agenda-time {
   font-size: 0.85rem;
