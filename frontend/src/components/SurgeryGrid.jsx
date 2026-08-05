@@ -1260,11 +1260,15 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
             <button 
               className="btn-secondary" 
               title="Alternar Visualização"
-              onClick={() => setViewMode(prev => prev === 'full' ? 'compact' : 'full')}
+              onClick={() => setViewMode(prev => {
+                if (prev === 'full') return 'compact';
+                if (prev === 'compact') return 'cards';
+                return 'full';
+              })}
               style={{ flex: 1, height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--bg-primary, #ffffff)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-primary)' }}
             >
-              {viewMode === 'full' ? <List size={18} /> : <LayoutGrid size={18} />}
-              <span>{viewMode === 'full' ? 'Modo Planilha' : 'Modo Cards'}</span>
+              {viewMode === 'full' ? <List size={18} /> : viewMode === 'compact' ? <LayoutGrid size={18} /> : <List size={18} />}
+              <span>{viewMode === 'full' ? 'Modo Planilha (Filtros)' : viewMode === 'compact' ? 'Modo Cartões' : 'Modo Tabela Padrão'}</span>
             </button>
           </div>
         </div>
@@ -1762,6 +1766,76 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                     </button>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {viewMode === 'cards' && (
+              <div className="surgery-card-grid" style={{ padding: '20px' }}>
+                {surgeries.map((surgery) => (
+                  <div 
+                    key={surgery.id} 
+                    className="surgery-card" 
+                    onClick={() => onViewClick && onViewClick(surgery)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className="surgery-card-header">
+                      <span className="status-badge" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        {surgery.delivery_status || getLegacyIcon(surgery.status)} {surgery.status}
+                      </span>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '0.9rem', fontWeight: 500 }}>
+                        <span>{formatBrazilianDate(surgery.date)}</span>
+                        {surgery.time && <span style={{ color: 'var(--text-secondary)' }}>{surgery.time}</span>}
+                      </div>
+                    </div>
+                    
+                    <div className="surgery-card-body">
+                      <div className="card-patient-name">{surgery.patient}</div>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px' }}>
+                        <div className="card-info-row">
+                          <span title="Hospital">🏥 {surgery.hospital || '-'}</span>
+                        </div>
+                        <div className="card-info-row">
+                          <span title="Médico">👨‍⚕️ {surgery.doctor || '-'}</span>
+                        </div>
+                        <div className="card-info-row">
+                          <span title="Convênio">🏢 {surgery.insurance || '-'}</span>
+                        </div>
+                        <div className="card-info-row">
+                          <span title="Caráter" style={{ color: (surgery.carater === 'URGÊNCIA' || surgery.carater === 'URGENCIA') ? '#f87171' : 'inherit', fontWeight: 500 }}>
+                            ⚡ {surgery.carater || '-'}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="card-info-row" style={{ marginTop: '8px' }}>
+                        <span title="Tipo de Cirurgia">🔪 {surgery.surgery_type || '-'}</span>
+                      </div>
+                      
+                      <div className="card-info-row">
+                        <span title="Procedimento">📋 {surgery.material_procedure || '-'}</span>
+                      </div>
+                      
+                      <div className="card-info-row">
+                        <span title="Cód. Cirurgia">🏷️ Cód: {surgery.surgery_code || '-'}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="surgery-card-footer">
+                       <span className={`checkbox-pill ${surgery.opme_checked ? 'active' : 'inactive'}`}>OPME</span>
+                       <span className={`checkbox-pill ${surgery.cme_checked ? 'active' : 'inactive'}`}>CME</span>
+                       <span className={`checkbox-pill ${surgery.bloco_checked ? 'active' : 'inactive'}`}>BLOCO</span>
+                       <span className={`checkbox-pill ${surgery.pos_checked ? 'active' : 'inactive'}`}>PÓS</span>
+                       
+                       {((surgery.medical_request_urls && surgery.medical_request_urls.length > 0) || !!surgery.attachment_url) && (
+                         <span className="checkbox-pill active">ANEXO 1</span>
+                       )}
+                       {(surgery.comanda_urls && surgery.comanda_urls.length > 0) && (
+                         <span className="checkbox-pill active">ANEXO 2</span>
+                       )}
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
