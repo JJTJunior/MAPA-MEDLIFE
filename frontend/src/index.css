@@ -269,7 +269,21 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   z-index: 1000;
   background: var(--bg-primary);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+  padding: 24px 10px;
+}
+
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.sidebar.collapsed .nav-item svg {
+  margin-right: 0;
 }
 
 .main-content {
@@ -278,7 +292,12 @@ h1, h2, h3, h4, h5, h6 {
   padding: 40px;
   max-width: 1600px;
   width: calc(100% - 260px);
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+}
+
+.main-content.collapsed {
+  margin-left: 80px;
+  width: calc(100% - 80px);
 }
 
 .mobile-topbar {
@@ -406,6 +425,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .btn-logout:hover {
   background: rgba(239, 68, 68, 0.08);
+}
+
+.collapsed-user {
+  padding-top: 10px;
+}
+
+.collapsed-user .btn-logout {
+  padding: 8px 0;
+  justify-content: center;
 }
 
 /* Dashboard Styles */

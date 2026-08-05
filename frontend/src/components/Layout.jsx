@@ -3,6 +3,7 @@ import { LayoutDashboard, Calendar, LogOut, Sun, Moon, Settings, Menu, X, Truck,
 
 export default function Layout({ children, activeTab, setActiveTab, user, onLogout, theme, toggleTheme, onlineUsers, onOpenOnlineModal }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const isAdminOrManager = user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'Administrativo' || user?.role === 'Diretoria' || user?.role === 'TI';
   const hasSettingsPermission = user?.permissions?.allowed_edit_fields?.includes('view_settings') || isAdminOrManager;
   const hasDriverPermission = user?.role === 'Motorista' || user?.permissions?.allowed_edit_fields?.includes('view_driver');
@@ -62,12 +63,36 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
       ></div>
 
       {/* Sidebar */}
-      <aside className={`sidebar glass-panel ${isMobileMenuOpen ? 'open' : ''}`}>
+      <aside className={`sidebar glass-panel ${isMobileMenuOpen ? 'open' : ''} ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="logo-section" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '20px 0', position: 'relative' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img src="/logo.png" alt="Medlife Brasil" style={{ maxHeight: '80px', objectFit: 'contain' }} />
-          </div>
-
+          {!isSidebarCollapsed && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <img src="/logo.png" alt="Medlife Brasil" style={{ maxHeight: '80px', objectFit: 'contain' }} />
+            </div>
+          )}
+          <button 
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            style={{ 
+              position: 'absolute', 
+              right: isSidebarCollapsed ? 'auto' : '-16px', 
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'var(--bg-glass)', 
+              border: '1px solid var(--border-glass)',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: 'var(--text-primary)',
+              zIndex: 10
+            }}
+            title={isSidebarCollapsed ? "Expandir menu" : "Recolher menu"}
+          >
+            <Menu size={16} />
+          </button>
         </div>
         
         <nav className="nav-links">
@@ -76,8 +101,8 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
               className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
               onClick={() => handleNavClick('dashboard')}
             >
-              <LayoutDashboard size={20} />
-              Dashboard
+              <LayoutDashboard size={20} style={{ minWidth: '20px' }} />
+              {!isSidebarCollapsed && <span>Dashboard</span>}
             </button>
           )}
           
@@ -86,8 +111,8 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
               className={`nav-item ${activeTab === 'surgeries' ? 'active' : ''}`}
               onClick={() => handleNavClick('surgeries')}
             >
-              <Calendar size={20} />
-              Mapa Cirúrgico
+              <Calendar size={20} style={{ minWidth: '20px' }} />
+              {!isSidebarCollapsed && <span>Mapa Cirúrgico</span>}
             </button>
           )}
           
@@ -96,8 +121,8 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
               className={`nav-item ${activeTab === 'driver' ? 'active' : ''}`}
               onClick={() => handleNavClick('driver')}
             >
-              <Truck size={20} />
-              Motorista
+              <Truck size={20} style={{ minWidth: '20px' }} />
+              {!isSidebarCollapsed && <span>Motorista</span>}
             </button>
           )}
           
@@ -106,8 +131,8 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
               className={`nav-item ${activeTab === 'scrub_nurse' ? 'active' : ''}`}
               onClick={() => handleNavClick('scrub_nurse')}
             >
-              <Stethoscope size={20} />
-              Instrumentador
+              <Stethoscope size={20} style={{ minWidth: '20px' }} />
+              {!isSidebarCollapsed && <span>Instrumentador</span>}
             </button>
           )}
           
@@ -116,17 +141,18 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
               className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}
               onClick={() => handleNavClick('settings')}
             >
-              <Settings size={20} />
-              Configurações
+              <Settings size={20} style={{ minWidth: '20px' }} />
+              {!isSidebarCollapsed && <span>Configurações</span>}
             </button>
           )}
         </nav>
         
         {user && (
-          <div className="user-profile-widget">
+          <div className={`user-profile-widget ${isSidebarCollapsed ? 'collapsed-user' : ''}`}>
             <div className="user-info">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                <span className="user-name">{user.name || user.email.split('@')[0].toUpperCase()}</span>
+              {!isSidebarCollapsed && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+                  <span className="user-name">{user.name || user.email.split('@')[0].toUpperCase()}</span>
                 <span 
                   style={{ 
                     fontSize: '0.75rem', 
@@ -149,13 +175,14 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
                   👁️ {onlineUsers && onlineUsers.length > 0 ? onlineUsers.length : 1} online
                 </span>
               </div>
-              <span className="user-role">{user.role || 'Usuário'}</span>
+              )}
+              {!isSidebarCollapsed && <span className="user-role" style={{ fontSize: '0.8rem', opacity: 0.8, textTransform: 'uppercase' }}>{user.role}</span>}
             </div>
             
-            <div style={{ display: 'flex', gap: '8px', width: '100%' }}>
-              <button className="btn-logout" onClick={onLogout} style={{ flex: 1 }}>
+            <div className="user-actions" style={{ flexDirection: isSidebarCollapsed ? 'column' : 'row' }}>
+              <button className="btn-logout" onClick={onLogout} title="Sair" style={{ flex: 1 }}>
                 <LogOut size={16} />
-                Sair
+                {!isSidebarCollapsed && "Sair"}
               </button>
               
               <button className="btn-icon" onClick={toggleTheme} title="Alternar Tema" style={{ padding: '8px 12px' }}>
@@ -166,8 +193,8 @@ export default function Layout({ children, activeTab, setActiveTab, user, onLogo
         )}
       </aside>
       
-      {/* Main Content Pane */}
-      <main className="main-content">
+      {/* Main Content */}
+      <main className={`main-content ${isSidebarCollapsed ? 'collapsed' : ''}`}>
         {children}
       </main>
     </div>
