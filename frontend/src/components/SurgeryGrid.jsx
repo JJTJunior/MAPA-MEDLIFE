@@ -1186,7 +1186,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                    <div className="agenda-input-group">
+                    <div className="agenda-input-group" style={{ maxWidth: 'calc(25% - 12px)' }}>
                       <label className="agenda-input-label">INSTRUMENTADOR</label>
                       <div className="agenda-input-wrapper">
                         <Smartphone size={16} />

@@ -1807,14 +1807,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 6px;
 }
 
-.agenda-filter-section-title::before {
-  content: '';
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #8b5cf6;
-}
+
 
 .agenda-filter-row {
   display: flex;
