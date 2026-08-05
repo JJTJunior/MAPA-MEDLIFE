@@ -445,7 +445,7 @@ const DriverPanel = ({ user }) => {
   };
 
   return (
-    <div className="mobile-edge-to-edge" style={{ backgroundColor: '#f1f5f9', minHeight: '100%', paddingBottom: '80px', fontFamily: "'Inter', sans-serif" }}>
+    <div className="mobile-edge-to-edge" style={{ backgroundColor: 'var(--bg-glass)', minHeight: '100%', paddingBottom: '80px', fontFamily: "'Inter', sans-serif" }}>
       
       {/* Header section (Dark Teal) */}
       <div style={{ 
@@ -500,7 +500,7 @@ const DriverPanel = ({ user }) => {
             width: '100%',
             padding: '12px 16px',
             borderRadius: '12px',
-            border: '1px solid #e2e8f0',
+            border: '1px solid var(--border-glass)',
             outline: 'none',
             fontSize: '0.95rem',
             marginBottom: '16px',
@@ -522,9 +522,9 @@ const DriverPanel = ({ user }) => {
                 padding: '8px 16px',
                 borderRadius: '20px',
                 border: '1px solid',
-                borderColor: dateFilter === f.id ? '#0f4c5c' : '#cbd5e1',
-                backgroundColor: dateFilter === f.id ? '#0f4c5c' : '#ffffff',
-                color: dateFilter === f.id ? '#ffffff' : '#475569',
+                borderColor: dateFilter === f.id ? '#0f4c5c' : 'var(--border-glass)',
+                backgroundColor: dateFilter === f.id ? '#0f4c5c' : 'var(--bg-secondary)',
+                color: dateFilter === f.id ? 'var(--bg-secondary)' : 'var(--text-secondary)',
                 fontSize: '0.85rem',
                 fontWeight: '500',
                 whiteSpace: 'nowrap',
@@ -538,7 +538,7 @@ const DriverPanel = ({ user }) => {
         </div>
 
         <div style={{ marginTop: '12px', position: 'relative' }}>
-          <Calendar size={16} color="#64748b" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
+          <Calendar size={16} color="var(--text-secondary)" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           <input 
             type="date" 
             className="form-input"
@@ -553,9 +553,9 @@ const DriverPanel = ({ user }) => {
               paddingRight: '16px',
               height: '46px', 
               borderRadius: '12px', 
-              border: '1px solid #e2e8f0',
-              backgroundColor: '#ffffff',
-              color: '#475569',
+              border: '1px solid var(--border-glass)',
+              backgroundColor: 'var(--bg-secondary)',
+              color: 'var(--text-secondary)',
               boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
               fontFamily: 'inherit',
               appearance: 'none',
@@ -568,9 +568,9 @@ const DriverPanel = ({ user }) => {
       {/* List */}
       <div style={{ padding: '0 4px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Carregando entregas...</div>
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Carregando entregas...</div>
         ) : filteredSurgeries.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Nenhuma entrega encontrada.</div>
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Nenhuma entrega encontrada.</div>
         ) : (
           filteredSurgeries.map((surgery) => {
             const st = surgery.status ? surgery.status.toUpperCase() : '';
@@ -602,44 +602,44 @@ const DriverPanel = ({ user }) => {
 
             return (
               <div key={surgery.id} style={{ 
-                backgroundColor: '#ffffff', 
+                backgroundColor: 'var(--bg-secondary)', 
                 borderRadius: '16px', 
                 padding: '20px', 
                 boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
-                border: '1px solid #f1f5f9'
+                border: '1px solid var(--bg-glass)'
               }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '16px', gap: '12px' }}>
                   <div style={{ width: '100%' }}>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>PACIENTE</div>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px', wordBreak: 'break-word' }}>{surgery.patient}</div>
+                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-primary)', marginTop: '2px', wordBreak: 'break-word' }}>{surgery.patient}</div>
                   </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>HOSPITAL</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500', display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
                       <span style={{ color: '#94a3b8', marginTop: '2px' }}>♡</span> <span style={{ wordBreak: 'break-word' }}>{surgery.hospital}</span>
                     </div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>MÉDICO</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', wordBreak: 'break-word' }}>{surgery.doctor}</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500', wordBreak: 'break-word' }}>{surgery.doctor}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>DATA</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Calendar size={14} color="#64748b" /> {displayDate || '--'}
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Calendar size={14} color="var(--text-secondary)" /> {displayDate || '--'}
                     </div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>VENDEDOR</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500' }}>{surgery.salesperson || '--'}</div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>{surgery.salesperson || '--'}</div>
                   </div>
                   <div>
                     <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>HORA</div>
-                    <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <Clock size={14} color="#64748b" /> {surgery.time || '--'}
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Clock size={14} color="var(--text-secondary)" /> {surgery.time || '--'}
                     </div>
                   </div>
                 </div>
@@ -652,7 +652,7 @@ const DriverPanel = ({ user }) => {
                     {isDelivered ? '🟢 MATERIAL ENTREGUE' : '🟠 SEPARADO PARA ENTREGAR'}
                   </span>
                   {isDelivered && deliveredBy && (
-                    <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600', marginLeft: '4px' }}>
+                    <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600', marginLeft: '4px' }}>
                       por {deliveredBy}
                     </div>
                   )}
@@ -667,7 +667,7 @@ const DriverPanel = ({ user }) => {
                         <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
                           <div 
                             onClick={() => handleOpenImage(surgery.id, anexo3Items, idx)}
-                            style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
+                            style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-glass)', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)' }}
                           >
                             {isDocumentFile(parsed.url) ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
@@ -680,7 +680,7 @@ const DriverPanel = ({ user }) => {
                               <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             )}
                           </div>
-                          <div style={{ fontSize: '0.55rem', color: '#64748b', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
+                          <div style={{ fontSize: '0.55rem', color: 'var(--text-secondary)', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
                             {parsed.name || `Anexo ${idx + 1}`}
                           </div>
                         </div>
@@ -692,8 +692,8 @@ const DriverPanel = ({ user }) => {
                         onClick={() => openFilePicker(surgery.id)}
                         disabled={uploadingId === surgery.id}
                         style={{ 
-                          width: '60px', height: '60px', borderRadius: '8px', border: '1px dashed #cbd5e1', 
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc',
+                          width: '60px', height: '60px', borderRadius: '8px', border: '1px dashed var(--border-glass)', 
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)',
                           cursor: 'pointer', color: '#0f4c5c', minWidth: '60px', padding: 0
                         }}
                       >
@@ -709,7 +709,7 @@ const DriverPanel = ({ user }) => {
                     onClick={() => openFilePicker(surgery.id)}
                     disabled={uploadingId === surgery.id}
                     style={{
-                      width: '100%', padding: '12px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                      width: '100%', padding: '12px', backgroundColor: 'var(--bg-glass)', color: '#0f4c5c',
                       borderRadius: '8px', border: 'none', fontWeight: '600', fontSize: '0.9rem',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                       cursor: 'pointer', transition: 'background-color 0.2s'
@@ -736,7 +736,7 @@ const DriverPanel = ({ user }) => {
                       onClick={() => openFilePicker(surgery.id)}
                       disabled={uploadingId === surgery.id}
                       style={{
-                        flex: 1, padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                        flex: 1, padding: '14px', backgroundColor: 'var(--bg-glass)', color: '#0f4c5c',
                         borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                         cursor: 'pointer', transition: 'background-color 0.2s'
@@ -798,7 +798,7 @@ const DriverPanel = ({ user }) => {
           zIndex: 99999
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)',
             borderRadius: '16px',
             padding: '24px',
             maxWidth: '440px',
@@ -821,12 +821,12 @@ const DriverPanel = ({ user }) => {
               }}>
                 <FileText size={20} />
               </div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 Identificar Anexo{pendingAttachment.files.length > 1 ? `s (${pendingAttachment.files.length} arquivos)` : ''} (Obrigatório)
               </h3>
             </div>
 
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: '1.4' }}>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
               {pendingAttachment.files.length > 1 
                 ? `Informe o nome base para identificar os ${pendingAttachment.files.length} arquivos selecionados:`
                 : 'Informe o nome ou escolha uma opção rápida para identificar este arquivo:'}
@@ -846,9 +846,9 @@ const DriverPanel = ({ user }) => {
                   style={{
                     padding: '6px 12px',
                     borderRadius: '20px',
-                    border: '1px solid #cbd5e1',
-                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : '#f8fafc',
-                    color: attachmentNameInput === chip ? '#ffffff' : '#334155',
+                    border: '1px solid var(--border-glass)',
+                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : 'var(--bg-primary)',
+                    color: attachmentNameInput === chip ? 'var(--bg-secondary)' : '#334155',
                     fontSize: '0.8rem',
                     cursor: 'pointer',
                     fontWeight: 500,
@@ -873,7 +873,7 @@ const DriverPanel = ({ user }) => {
                 style={{
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid #cbd5e1',
+                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid var(--border-glass)',
                   fontSize: '0.9rem',
                   outline: 'none',
                   width: '100%',
@@ -905,9 +905,9 @@ const DriverPanel = ({ user }) => {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  backgroundColor: '#f8fafc',
-                  color: '#475569',
+                  border: '1px solid var(--border-glass)',
+                  backgroundColor: 'var(--bg-primary)',
+                  color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 500
@@ -923,7 +923,7 @@ const DriverPanel = ({ user }) => {
                   borderRadius: '8px',
                   border: 'none',
                   backgroundColor: '#2563eb',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 600,
@@ -948,7 +948,7 @@ const DriverPanel = ({ user }) => {
             backgroundColor: '#fff', borderRadius: '16px', padding: '24px', width: '300px',
             display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
           }}>
-            <h3 style={{ margin: '0 0 16px 0', textAlign: 'center', color: '#0f172a' }}>Adicionar Foto</h3>
+            <h3 style={{ margin: '0 0 16px 0', textAlign: 'center', color: 'var(--text-primary)' }}>Adicionar Foto</h3>
             
             <button
               onClick={() => {
@@ -972,7 +972,7 @@ const DriverPanel = ({ user }) => {
                 if (fileInputRef.current) fileInputRef.current.click();
               }}
               style={{
-                padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                padding: '14px', backgroundColor: 'var(--bg-glass)', color: '#0f4c5c',
                 borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
               }}
@@ -998,7 +998,7 @@ const DriverPanel = ({ user }) => {
             <button
               onClick={() => setUploadOptionsModal(null)}
               style={{
-                marginTop: '8px', padding: '10px', backgroundColor: 'transparent', color: '#64748b',
+                marginTop: '8px', padding: '10px', backgroundColor: 'transparent', color: 'var(--text-secondary)',
                 border: 'none', fontWeight: 'bold', cursor: 'pointer'
               }}
             >
@@ -1054,7 +1054,7 @@ const DriverPanel = ({ user }) => {
             </button>
             
             {isDocumentFile(parsed.url) ? (
-              <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', borderRadius: '8px', overflow: 'hidden' }}>
                 {parsed.url.toLowerCase().includes('.pdf') ? (
                   <iframe 
                     src={`https://docs.google.com/viewer?url=${encodeURIComponent(parsed.url)}&embedded=true`} 
@@ -1067,7 +1067,7 @@ const DriverPanel = ({ user }) => {
                       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                     </div>
                     <h3 style={{ margin: 0, color: '#334155', fontSize: '1.2rem' }}>Documento de Texto</h3>
-                    <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>Visualização direta não suportada.</p>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '8px' }}>Visualização direta não suportada.</p>
                     <a href={parsed.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '16px', padding: '10px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' }}>
                       Baixar / Abrir
                     </a>
@@ -1161,7 +1161,7 @@ const DriverPanel = ({ user }) => {
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999999
         }}>
           <div style={{
-            backgroundColor: '#ffffff', borderRadius: '20px', padding: '32px 28px',
+            backgroundColor: 'var(--bg-secondary)', borderRadius: '20px', padding: '32px 28px',
             maxWidth: '420px', width: '90%', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px'
           }}>
@@ -1175,20 +1175,20 @@ const DriverPanel = ({ user }) => {
             </div>
 
             <div>
-              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {uploadProgress.isDone ? 'Anexos Enviados!' : 'Enviando Anexos'}
               </h3>
-              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
                 {uploadProgress.status}
               </p>
             </div>
 
             <div style={{ width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
                 <span>{uploadProgress.fileName}</span>
                 <span>{uploadProgress.percent}%</span>
               </div>
-              <div style={{ width: '100%', height: '10px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+              <div style={{ width: '100%', height: '10px', backgroundColor: 'var(--border-glass)', borderRadius: '999px', overflow: 'hidden' }}>
                 <div style={{
                   width: `${uploadProgress.percent}%`, height: '100%',
                   background: uploadProgress.isDone ? '#10b981' : 'linear-gradient(90deg, #2563eb, #3b82f6)',

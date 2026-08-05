@@ -187,10 +187,10 @@ export default function OnCallModal({ isOpen, onClose, onScheduleUpdated }) {
       <style>{`
         .react-datepicker-wrapper { width: 100%; }
         .react-datepicker__input-container input { width: 100%; }
-        .react-datepicker { background-color: #1e293b !important; border: 1px solid rgba(255,255,255,0.1) !important; font-family: inherit; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border-radius: 8px !important; }
-        .react-datepicker__header { background-color: #0f172a !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; padding-top: 10px; }
-        .react-datepicker__current-month, .react-datepicker-time__header, .react-datepicker-year-header, .react-datepicker__day-name { color: #f8fafc !important; }
-        .react-datepicker__day { color: #f8fafc; margin: 0.15rem; border-radius: 50% !important; }
+        .react-datepicker { background-color: var(--text-primary) !important; border: 1px solid rgba(255,255,255,0.1) !important; font-family: inherit; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border-radius: 8px !important; }
+        .react-datepicker__header { background-color: var(--text-primary) !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; border-top-left-radius: 8px !important; border-top-right-radius: 8px !important; padding-top: 10px; }
+        .react-datepicker__current-month, .react-datepicker-time__header, .react-datepicker-year-header, .react-datepicker__day-name { color: var(--bg-primary) !important; }
+        .react-datepicker__day { color: var(--bg-primary); margin: 0.15rem; border-radius: 50% !important; }
         .react-datepicker__day:hover { background-color: rgba(255,255,255,0.1); }
         .react-datepicker__day--selected { background-color: var(--accent-blue) !important; color: white !important; }
         .react-datepicker__day--keyboard-selected { background-color: transparent !important; }

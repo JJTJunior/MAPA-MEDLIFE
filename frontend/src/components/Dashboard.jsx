@@ -21,7 +21,7 @@ class DashboardErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: '30px', background: '#ffffff', borderRadius: '12px', margin: '20px', border: '2px solid #ef4444', color: '#991b1b' }}>
+        <div style={{ padding: '30px', background: 'var(--bg-secondary)', borderRadius: '12px', margin: '20px', border: '2px solid #ef4444', color: '#991b1b' }}>
           <h2 style={{ margin: '0 0 10px 0', color: '#dc2626' }}>⚠️ Erro no Dashboard</h2>
           <p style={{ color: '#374151' }}>Ocorreu o seguinte erro ao renderizar o Dashboard:</p>
           <pre style={{ background: '#fef2f2', padding: '12px', borderRadius: '6px', fontSize: '0.85rem', overflowX: 'auto', whiteSpace: 'pre-wrap' }}>
@@ -1351,7 +1351,7 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
       {printData && (
         <div style={{ display: 'none' }}>
           <div id="dashboard-print-container" style={{ padding: '20px', fontFamily: 'sans-serif', backgroundColor: '#fff', color: '#000' }}>
-            <h1 style={{ textAlign: 'center', color: '#1e293b', marginBottom: '20px', fontSize: '18px' }}>
+            <h1 style={{ textAlign: 'center', color: 'var(--text-primary)', marginBottom: '20px', fontSize: '18px' }}>
               {printTitle}
             </h1>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9px' }}>
@@ -1373,28 +1373,28 @@ function DashboardInner({ user, onNavigate, onlineUsers, onOpenOnlineModal }) {
               </thead>
               <tbody>
                 {printData.map((item, idx) => (
-                  <tr key={idx} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>
+                  <tr key={idx} style={{ borderBottom: '1px solid var(--border-glass)' }}>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>
                       {item.date ? new Date(item.date).toLocaleDateString('pt-BR') : ''}
                       {item.time ? <br /> : ''}
                       {item.time ? item.time : ''}
                     </td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.status}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.doctor}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.hospital}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.patient}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.insurance}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.surgery_type}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.material_procedure}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.instrumentalist1}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.instrumentalist2}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.salesperson}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.observation}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.status}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.doctor}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.hospital}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.patient}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.insurance}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.surgery_type}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.material_procedure}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.instrumentalist1}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.instrumentalist2}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.salesperson}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.observation}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div style={{ marginTop: '20px', textAlign: 'right', fontSize: '10px', color: '#64748b' }}>
+            <div style={{ marginTop: '20px', textAlign: 'right', fontSize: '10px', color: 'var(--text-secondary)' }}>
               Gerado em: {new Date().toLocaleString('pt-BR')} - Total: {printData.length} registros
             </div>
           </div>

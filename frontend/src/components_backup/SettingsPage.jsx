@@ -4,7 +4,7 @@ import { X, Settings, Users, Stethoscope, Building2, UserPlus, Tag, Plus, Trash2
 import UserManagement from './UserManagement';
 import AuditLogs from './AuditLogs';
 
-const PRESET_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#6366f1', '#a855f7', '#ec4899', '#64748b'];
+const PRESET_COLORS = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#6366f1', '#a855f7', '#ec4899', 'var(--text-secondary)'];
 
 export default function SettingsPage({ user, onBack }) {
   const availableTabs = useMemo(() => {

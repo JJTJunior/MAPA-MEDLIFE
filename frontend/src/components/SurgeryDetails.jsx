@@ -1091,8 +1091,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           position: absolute;
           top: calc(100% + 4px);
           right: 0;
-          background-color: var(--bg-secondary, #f8fafc);
-          border: 1px solid var(--border-color, #e2e8f0);
+          background-color: var(--bg-secondary, var(--bg-primary));
+          border: 1px solid var(--border-color, var(--border-glass));
           border-radius: 8px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           padding: 4px;
@@ -1215,7 +1215,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             </div>
           </div>
 
-          <span style={{ color: '#cbd5e1', fontSize: '1.5rem', fontWeight: '300', margin: '0 4px' }}>/</span>
+          <span style={{ color: 'var(--border-glass)', fontSize: '1.5rem', fontWeight: '300', margin: '0 4px' }}>/</span>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <button 
@@ -1383,10 +1383,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             flexDirection: 'column', 
             gap: '16px',
             outline: 'none',
-            border: '1px solid var(--border-color, #e2e8f0)',
+            border: '1px solid var(--border-color, var(--border-glass))',
             borderRadius: '12px',
             padding: '20px',
-            backgroundColor: 'var(--card-bg, #ffffff)',
+            backgroundColor: 'var(--card-bg, var(--bg-secondary))',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             transition: 'all 0.2s'
           }}
@@ -1408,10 +1408,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 <FileText size={20} />
               </div>
               <div>
-                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, #0f172a)' }}>
+                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, var(--text-primary))' }}>
                   Anexo 1 · Solicitação médica / Autorização
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, var(--text-secondary))', marginTop: '2px' }}>
                   Documento de solicitação e autorização do procedimento
                 </div>
               </div>
@@ -1451,10 +1451,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           <div style={{
             border: (isEditable && isFieldEditable('attachment_url') && isDropzoneFocused1) 
               ? '2px dashed #2563eb' 
-              : '1px dashed var(--border-color, #cbd5e1)',
+              : '1px dashed var(--border-color, var(--border-glass))',
             borderRadius: '10px',
             padding: '24px 16px',
-            backgroundColor: 'var(--bg-secondary, #f8fafc)',
+            backgroundColor: 'var(--bg-secondary, var(--bg-primary))',
             minHeight: '90px',
             display: 'flex',
             flexDirection: 'column',
@@ -1474,7 +1474,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 return (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
                     <EyeOff size={24} style={{ color: 'var(--text-secondary, #94a3b8)', opacity: 0.7 }} />
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, var(--text-secondary))' }}>
                       Nenhum anexo de solicitação ou autorização enviado.
                     </span>
                   </div>
@@ -1491,7 +1491,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                         {isDocumentFile(url) ? (
                           <div 
                             onClick={() => handleOpenImage(allAttachmentUrls, idx)} 
-                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}
+                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', cursor: 'pointer', textDecoration: 'none' }}
                           >
                             {url.toLowerCase().includes('.pdf') ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
@@ -1567,7 +1567,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             width: '120px',
                             fontSize: '0.75rem',
                             padding: '4px 6px',
-                            border: '1px solid var(--border-color, #e2e8f0)',
+                            border: '1px solid var(--border-color, var(--border-glass))',
                             borderRadius: '6px',
                             textAlign: 'center',
                             marginTop: '4px'
@@ -1581,7 +1581,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             </span>
                           )}
                           {userName && (
-                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: '#64748b', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
                               por {userName}
                             </span>
                           )}
@@ -1606,9 +1606,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     setShowDeleteIcons(true);
                   }}
                   style={{
-                    backgroundColor: '#ffffff',
+                    backgroundColor: 'var(--bg-secondary)',
                     color: '#334155',
-                    border: '1px solid #cbd5e1',
+                    border: '1px solid var(--border-glass)',
                     padding: '8px 16px',
                     borderRadius: '8px',
                     cursor: 'pointer',
@@ -1641,9 +1641,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     }
                   }}
                   style={{
-                    backgroundColor: '#ffffff',
+                    backgroundColor: 'var(--bg-secondary)',
                     color: '#334155',
-                    border: '1px solid #cbd5e1',
+                    border: '1px solid var(--border-glass)',
                     padding: '8px 16px',
                     borderRadius: '8px',
                     cursor: 'pointer',
@@ -1672,7 +1672,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   }}
                   style={{
                     backgroundColor: '#2563eb',
-                    color: '#ffffff',
+                    color: 'var(--bg-secondary)',
                     padding: '8px 18px',
                     borderRadius: '8px',
                     border: 'none',
@@ -1731,7 +1731,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           textAlign: 'left',
                           cursor: 'pointer',
                           fontSize: '0.85rem',
-                          color: 'var(--text-primary, #0f172a)',
+                          color: 'var(--text-primary, var(--text-primary))',
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
@@ -1756,7 +1756,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           textAlign: 'left',
                           cursor: 'pointer',
                           fontSize: '0.85rem',
-                          color: 'var(--text-primary, #0f172a)',
+                          color: 'var(--text-primary, var(--text-primary))',
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
@@ -1781,7 +1781,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           textAlign: 'left',
                           cursor: 'pointer',
                           fontSize: '0.85rem',
-                          color: 'var(--text-primary, #0f172a)',
+                          color: 'var(--text-primary, var(--text-primary))',
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
@@ -1804,7 +1804,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           textAlign: 'left',
                           cursor: 'pointer',
                           fontSize: '0.85rem',
-                          color: 'var(--text-primary, #0f172a)',
+                          color: 'var(--text-primary, var(--text-primary))',
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
@@ -1865,10 +1865,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             flexDirection: 'column', 
             gap: '16px',
             outline: 'none',
-            border: '1px solid var(--border-color, #e2e8f0)',
+            border: '1px solid var(--border-color, var(--border-glass))',
             borderRadius: '12px',
             padding: '20px',
-            backgroundColor: 'var(--card-bg, #ffffff)',
+            backgroundColor: 'var(--card-bg, var(--bg-secondary))',
             boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
             transition: 'all 0.2s'
           }}
@@ -1890,10 +1890,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 <ClipboardList size={20} />
               </div>
               <div>
-                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, #0f172a)' }}>
+                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, var(--text-primary))' }}>
                   Anexo 2 · Comanda / Documentação cirúrgica
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, var(--text-secondary))', marginTop: '2px' }}>
                   Comanda cirúrgica e documentos complementares
                 </div>
               </div>
@@ -1934,10 +1934,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           <div style={{
             border: (isEditable && isFieldEditable('comanda_urls') && isDropzoneFocused2) 
               ? '2px dashed #2563eb' 
-              : '1px dashed var(--border-color, #cbd5e1)',
+              : '1px dashed var(--border-color, var(--border-glass))',
             borderRadius: '10px',
             padding: '24px 16px',
-            backgroundColor: 'var(--bg-secondary, #f8fafc)',
+            backgroundColor: 'var(--bg-secondary, var(--bg-primary))',
             minHeight: '90px',
             display: 'flex',
             flexDirection: 'column',
@@ -1955,7 +1955,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 return (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
                     <EyeOff size={24} style={{ color: 'var(--text-secondary, #94a3b8)', opacity: 0.7 }} />
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, var(--text-secondary))' }}>
                       Nenhum anexo de comanda ou documentação enviado.
                     </span>
                   </div>
@@ -1972,7 +1972,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                         {isDocumentFile(url) ? (
                           <div 
                             onClick={() => handleOpenImage(allAttachmentUrls, idx)} 
-                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}
+                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', cursor: 'pointer', textDecoration: 'none' }}
                           >
                             {url.toLowerCase().includes('.pdf') ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
@@ -2048,7 +2048,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             width: '120px',
                             fontSize: '0.75rem',
                             padding: '4px 6px',
-                            border: '1px solid var(--border-color, #e2e8f0)',
+                            border: '1px solid var(--border-color, var(--border-glass))',
                             borderRadius: '6px',
                             textAlign: 'center',
                             marginTop: '4px'
@@ -2062,7 +2062,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             </span>
                           )}
                           {userName && (
-                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: '#64748b', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
                               por {userName}
                             </span>
                           )}
@@ -2117,9 +2117,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           onBlur={() => setIsDropzoneFocused3(false)}
           onPaste={handlePasteEquipmentImages}
           style={{
-            backgroundColor: 'var(--card-bg, #ffffff)',
+            backgroundColor: 'var(--card-bg, var(--bg-secondary))',
             borderRadius: '16px',
-            border: '1px solid var(--border-color, #e2e8f0)',
+            border: '1px solid var(--border-color, var(--border-glass))',
             padding: '24px',
             boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
             display: 'flex',
@@ -2146,10 +2146,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 <Briefcase size={20} />
               </div>
               <div>
-                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, #0f172a)' }}>
+                <div style={{ fontWeight: '600', fontSize: '0.95rem', color: 'var(--text-primary, var(--text-primary))' }}>
                   Anexo 3 · Materiais / Comprovante da Entrega
                 </div>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', marginTop: '2px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary, var(--text-secondary))', marginTop: '2px' }}>
                   imagem de materiais e comprovante de entrega
                 </div>
               </div>
@@ -2189,10 +2189,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           <div style={{
             border: (isEditable && (isFieldEditable('comanda_urls') || isFieldEditable('equipment_urls')) && isDropzoneFocused3) 
               ? '2px dashed #6366f1' 
-              : '1px dashed var(--border-color, #cbd5e1)',
+              : '1px dashed var(--border-color, var(--border-glass))',
             borderRadius: '10px',
             padding: '24px 16px',
-            backgroundColor: 'var(--bg-secondary, #f8fafc)',
+            backgroundColor: 'var(--bg-secondary, var(--bg-primary))',
             minHeight: '90px',
             display: 'flex',
             flexDirection: 'column',
@@ -2210,7 +2210,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 return (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', padding: '12px 0' }}>
                     <EyeOff size={24} style={{ color: 'var(--text-secondary, #94a3b8)', opacity: 0.7 }} />
-                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, #64748b)' }}>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary, var(--text-secondary))' }}>
                       Nenhum anexo de descartáveis, implantes, instrumentais, equipamentos ou comprovante de entrega enviado.
                     </span>
                   </div>
@@ -2228,7 +2228,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                         {isDocumentFile(url) ? (
                           <div 
                             onClick={() => handleOpenImage(allEquipmentRaw, idx)} 
-                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}
+                            style={{ display: 'flex', width: '80px', height: '80px', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', cursor: 'pointer', textDecoration: 'none' }}
                           >
                             {url.toLowerCase().includes('.pdf') ? (
                               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
@@ -2307,7 +2307,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             fontSize: '0.78rem',
                             padding: '4px 8px',
                             borderRadius: '4px',
-                            border: '1px solid var(--border-color, #cbd5e1)',
+                            border: '1px solid var(--border-color, var(--border-glass))',
                             width: '110px',
                             textAlign: 'center'
                           }}
@@ -2320,7 +2320,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             </span>
                           )}
                           {userName && (
-                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: '#64748b', textAlign: 'center', maxWidth: '140px' }}>
+                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '140px' }}>
                               por {userName}
                             </span>
                           )}
@@ -2364,8 +2364,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           padding: '16px'
         }}>
           <div style={{
-            backgroundColor: 'var(--bg-primary, #ffffff)',
-            color: 'var(--text-primary, #0f172a)',
+            backgroundColor: 'var(--bg-primary, var(--bg-secondary))',
+            color: 'var(--text-primary, var(--text-primary))',
             borderRadius: '16px',
             maxWidth: '480px',
             width: '100%',
@@ -2375,18 +2375,18 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             flexDirection: 'column',
             gap: '16px'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color, #e2e8f0)', paddingBottom: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color, var(--border-glass))', paddingBottom: '12px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <MessageCircle size={22} /> Compartilhar no WhatsApp
                 </h3>
-                <span style={{ fontSize: '0.85rem', color: '#64748b' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                   Cirurgia de <strong>{shareModalData.patient}</strong> · {shareModalData.files.filter(f => f.origin !== 'anexo3').length} anexo(s)
                 </span>
               </div>
               <button 
                 onClick={() => setShareModalData(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '4px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px' }}
               >
                 <X size={20} />
               </button>
@@ -2405,7 +2405,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   gap: '12px',
                   padding: '12px 16px',
                   backgroundColor: '#16a34a',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   border: 'none',
                   borderRadius: '10px',
                   fontWeight: '600',
@@ -2431,9 +2431,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 
                 return (
                   <div style={{ 
-                    border: '1px solid var(--border-color, #e2e8f0)', 
+                    border: '1px solid var(--border-color, var(--border-glass))', 
                     borderRadius: '12px', padding: '12px',
-                    backgroundColor: 'var(--bg-secondary, #f8fafc)',
+                    backgroundColor: 'var(--bg-secondary, var(--bg-primary))',
                     display: 'flex', flexDirection: 'column', gap: '10px'
                   }}>
                     <div 
@@ -2442,13 +2442,13 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     >
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', flexWrap: 'wrap' }}>
                         <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-primary)' }}>Anexo 1</span>
-                        <span style={{ fontSize: '0.78rem', color: '#64748b' }}>- solicitação médica / autorização</span>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>- solicitação médica / autorização</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#64748b', backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', fontWeight: '500' }}>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', backgroundColor: 'var(--border-glass)', padding: '2px 8px', borderRadius: '12px', fontWeight: '500' }}>
                           {imgFiles1.length > 0 && `${imgFiles1.length} img`}{imgFiles1.length > 0 && pdfFiles1.length > 0 && ' · '}{pdfFiles1.length > 0 && `${pdfFiles1.length} pdf`}
                         </span>
-                        {isCollapsed ? <ChevronDown size={14} style={{ color: '#64748b' }} /> : <ChevronUp size={14} style={{ color: '#64748b' }} />}
+                        {isCollapsed ? <ChevronDown size={14} style={{ color: 'var(--text-secondary)' }} /> : <ChevronUp size={14} style={{ color: 'var(--text-secondary)' }} />}
                       </div>
                     </div>
                     
@@ -2484,7 +2484,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             }}
                             style={{
                               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 14px',
-                              backgroundColor: '#2563eb', color: '#ffffff', border: 'none', flex: 1,
+                              backgroundColor: '#2563eb', color: 'var(--bg-secondary)', border: 'none', flex: 1,
                               borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer',
                               transition: 'all 0.2s'
                             }}
@@ -2524,7 +2524,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             }}
                             style={{
                               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 14px',
-                              backgroundColor: '#dc2626', color: '#ffffff', border: 'none', flex: 1,
+                              backgroundColor: '#dc2626', color: 'var(--bg-secondary)', border: 'none', flex: 1,
                               borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer',
                               transition: 'all 0.2s'
                             }}
@@ -2548,9 +2548,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 
                 return (
                   <div style={{ 
-                    border: '1px solid var(--border-color, #e2e8f0)', 
+                    border: '1px solid var(--border-color, var(--border-glass))', 
                     borderRadius: '12px', padding: '12px',
-                    backgroundColor: 'var(--bg-secondary, #f8fafc)',
+                    backgroundColor: 'var(--bg-secondary, var(--bg-primary))',
                     display: 'flex', flexDirection: 'column', gap: '10px'
                   }}>
                     <div 
@@ -2559,13 +2559,13 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                     >
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', flexWrap: 'wrap' }}>
                         <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: 'var(--text-primary)' }}>Anexo 2</span>
-                        <span style={{ fontSize: '0.78rem', color: '#64748b' }}>- comanda / documentação</span>
+                        <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>- comanda / documentação</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ fontSize: '0.7rem', color: '#64748b', backgroundColor: '#e2e8f0', padding: '2px 8px', borderRadius: '12px', fontWeight: '500' }}>
+                        <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', backgroundColor: 'var(--border-glass)', padding: '2px 8px', borderRadius: '12px', fontWeight: '500' }}>
                           {imgFiles2.length > 0 && `${imgFiles2.length} img`}{imgFiles2.length > 0 && pdfFiles2.length > 0 && ' · '}{pdfFiles2.length > 0 && `${pdfFiles2.length} pdf`}
                         </span>
-                        {isCollapsed ? <ChevronDown size={14} style={{ color: '#64748b' }} /> : <ChevronUp size={14} style={{ color: '#64748b' }} />}
+                        {isCollapsed ? <ChevronDown size={14} style={{ color: 'var(--text-secondary)' }} /> : <ChevronUp size={14} style={{ color: 'var(--text-secondary)' }} />}
                       </div>
                     </div>
                     
@@ -2601,7 +2601,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             }}
                             style={{
                               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 14px',
-                              backgroundColor: '#2563eb', color: '#ffffff', border: 'none', flex: 1,
+                              backgroundColor: '#2563eb', color: 'var(--bg-secondary)', border: 'none', flex: 1,
                               borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer',
                               transition: 'all 0.2s'
                             }}
@@ -2641,7 +2641,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             }}
                             style={{
                               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px 14px',
-                              backgroundColor: '#dc2626', color: '#ffffff', border: 'none', flex: 1,
+                              backgroundColor: '#dc2626', color: 'var(--bg-secondary)', border: 'none', flex: 1,
                               borderRadius: '8px', fontWeight: '600', fontSize: '0.82rem', cursor: 'pointer',
                               transition: 'all 0.2s'
                             }}
@@ -2743,7 +2743,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           zIndex: 99999
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)',
             borderRadius: '16px',
             padding: '24px',
             maxWidth: '440px',
@@ -2766,12 +2766,12 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               }}>
                 <FileText size={20} />
               </div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 Identificar Anexo{pendingAttachment.files.length > 1 ? `s (${pendingAttachment.files.length} arquivos)` : ''} (Obrigatório)
               </h3>
             </div>
 
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: '1.4' }}>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
               {pendingAttachment.files.length > 1 
                 ? `Informe o nome base para identificar os ${pendingAttachment.files.length} arquivos selecionados:`
                 : 'Informe o nome ou escolha uma opção rápida para identificar este arquivo:'}
@@ -2795,9 +2795,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   style={{
                     padding: '6px 12px',
                     borderRadius: '20px',
-                    border: '1px solid #cbd5e1',
-                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : '#f8fafc',
-                    color: attachmentNameInput === chip ? '#ffffff' : '#334155',
+                    border: '1px solid var(--border-glass)',
+                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : 'var(--bg-primary)',
+                    color: attachmentNameInput === chip ? 'var(--bg-secondary)' : '#334155',
                     fontSize: '0.8rem',
                     cursor: 'pointer',
                     fontWeight: 500,
@@ -2822,7 +2822,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 style={{
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid #cbd5e1',
+                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid var(--border-glass)',
                   fontSize: '0.9rem',
                   outline: 'none',
                   width: '100%',
@@ -2852,9 +2852,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  backgroundColor: '#f8fafc',
-                  color: '#475569',
+                  border: '1px solid var(--border-glass)',
+                  backgroundColor: 'var(--bg-primary)',
+                  color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 500
@@ -2870,7 +2870,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   borderRadius: '8px',
                   border: 'none',
                   backgroundColor: '#2563eb',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 600,
@@ -2899,7 +2899,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           zIndex: 9999999
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)',
             borderRadius: '20px',
             padding: '32px 28px',
             maxWidth: '420px',
@@ -2930,10 +2930,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             </div>
 
             <div>
-              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {uploadProgress.isDone ? 'Anexos Enviados!' : 'Enviando Anexos'}
               </h3>
-              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
                 {uploadProgress.status}
               </p>
             </div>
@@ -2944,7 +2944,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 justify: 'space-between',
                 fontSize: '0.8rem',
                 fontWeight: 600,
-                color: '#475569',
+                color: 'var(--text-secondary)',
                 marginBottom: '8px'
               }}>
                 <span>{uploadProgress.fileName}</span>
@@ -2954,7 +2954,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               <div style={{
                 width: '100%',
                 height: '10px',
-                backgroundColor: '#e2e8f0',
+                backgroundColor: 'var(--border-glass)',
                 borderRadius: '999px',
                 overflow: 'hidden'
               }}>
@@ -2990,7 +2990,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
           zIndex: 9999999
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)',
             borderRadius: '16px',
             padding: '24px',
             maxWidth: '420px',
@@ -3015,10 +3015,10 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 <Trash2 size={22} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Excluir Anexo?
                 </h3>
-                <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
                   Esta ação removerá o arquivo do prontuário da cirurgia.
                 </p>
               </div>
@@ -3026,9 +3026,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
 
             <div style={{
               padding: '12px 14px',
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--bg-primary)',
               borderRadius: '8px',
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--border-glass)',
               fontSize: '0.88rem',
               color: '#334155',
               fontWeight: 500
@@ -3043,9 +3043,9 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  backgroundColor: '#f8fafc',
-                  color: '#475569',
+                  border: '1px solid var(--border-glass)',
+                  backgroundColor: 'var(--bg-primary)',
+                  color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 500
@@ -3069,7 +3069,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                   borderRadius: '8px',
                   border: 'none',
                   backgroundColor: '#ef4444',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 600,
@@ -3105,7 +3105,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             return (
               <>
                 {isDocumentFile(parsed.url) ? (
-                  <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', borderRadius: '8px', overflow: 'hidden' }}>
+                  <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', borderRadius: '8px', overflow: 'hidden' }}>
                     {parsed.url.toLowerCase().includes('.pdf') ? (
                       <iframe 
                         src={`https://docs.google.com/viewer?url=${encodeURIComponent(parsed.url)}&embedded=true`} 
@@ -3118,7 +3118,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                         </div>
                         <h3 style={{ margin: 0, color: '#334155', fontSize: '1.2rem' }}>Documento de Texto</h3>
-                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>Visualização direta não suportada.</p>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '8px' }}>Visualização direta não suportada.</p>
                         <a href={parsed.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '16px', padding: '10px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' }}>
                           Baixar / Abrir
                         </a>

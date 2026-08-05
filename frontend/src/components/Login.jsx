@@ -140,7 +140,7 @@ export default function Login({ onLoginSuccess }) {
                   placeholder="Seu usuário (ex: joao.silva)"
                   required
                 />
-                <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '6px', marginLeft: '4px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '6px', marginLeft: '4px' }}>
                   @medlifebrasil.com
                 </div>
               </div>
@@ -194,7 +194,7 @@ export default function Login({ onLoginSuccess }) {
               placeholder="Seu usuário (ex: joao.silva)"
               required
             />
-            <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '6px', marginLeft: '4px' }}>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '6px', marginLeft: '4px' }}>
               @medlifebrasil.com
             </div>
           </div>

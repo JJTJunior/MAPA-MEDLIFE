@@ -842,7 +842,7 @@ export default function Dashboard({ user, onNavigate, onlineUsers, onOpenOnlineM
       {printData && (
         <div style={{ display: 'none' }}>
           <div id="dashboard-print-container" style={{ padding: '20px', fontFamily: 'sans-serif', backgroundColor: '#fff', color: '#000' }}>
-            <h1 style={{ textAlign: 'center', color: '#1e293b', marginBottom: '20px', fontSize: '18px' }}>
+            <h1 style={{ textAlign: 'center', color: 'var(--text-primary)', marginBottom: '20px', fontSize: '18px' }}>
               {printTitle}
             </h1>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9px' }}>
@@ -864,28 +864,28 @@ export default function Dashboard({ user, onNavigate, onlineUsers, onOpenOnlineM
               </thead>
               <tbody>
                 {printData.map((item, idx) => (
-                  <tr key={idx} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>
+                  <tr key={idx} style={{ borderBottom: '1px solid var(--border-glass)' }}>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>
                       {item.date ? new Date(item.date).toLocaleDateString('pt-BR') : ''}
                       {item.time ? <br /> : ''}
                       {item.time ? item.time : ''}
                     </td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.status}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.doctor}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.hospital}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.patient}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.insurance}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.surgery_type}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.material_procedure}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.instrumentalist1}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.instrumentalist2}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.salesperson}</td>
-                    <td style={{ padding: '4px', border: '1px solid #e2e8f0' }}>{item.observation}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.status}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.doctor}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.hospital}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.patient}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.insurance}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.surgery_type}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.material_procedure}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.instrumentalist1}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.instrumentalist2}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.salesperson}</td>
+                    <td style={{ padding: '4px', border: '1px solid var(--border-glass)' }}>{item.observation}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div style={{ marginTop: '20px', textAlign: 'right', fontSize: '10px', color: '#64748b' }}>
+            <div style={{ marginTop: '20px', textAlign: 'right', fontSize: '10px', color: 'var(--text-secondary)' }}>
               Gerado em: {new Date().toLocaleString('pt-BR')} - Total: {printData.length} registros
             </div>
           </div>

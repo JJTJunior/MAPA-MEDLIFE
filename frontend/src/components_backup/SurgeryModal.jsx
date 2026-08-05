@@ -501,7 +501,7 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
         </div>
 
         <form onSubmit={handleSubmit}>
-          <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '15px' }}>Campos marcados com asterisco (*) são obrigatórios.</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '15px' }}>Campos marcados com asterisco (*) são obrigatórios.</p>
           <div className="form-grid">
             {/* Informações Básicas */}
             <div className="form-group">
@@ -753,11 +753,11 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                 onBlur={() => setIsDropzoneFocused(false)}
                 className="paste-dropzone"
                 style={{
-                  border: isDropzoneFocused ? '2px dashed var(--primary-color, #10b981)' : '2px dashed var(--border-color, #e2e8f0)',
+                  border: isDropzoneFocused ? '2px dashed var(--primary-color, #10b981)' : '2px dashed var(--border-color, var(--border-glass))',
                   borderRadius: '8px',
                   padding: '20px',
                   textAlign: 'center',
-                  background: 'var(--bg-secondary, #f8fafc)',
+                  background: 'var(--bg-secondary, var(--bg-primary))',
                   minHeight: '110px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -812,8 +812,8 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                           top: 'calc(100% + 4px)',
                           left: '50%',
                           transform: 'translateX(-50%)',
-                          backgroundColor: 'var(--bg-secondary, #f8fafc)',
-                          border: '1px solid var(--border-color, #e2e8f0)',
+                          backgroundColor: 'var(--bg-secondary, var(--bg-primary))',
+                          border: '1px solid var(--border-color, var(--border-glass))',
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                           padding: '4px',
@@ -838,7 +838,7 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.85rem',
-                            color: 'var(--text-primary, #0f172a)',
+                            color: 'var(--text-primary, var(--text-primary))',
                             borderRadius: '6px',
                             display: 'flex',
                             alignItems: 'center',
@@ -863,7 +863,7 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.85rem',
-                            color: 'var(--text-primary, #0f172a)',
+                            color: 'var(--text-primary, var(--text-primary))',
                             borderRadius: '6px',
                             display: 'flex',
                             alignItems: 'center',
@@ -888,7 +888,7 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.85rem',
-                            color: 'var(--text-primary, #0f172a)',
+                            color: 'var(--text-primary, var(--text-primary))',
                             borderRadius: '6px',
                             display: 'flex',
                             alignItems: 'center',
@@ -916,7 +916,7 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.85rem',
-                            color: 'var(--text-primary, #0f172a)',
+                            color: 'var(--text-primary, var(--text-primary))',
                             borderRadius: '6px',
                             display: 'flex',
                             alignItems: 'center',
@@ -955,7 +955,7 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                   onChange={handleFileDocumentSelect} 
                 />
 
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)', fontWeight: '500' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, var(--text-secondary))', fontWeight: '500' }}>
                   Selecione uma opção acima ou **clique aqui e aperte Ctrl+V** para colar anexos
                 </span>
               </div>
@@ -974,9 +974,9 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                       const { url, name } = parsePrintUrl(item);
                       return (
                       <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '110px', gap: '6px' }}>
-                        <div style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color, #e2e8f0)' }}>
+                        <div style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color, var(--border-glass))' }}>
                           {isDocumentFile(url) ? (
-                            <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', textDecoration: 'none' }}>
+                            <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', textDecoration: 'none' }}>
                               {url.toLowerCase().includes('.pdf') ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                   <FileText size={32} style={{ color: '#ef4444' }} />
@@ -1042,11 +1042,11 @@ export default function SurgeryModal({ isOpen, onClose, surgery, user, onSaveSuc
                             width: '100px',
                             fontSize: '0.75rem',
                             padding: '4px 6px',
-                            border: '1px solid var(--border-color, #e2e8f0)',
+                            border: '1px solid var(--border-color, var(--border-glass))',
                             borderRadius: '6px',
                             textAlign: 'center',
                             background: 'var(--bg-primary, #fff)',
-                            color: 'var(--text-primary, #0f172a)'
+                            color: 'var(--text-primary, var(--text-primary))'
                           }}
                         />
                       </div>

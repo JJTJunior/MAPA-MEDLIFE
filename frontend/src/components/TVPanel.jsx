@@ -267,7 +267,7 @@ export default function TVPanel({ user, onBack }) {
               onClick={toggleSound}
               style={{
                 backgroundColor: '#ef4444',
-                color: '#ffffff',
+                color: 'var(--bg-secondary)',
                 padding: '8px 16px',
                 textAlign: 'center',
                 fontWeight: 'bold',

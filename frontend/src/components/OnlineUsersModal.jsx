@@ -36,18 +36,18 @@ export default function OnlineUsersModal({ isOpen, onClose, onlineUsers, current
           padding: 0, 
           overflow: 'hidden', 
           borderRadius: '16px',
-          background: 'var(--bg-primary, #ffffff)',
+          background: 'var(--bg-primary, var(--bg-secondary))',
           boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1)'
         }}
       >
         {/* Header */}
         <div style={{ 
           padding: '20px 24px', 
-          borderBottom: '1px solid var(--border-color, #e2e8f0)', 
+          borderBottom: '1px solid var(--border-color, var(--border-glass))', 
           display: 'flex', 
           justify: 'space-between', 
           alignItems: 'center',
-          background: 'var(--bg-secondary, #f8fafc)' 
+          background: 'var(--bg-secondary, var(--bg-primary))' 
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div style={{ 
@@ -61,10 +61,10 @@ export default function OnlineUsersModal({ isOpen, onClose, onlineUsers, current
               <Eye size={24} style={{ color: '#10b981' }} />
             </div>
             <div>
-              <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 'bold', color: 'var(--text-primary, #0f172a)' }}>
+              <h2 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 'bold', color: 'var(--text-primary, var(--text-primary))' }}>
                 Usuários Online
               </h2>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, #64748b)' }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary, var(--text-secondary))' }}>
                 Usuários ativos em tempo real na plataforma Medlife
               </span>
             </div>
@@ -99,7 +99,7 @@ export default function OnlineUsersModal({ isOpen, onClose, onlineUsers, current
         <div style={{ padding: '20px 24px', overflowY: 'auto', flex: 1 }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
             <thead>
-              <tr style={{ borderBottom: '2px solid var(--border-color, #e2e8f0)', color: 'var(--text-secondary, #64748b)', textAlign: 'left' }}>
+              <tr style={{ borderBottom: '2px solid var(--border-color, var(--border-glass))', color: 'var(--text-secondary, var(--text-secondary))', textAlign: 'left' }}>
                 <th style={{ padding: '12px 8px', width: '45px', textAlign: 'center' }}>-</th>
                 <th style={{ padding: '12px 8px' }}>Usuário</th>
                 <th style={{ padding: '12px 8px' }}>Grupo</th>
@@ -122,7 +122,7 @@ export default function OnlineUsersModal({ isOpen, onClose, onlineUsers, current
                   const isRedRole = roleName === 'Admin' || roleName === 'Administrativo' || roleName === 'Administrador' || roleName === 'TI';
 
                   return (
-                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-color, #f1f5f9)' }}>
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-color, var(--bg-glass))' }}>
                       <td style={{ padding: '12px 8px', textAlign: 'center', fontSize: '1.2rem' }}>
                         {u.device === 'Mobile' ? '📱' : '💻'}
                       </td>
@@ -133,7 +133,7 @@ export default function OnlineUsersModal({ isOpen, onClose, onlineUsers, current
                       <td style={{ padding: '12px 8px' }}>
                         <span style={{ 
                           backgroundColor: isRedRole ? '#ef4444' : roleName === 'Gerente' ? '#8b5cf6' : roleName === 'Vendedor' ? '#3b82f6' : '#10b981', 
-                          color: '#ffffff', 
+                          color: 'var(--bg-secondary)', 
                           padding: '3px 10px', 
                           borderRadius: '12px', 
                           fontSize: '0.75rem', 
@@ -165,10 +165,10 @@ export default function OnlineUsersModal({ isOpen, onClose, onlineUsers, current
         {/* Footer */}
         <div style={{ 
           padding: '16px 24px', 
-          borderTop: '1px solid var(--border-color, #e2e8f0)', 
+          borderTop: '1px solid var(--border-color, var(--border-glass))', 
           display: 'flex', 
           justify: 'flex-end',
-          background: 'var(--bg-secondary, #f8fafc)' 
+          background: 'var(--bg-secondary, var(--bg-primary))' 
         }}>
           <button 
             type="button"

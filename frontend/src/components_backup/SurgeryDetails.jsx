@@ -433,8 +433,8 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
           position: absolute;
           top: calc(100% + 4px);
           right: 0;
-          background-color: var(--bg-secondary, #f8fafc);
-          border: 1px solid var(--border-color, #e2e8f0);
+          background-color: var(--bg-secondary, var(--bg-primary));
+          border: 1px solid var(--border-color, var(--border-glass));
           border-radius: 8px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
           padding: 4px;
@@ -686,7 +686,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                           textAlign: 'left',
                           cursor: 'pointer',
                           fontSize: '0.85rem',
-                          color: 'var(--text-primary, #0f172a)',
+                          color: 'var(--text-primary, var(--text-primary))',
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
@@ -711,7 +711,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                           textAlign: 'left',
                           cursor: 'pointer',
                           fontSize: '0.85rem',
-                          color: 'var(--text-primary, #0f172a)',
+                          color: 'var(--text-primary, var(--text-primary))',
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
@@ -736,7 +736,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                           textAlign: 'left',
                           cursor: 'pointer',
                           fontSize: '0.85rem',
-                          color: 'var(--text-primary, #0f172a)',
+                          color: 'var(--text-primary, var(--text-primary))',
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
@@ -764,7 +764,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                           textAlign: 'left',
                           cursor: 'pointer',
                           fontSize: '0.85rem',
-                          color: 'var(--text-primary, #0f172a)',
+                          color: 'var(--text-primary, var(--text-primary))',
                           borderRadius: '6px',
                           display: 'flex',
                           alignItems: 'center',
@@ -827,7 +827,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                   <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                     <div style={{ position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color)' }}>
                       {isDocumentFile(url) ? (
-                        <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', cursor: 'pointer', textDecoration: 'none' }}>
+                        <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '120px', height: '120px', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', cursor: 'pointer', textDecoration: 'none' }}>
                           {url.toLowerCase().includes('.pdf') ? (
                             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                               <FileText size={40} style={{ color: '#ef4444' }} />
@@ -899,7 +899,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                           width: '120px',
                           fontSize: '0.75rem',
                           padding: '4px 6px',
-                          border: '1px solid var(--border-color, #e2e8f0)',
+                          border: '1px solid var(--border-color, var(--border-glass))',
                           borderRadius: '6px',
                           textAlign: 'center',
                           marginTop: '4px'
@@ -945,8 +945,8 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
           padding: '16px'
         }}>
           <div style={{
-            backgroundColor: 'var(--bg-primary, #ffffff)',
-            color: 'var(--text-primary, #0f172a)',
+            backgroundColor: 'var(--bg-primary, var(--bg-secondary))',
+            color: 'var(--text-primary, var(--text-primary))',
             borderRadius: '16px',
             maxWidth: '460px',
             width: '100%',
@@ -956,19 +956,19 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
             flexDirection: 'column',
             gap: '16px'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color, #e2e8f0)', paddingBottom: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color, var(--border-glass))', paddingBottom: '12px' }}>
               <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <MessageCircle size={22} /> Compartilhar no WhatsApp
               </h3>
               <button 
                 onClick={() => setShareModalData(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '4px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', lineHeight: '1.4' }}>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
               Cirurgia de <strong>{shareModalData.patient}</strong> possui <strong>{shareModalData.files.length} anexo(s)</strong>. Selecione a opção desejada:
             </p>
 
@@ -984,7 +984,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                   gap: '12px',
                   padding: '14px 16px',
                   backgroundColor: '#25D366',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   border: 'none',
                   borderRadius: '10px',
                   fontWeight: '600',
@@ -1033,7 +1033,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                     gap: '12px',
                     padding: '14px 16px',
                     backgroundColor: '#0284c7',
-                    color: '#ffffff',
+                    color: 'var(--bg-secondary)',
                     border: 'none',
                     borderRadius: '10px',
                     fontWeight: '600',
@@ -1083,7 +1083,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                     gap: '12px',
                     padding: '14px 16px',
                     backgroundColor: '#ef4444',
-                    color: '#ffffff',
+                    color: 'var(--bg-secondary)',
                     border: 'none',
                     borderRadius: '10px',
                     fontWeight: '600',
@@ -1126,9 +1126,9 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                     alignItems: 'center',
                     gap: '12px',
                     padding: '12px 16px',
-                    backgroundColor: 'var(--bg-secondary, #f1f5f9)',
+                    backgroundColor: 'var(--bg-secondary, var(--bg-glass))',
                     color: 'var(--text-primary, #334155)',
-                    border: '1px solid var(--border-color, #cbd5e1)',
+                    border: '1px solid var(--border-color, var(--border-glass))',
                     borderRadius: '10px',
                     fontWeight: '500',
                     fontSize: '0.85rem',
@@ -1138,7 +1138,7 @@ export default function SurgeryDetails({ surgery, onBack, user }) {
                   <Share2 size={20} style={{ flexShrink: 0 }} />
                   <div style={{ textAlign: 'left' }}>
                     <div>Enviar Texto + Anexos Juntos</div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                       Tentativa direta simultânea<br/>
                       <span style={{ color: '#ea580c', fontWeight: 'bold' }}>⚠️ Nota: Utilize esta opção apenas pelo computador.</span>
                     </div>

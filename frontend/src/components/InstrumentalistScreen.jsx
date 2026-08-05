@@ -657,44 +657,44 @@ export default function InstrumentalistScreen({ user }) {
               
               return (
                 <div key={idx} style={{
-                  backgroundColor: '#ffffff', 
+                  backgroundColor: 'var(--bg-secondary)', 
                   borderRadius: '16px', 
                   padding: '20px', 
                   boxShadow: '0 4px 6px rgba(0,0,0,0.02)',
-                  border: '1px solid #f1f5f9'
+                  border: '1px solid var(--bg-glass)'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                     <div>
                       <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px' }}>PACIENTE</div>
-                      <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#0f172a', marginTop: '2px', textTransform: 'uppercase' }}>{surgery.patient || 'PACIENTE NÃO INFORMADO'}</div>
+                      <div style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-primary)', marginTop: '2px', textTransform: 'uppercase' }}>{surgery.patient || 'PACIENTE NÃO INFORMADO'}</div>
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
                     <div>
                       <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>HOSPITAL</div>
-                      <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <span style={{ color: '#94a3b8' }}>♡</span> {surgery.hospital || '--'}
                       </div>
                     </div>
                     <div>
                       <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>MÉDICO</div>
-                      <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500' }}>{surgery.doctor || '--'}</div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>{surgery.doctor || '--'}</div>
                     </div>
                     <div>
                       <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>DATA</div>
-                      <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <CalendarIcon size={14} color="#64748b" /> {displayDate || '--'}
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <CalendarIcon size={14} color="var(--text-secondary)" /> {displayDate || '--'}
                       </div>
                     </div>
                     <div>
                       <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>VENDEDOR</div>
-                      <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500' }}>{surgery.salesperson || '--'}</div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500' }}>{surgery.salesperson || '--'}</div>
                     </div>
                     <div>
                       <div style={{ fontSize: '0.65rem', fontWeight: 'bold', color: '#94a3b8', letterSpacing: '0.5px', marginBottom: '4px' }}>HORA</div>
-                      <div style={{ fontSize: '0.85rem', color: '#0f172a', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ color: '#64748b', fontSize: '14px' }}>⏱</span> {surgery.time || '--'}
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>⏱</span> {surgery.time || '--'}
                       </div>
                     </div>
                   </div>
@@ -721,7 +721,7 @@ export default function InstrumentalistScreen({ user }) {
                                const parsedLast = parsePrintUrl(anexo3Items[anexo3Items.length - 1]);
                                const deliveredBy = parsedLast.userName;
                                if (deliveredBy) {
-                                 return <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600' }}>• por {deliveredBy}</div>;
+                                 return <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600' }}>• por {deliveredBy}</div>;
                                }
                                return null;
                             })()}
@@ -733,7 +733,7 @@ export default function InstrumentalistScreen({ user }) {
                                 <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
                                   <div 
                                     onClick={() => setSelectedImage({ items: anexo3Items, currentIndex: idx, surgeryId: surgery.id })}
-                                    style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
+                                    style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-glass)', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)' }}
                                   >
                                     {isDocumentFile(parsed.url) ? (
                                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
@@ -746,7 +746,7 @@ export default function InstrumentalistScreen({ user }) {
                                       <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     )}
                                   </div>
-                                  <div style={{ fontSize: '0.55rem', color: '#64748b', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
+                                  <div style={{ fontSize: '0.55rem', color: 'var(--text-secondary)', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
                                     {parsed.name || `Anexo ${idx + 1}`}
                                   </div>
                                 </div>
@@ -771,7 +771,7 @@ export default function InstrumentalistScreen({ user }) {
                                const parsedLast = parsePrintUrl(anexo2Items[anexo2Items.length - 1]);
                                const uploadedBy = parsedLast.userName;
                                if (uploadedBy) {
-                                 return <div style={{ fontSize: '0.65rem', color: '#64748b', fontWeight: '600' }}>• por {uploadedBy}</div>;
+                                 return <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', fontWeight: '600' }}>• por {uploadedBy}</div>;
                                }
                                return null;
                             })()}
@@ -783,7 +783,7 @@ export default function InstrumentalistScreen({ user }) {
                                 <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', width: '60px' }}>
                                   <div 
                                     onClick={() => setSelectedImage({ items: anexo2Items, currentIndex: idx, surgeryId: surgery.id })}
-                                    style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e2e8f0', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9' }}
+                                    style={{ width: '60px', height: '60px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-glass)', cursor: 'pointer', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)' }}
                                   >
                                     {isDocumentFile(parsed.url) ? (
                                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
@@ -796,7 +796,7 @@ export default function InstrumentalistScreen({ user }) {
                                       <img src={parsed.url} alt={parsed.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     )}
                                   </div>
-                                  <div style={{ fontSize: '0.55rem', color: '#64748b', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
+                                  <div style={{ fontSize: '0.55rem', color: 'var(--text-secondary)', textAlign: 'center', width: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500' }} title={parsed.name || `Anexo ${idx + 1}`}>
                                     {parsed.name || `Anexo ${idx + 1}`}
                                   </div>
                                 </div>
@@ -808,8 +808,8 @@ export default function InstrumentalistScreen({ user }) {
                                 onClick={() => openFilePicker(surgery.id)}
                                 disabled={uploadingId === surgery.id}
                                 style={{ 
-                                  width: '60px', height: '60px', borderRadius: '8px', border: '1px dashed #cbd5e1', 
-                                  display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8fafc',
+                                  width: '60px', height: '60px', borderRadius: '8px', border: '1px dashed var(--border-glass)', 
+                                  display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-primary)',
                                   cursor: 'pointer', color: '#0f4c5c', minWidth: '60px'
                                 }}
                               >
@@ -859,7 +859,7 @@ export default function InstrumentalistScreen({ user }) {
                             onClick={() => openFilePicker(surgery.id)}
                             disabled={uploadingId === surgery.id}
                             style={{
-                              flex: 2, padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                              flex: 2, padding: '14px', backgroundColor: 'var(--bg-glass)', color: '#0f4c5c',
                               borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
                               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                               cursor: 'pointer', transition: 'background-color 0.2s'
@@ -889,7 +889,7 @@ export default function InstrumentalistScreen({ user }) {
                             onClick={() => openFilePicker(surgery.id)}
                             disabled={uploadingId === surgery.id}
                             style={{
-                              flex: 1, padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                              flex: 1, padding: '14px', backgroundColor: 'var(--bg-glass)', color: '#0f4c5c',
                               borderRadius: '8px', border: 'none', fontWeight: 'bold', fontSize: '0.9rem',
                               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                               cursor: 'pointer', transition: 'background-color 0.2s'
@@ -951,7 +951,7 @@ export default function InstrumentalistScreen({ user }) {
             backgroundColor: '#fff', borderRadius: '16px', padding: '24px', width: '300px',
             display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
           }}>
-            <h3 style={{ margin: '0 0 16px 0', textAlign: 'center', color: '#0f172a' }}>Adicionar Foto</h3>
+            <h3 style={{ margin: '0 0 16px 0', textAlign: 'center', color: 'var(--text-primary)' }}>Adicionar Foto</h3>
             
             <button
               onClick={() => {
@@ -975,7 +975,7 @@ export default function InstrumentalistScreen({ user }) {
                 if (fileInputRef.current) fileInputRef.current.click();
               }}
               style={{
-                padding: '14px', backgroundColor: '#f1f5f9', color: '#0f4c5c',
+                padding: '14px', backgroundColor: 'var(--bg-glass)', color: '#0f4c5c',
                 borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'
               }}
@@ -1001,7 +1001,7 @@ export default function InstrumentalistScreen({ user }) {
             <button
               onClick={() => setUploadOptionsModal(null)}
               style={{
-                marginTop: '8px', padding: '10px', backgroundColor: 'transparent', color: '#64748b',
+                marginTop: '8px', padding: '10px', backgroundColor: 'transparent', color: 'var(--text-secondary)',
                 border: 'none', fontWeight: 'bold', cursor: 'pointer'
               }}
             >
@@ -1057,7 +1057,7 @@ export default function InstrumentalistScreen({ user }) {
             </button>
             
             {isDocumentFile(parsed.url) ? (
-              <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ width: '90vw', height: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', borderRadius: '8px', overflow: 'hidden' }}>
                 {parsed.url.toLowerCase().includes('.pdf') ? (
                   <iframe 
                     src={`https://docs.google.com/viewer?url=${encodeURIComponent(parsed.url)}&embedded=true`} 
@@ -1070,7 +1070,7 @@ export default function InstrumentalistScreen({ user }) {
                       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
                     </div>
                     <h3 style={{ margin: 0, color: '#334155', fontSize: '1.2rem' }}>Documento de Texto</h3>
-                    <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: '8px' }}>Visualização direta não suportada.</p>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '8px' }}>Visualização direta não suportada.</p>
                     <a href={parsed.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', marginTop: '16px', padding: '10px 24px', backgroundColor: '#3b82f6', color: '#fff', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' }}>
                       Baixar / Abrir
                     </a>
@@ -1164,7 +1164,7 @@ export default function InstrumentalistScreen({ user }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999999
         }}>
           <div style={{
-            backgroundColor: '#ffffff', borderRadius: '20px', padding: '32px 28px',
+            backgroundColor: 'var(--bg-secondary)', borderRadius: '20px', padding: '32px 28px',
             maxWidth: '420px', width: '90%', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '20px'
           }}>
@@ -1182,20 +1182,20 @@ export default function InstrumentalistScreen({ user }) {
             </div>
 
             <div>
-              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {uploadProgress.isDone ? 'Anexos Enviados!' : 'Enviando Anexos'}
               </h3>
-              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
                 {uploadProgress.status}
               </p>
             </div>
 
             <div style={{ width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600, color: '#475569', marginBottom: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '8px' }}>
                 <span>{uploadProgress.fileName}</span>
                 <span>{uploadProgress.percent}%</span>
               </div>
-              <div style={{ width: '100%', height: '10px', backgroundColor: '#e2e8f0', borderRadius: '999px', overflow: 'hidden' }}>
+              <div style={{ width: '100%', height: '10px', backgroundColor: 'var(--border-glass)', borderRadius: '999px', overflow: 'hidden' }}>
                 <div style={{
                   width: `${uploadProgress.percent}%`, height: '100%',
                   background: uploadProgress.isDone ? '#10b981' : 'linear-gradient(90deg, #2563eb, #3b82f6)',
@@ -1227,7 +1227,7 @@ export default function InstrumentalistScreen({ user }) {
           zIndex: 99999
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)',
             borderRadius: '16px',
             padding: '24px',
             maxWidth: '440px',
@@ -1250,12 +1250,12 @@ export default function InstrumentalistScreen({ user }) {
               }}>
                 <FileText size={20} />
               </div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 Identificar Anexo{pendingAttachment.files.length > 1 ? `s (${pendingAttachment.files.length} arquivos)` : ''} (Obrigatório)
               </h3>
             </div>
 
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: '1.4' }}>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
               {pendingAttachment.files.length > 1 
                 ? `Informe o nome base para identificar os ${pendingAttachment.files.length} arquivos selecionados:`
                 : 'Informe o nome ou escolha uma opção rápida para identificar este arquivo:'}
@@ -1275,9 +1275,9 @@ export default function InstrumentalistScreen({ user }) {
                   style={{
                     padding: '6px 12px',
                     borderRadius: '20px',
-                    border: '1px solid #cbd5e1',
-                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : '#f8fafc',
-                    color: attachmentNameInput === chip ? '#ffffff' : '#334155',
+                    border: '1px solid var(--border-glass)',
+                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : 'var(--bg-primary)',
+                    color: attachmentNameInput === chip ? 'var(--bg-secondary)' : '#334155',
                     fontSize: '0.8rem',
                     cursor: 'pointer',
                     fontWeight: 500,
@@ -1302,7 +1302,7 @@ export default function InstrumentalistScreen({ user }) {
                 style={{
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid #cbd5e1',
+                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid var(--border-glass)',
                   fontSize: '0.9rem',
                   outline: 'none',
                   width: '100%',
@@ -1334,9 +1334,9 @@ export default function InstrumentalistScreen({ user }) {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  backgroundColor: '#f8fafc',
-                  color: '#475569',
+                  border: '1px solid var(--border-glass)',
+                  backgroundColor: 'var(--bg-primary)',
+                  color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 500
@@ -1352,7 +1352,7 @@ export default function InstrumentalistScreen({ user }) {
                   borderRadius: '8px',
                   border: 'none',
                   backgroundColor: '#2563eb',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 600,

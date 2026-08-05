@@ -99,7 +99,7 @@ class SurgeryModalErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="modal-overlay" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999999 }}>
-          <div style={{ background: '#ffffff', color: '#991b1b', padding: '30px', borderRadius: '12px', maxWidth: '600px', width: '90%', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5)', border: '2px solid #ef4444' }}>
+          <div style={{ background: 'var(--bg-secondary)', color: '#991b1b', padding: '30px', borderRadius: '12px', maxWidth: '600px', width: '90%', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.5)', border: '2px solid #ef4444' }}>
             <h2 style={{ margin: '0 0 10px 0', fontSize: '1.3rem', color: '#dc2626', fontWeight: 'bold' }}>⚠️ Erro no Formulário de Agendamento</h2>
             <p style={{ fontSize: '0.9rem', color: '#374151', marginBottom: '10px' }}>Ocorreu o seguinte erro ao abrir o formulário:</p>
             <div style={{ background: '#fef2f2', border: '1px solid #fca5a5', padding: '12px', borderRadius: '6px', fontSize: '0.85rem', fontFamily: 'monospace', overflowX: 'auto', marginBottom: '15px', color: '#991b1b', whiteSpace: 'pre-wrap' }}>
@@ -816,7 +816,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '15px' }}>Campos marcados com asterisco (*) são obrigatórios.</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '15px' }}>Campos marcados com asterisco (*) são obrigatórios.</p>
           <div className="form-grid">
             {/* Informações Básicas */}
             <div className="form-group">
@@ -1125,11 +1125,11 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 onBlur={() => setIsDropzoneFocused1(false)}
                 className="paste-dropzone"
                 style={{
-                  border: isDropzoneFocused1 ? '2px dashed var(--primary-color, #10b981)' : '2px dashed var(--border-color, #e2e8f0)',
+                  border: isDropzoneFocused1 ? '2px dashed var(--primary-color, #10b981)' : '2px dashed var(--border-color, var(--border-glass))',
                   borderRadius: '8px',
                   padding: '20px',
                   textAlign: 'center',
-                  background: 'var(--bg-secondary, #f8fafc)',
+                  background: 'var(--bg-secondary, var(--bg-primary))',
                   minHeight: '110px',
                   display: 'flex',
                   flexDirection: 'column',
@@ -1184,8 +1184,8 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                           top: 'calc(100% + 4px)',
                           left: '50%',
                           transform: 'translateX(-50%)',
-                          backgroundColor: 'var(--bg-secondary, #f8fafc)',
-                          border: '1px solid var(--border-color, #e2e8f0)',
+                          backgroundColor: 'var(--bg-secondary, var(--bg-primary))',
+                          border: '1px solid var(--border-color, var(--border-glass))',
                           borderRadius: '8px',
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                           padding: '4px',
@@ -1210,7 +1210,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.85rem',
-                            color: 'var(--text-primary, #0f172a)',
+                            color: 'var(--text-primary, var(--text-primary))',
                             borderRadius: '6px',
                             display: 'flex',
                             alignItems: 'center',
@@ -1235,7 +1235,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.85rem',
-                            color: 'var(--text-primary, #0f172a)',
+                            color: 'var(--text-primary, var(--text-primary))',
                             borderRadius: '6px',
                             display: 'flex',
                             alignItems: 'center',
@@ -1260,7 +1260,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.85rem',
-                            color: 'var(--text-primary, #0f172a)',
+                            color: 'var(--text-primary, var(--text-primary))',
                             borderRadius: '6px',
                             display: 'flex',
                             alignItems: 'center',
@@ -1283,7 +1283,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                             textAlign: 'left',
                             cursor: 'pointer',
                             fontSize: '0.85rem',
-                            color: 'var(--text-primary, #0f172a)',
+                            color: 'var(--text-primary, var(--text-primary))',
                             borderRadius: '6px',
                             display: 'flex',
                             alignItems: 'center',
@@ -1339,9 +1339,9 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                       const { url, name } = parsePrintUrl(item);
                       return (
                       <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '110px', gap: '6px' }}>
-                        <div style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color, #e2e8f0)' }}>
+                        <div style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-color, var(--border-glass))' }}>
                           {isDocumentFile(url) ? (
-                            <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f1f5f9', color: '#64748b', textDecoration: 'none' }}>
+                            <a href={url} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--bg-glass)', color: 'var(--text-secondary)', textDecoration: 'none' }}>
                               {url.toLowerCase().includes('.pdf') ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                   <FileText size={32} style={{ color: '#ef4444' }} />
@@ -1407,11 +1407,11 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                             width: '100px',
                             fontSize: '0.75rem',
                             padding: '4px 6px',
-                            border: '1px solid var(--border-color, #e2e8f0)',
+                            border: '1px solid var(--border-color, var(--border-glass))',
                             borderRadius: '6px',
                             textAlign: 'center',
                             background: 'var(--bg-primary, #fff)',
-                            color: 'var(--text-primary, #0f172a)'
+                            color: 'var(--text-primary, var(--text-primary))'
                           }}
                         />
                       </div>
@@ -1513,7 +1513,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
           zIndex: 999999
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)',
             borderRadius: '16px',
             padding: '24px',
             maxWidth: '440px',
@@ -1536,12 +1536,12 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
               }}>
                 <FileText size={20} />
               </div>
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 Identificar Anexo{pendingAttachment.files.length > 1 ? `s (${pendingAttachment.files.length} arquivos)` : ''} (Obrigatório)
               </h3>
             </div>
 
-            <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b', lineHeight: '1.4' }}>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
               {pendingAttachment.files.length > 1 
                 ? `Informe o nome base para identificar os ${pendingAttachment.files.length} arquivos selecionados:`
                 : 'Informe o nome ou escolha uma opção rápida para identificar este arquivo:'}
@@ -1565,9 +1565,9 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                   style={{
                     padding: '6px 12px',
                     borderRadius: '20px',
-                    border: '1px solid #cbd5e1',
-                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : '#f8fafc',
-                    color: attachmentNameInput === chip ? '#ffffff' : '#334155',
+                    border: '1px solid var(--border-glass)',
+                    backgroundColor: attachmentNameInput === chip ? '#2563eb' : 'var(--bg-primary)',
+                    color: attachmentNameInput === chip ? 'var(--bg-secondary)' : '#334155',
                     fontSize: '0.8rem',
                     cursor: 'pointer',
                     fontWeight: 500,
@@ -1592,7 +1592,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 style={{
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid #cbd5e1',
+                  border: attachmentNameError ? '1.5px solid #ef4444' : '1px solid var(--border-glass)',
                   fontSize: '0.9rem',
                   outline: 'none',
                   width: '100%',
@@ -1622,9 +1622,9 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  backgroundColor: '#f8fafc',
-                  color: '#475569',
+                  border: '1px solid var(--border-glass)',
+                  backgroundColor: 'var(--bg-primary)',
+                  color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 500
@@ -1640,7 +1640,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                   borderRadius: '8px',
                   border: 'none',
                   backgroundColor: '#2563eb',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 600,
@@ -1669,7 +1669,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
           zIndex: 9999999
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)',
             borderRadius: '20px',
             padding: '32px 28px',
             maxWidth: '420px',
@@ -1700,10 +1700,10 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
             </div>
 
             <div>
-              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: '#0f172a' }}>
+              <h3 style={{ margin: '0 0 6px 0', fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {uploadProgress.isDone ? 'Anexos Enviados!' : 'Enviando Anexos'}
               </h3>
-              <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b' }}>
+              <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-secondary)' }}>
                 {uploadProgress.status}
               </p>
             </div>
@@ -1714,7 +1714,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 justify: 'space-between',
                 fontSize: '0.8rem',
                 fontWeight: 600,
-                color: '#475569',
+                color: 'var(--text-secondary)',
                 marginBottom: '8px'
               }}>
                 <span>{uploadProgress.fileName}</span>
@@ -1724,7 +1724,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
               <div style={{
                 width: '100%',
                 height: '10px',
-                backgroundColor: '#e2e8f0',
+                backgroundColor: 'var(--border-glass)',
                 borderRadius: '999px',
                 overflow: 'hidden'
               }}>
@@ -1760,7 +1760,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
           zIndex: 9999999
         }}>
           <div style={{
-            backgroundColor: '#ffffff',
+            backgroundColor: 'var(--bg-secondary)',
             borderRadius: '16px',
             padding: '24px',
             maxWidth: '420px',
@@ -1785,10 +1785,10 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 <Trash2 size={22} />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>
+                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Excluir Anexo?
                 </h3>
-                <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: '#64748b' }}>
+                <p style={{ margin: '2px 0 0 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
                   Esta ação removerá o arquivo do prontuário da cirurgia.
                 </p>
               </div>
@@ -1796,9 +1796,9 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
 
             <div style={{
               padding: '12px 14px',
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--bg-primary)',
               borderRadius: '8px',
-              border: '1px solid #e2e8f0',
+              border: '1px solid var(--border-glass)',
               fontSize: '0.88rem',
               color: '#334155',
               fontWeight: 500
@@ -1813,9 +1813,9 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
-                  backgroundColor: '#f8fafc',
-                  color: '#475569',
+                  border: '1px solid var(--border-glass)',
+                  backgroundColor: 'var(--bg-primary)',
+                  color: 'var(--text-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 500
@@ -1839,7 +1839,7 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                   borderRadius: '8px',
                   border: 'none',
                   backgroundColor: '#ef4444',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   cursor: 'pointer',
                   fontSize: '0.85rem',
                   fontWeight: 600,

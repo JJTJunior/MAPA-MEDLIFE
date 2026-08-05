@@ -183,7 +183,7 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
       {/* Captured Thumbnails Strip */}
       {capturedImages.length > 0 && (
         <div style={{
-          height: '100px', backgroundColor: '#1e293b', padding: '12px',
+          height: '100px', backgroundColor: 'var(--text-primary)', padding: '12px',
           display: 'flex', gap: '12px', overflowX: 'auto', alignItems: 'center'
         }}>
           {capturedImages.map((img, idx) => (
@@ -207,7 +207,7 @@ const DocumentScanner = ({ onFinish, onCancel }) => {
 
       {/* Footer Controls */}
       <div style={{
-        padding: '24px', backgroundColor: '#0f172a', display: 'flex', 
+        padding: '24px', backgroundColor: 'var(--text-primary)', display: 'flex', 
         justifyContent: 'center', alignItems: 'center', gap: '40px', paddingBottom: '40px'
       }}>
         

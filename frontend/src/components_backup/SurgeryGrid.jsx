@@ -954,13 +954,13 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
             </button>
           )}
           {onOpenTV && (
-            <button className="btn-secondary" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, background: '#0f172a', color: '#f8fafc', border: '1px solid #0f172a', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', transition: 'all 0.2s' }} onClick={onOpenTV} title="Abrir Modo TV">
+            <button className="btn-secondary" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, background: 'var(--text-primary)', color: 'var(--bg-primary)', border: '1px solid var(--text-primary)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', transition: 'all 0.2s' }} onClick={onOpenTV} title="Abrir Modo TV">
               <Eye size={18} />
               Painel TV
             </button>
           )}
           {canCreate && (
-            <button className="btn-primary" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, background: 'var(--primary-color, #10b981)', color: '#ffffff', border: 'none', boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.3)', transition: 'all 0.2s' }} onClick={onCreateClick}>
+            <button className="btn-primary" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, background: 'var(--primary-color, #10b981)', color: 'var(--bg-secondary)', border: 'none', boxShadow: '0 4px 6px -1px rgba(16, 185, 129, 0.3)', transition: 'all 0.2s' }} onClick={onCreateClick}>
               <Plus size={18} />
               Agendar Cirurgia
             </button>
@@ -969,7 +969,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
       </div>
 
       {/* BARRA DE FILTROS E AÇÕES */}
-      <div className="filters-bar glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: showFilters ? '20px' : '0', padding: showFilters ? '24px' : '16px 24px', borderRadius: '16px', background: 'var(--bg-secondary, #ffffff)', border: '1px solid var(--border-glass)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', transition: 'all 0.3s ease-in-out' }}>
+      <div className="filters-bar glass-panel" style={{ display: 'flex', flexDirection: 'column', gap: showFilters ? '20px' : '0', padding: showFilters ? '24px' : '16px 24px', borderRadius: '16px', background: 'var(--bg-secondary, var(--bg-secondary))', border: '1px solid var(--border-glass)', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)', transition: 'all 0.3s ease-in-out' }}>
         
         {/* HEADER DOS FILTROS */}
         <div 
@@ -979,11 +979,11 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Filter size={20} style={{ color: '#0d9488' }} />
             <h2 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)', margin: 0 }}>Filtros e Ações</h2>
-            <div style={{ color: '#64748b', display: 'flex', alignItems: 'center', marginLeft: '4px', transition: 'transform 0.3s', transform: showFilters ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+            <div style={{ color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', marginLeft: '4px', transition: 'transform 0.3s', transform: showFilters ? 'rotate(90deg)' : 'rotate(0deg)' }}>
               <ChevronRight size={18} />
             </div>
           </div>
-          <div style={{ background: 'var(--bg-primary, #f8fafc)', padding: '6px 12px', borderRadius: '20px', fontSize: '0.85rem', color: 'var(--text-secondary)', border: '1px solid var(--border-glass)' }}>
+          <div style={{ background: 'var(--bg-primary, var(--bg-primary))', padding: '6px 12px', borderRadius: '20px', fontSize: '0.85rem', color: 'var(--text-secondary)', border: '1px solid var(--border-glass)' }}>
             {totalCount} registros
           </div>
         </div>
@@ -1109,7 +1109,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 disabled={noDateOnly}
                 title="Data Inicial"
               />
-              <span style={{ position: 'absolute', left: '36px', top: '11px', fontSize: '0.9rem', color: '#64748b', pointerEvents: 'none' }}>De:</span>
+              <span style={{ position: 'absolute', left: '36px', top: '11px', fontSize: '0.9rem', color: 'var(--text-secondary)', pointerEvents: 'none' }}>De:</span>
             </div>
             <div style={{ position: 'relative', flex: 1, minWidth: '130px' }}>
               <Calendar size={16} style={{ position: 'absolute', left: '12px', top: '13px', color: '#94a3b8' }} />
@@ -1122,12 +1122,12 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 disabled={noDateOnly}
                 title="Data Final"
               />
-              <span style={{ position: 'absolute', left: '36px', top: '11px', fontSize: '0.9rem', color: '#64748b', pointerEvents: 'none' }}>Até:</span>
+              <span style={{ position: 'absolute', left: '36px', top: '11px', fontSize: '0.9rem', color: 'var(--text-secondary)', pointerEvents: 'none' }}>Até:</span>
             </div>
           </div>
 
           <div className="date-filter-container" style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap', gridColumn: '1 / -1' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, fontSize: '0.9rem', cursor: 'pointer', height: '42px', padding: '0 16px', background: 'var(--bg-primary, #f8fafc)', border: '1px solid var(--border-glass)', borderRadius: '8px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, fontSize: '0.9rem', cursor: 'pointer', height: '42px', padding: '0 16px', background: 'var(--bg-primary, var(--bg-primary))', border: '1px solid var(--border-glass)', borderRadius: '8px' }}>
               <input 
                 type="checkbox" 
                 checked={noDateOnly}
@@ -1141,7 +1141,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               className="btn-secondary" 
               title="Alternar Visualização"
               onClick={() => setViewMode(prev => prev === 'full' ? 'compact' : 'full')}
-              style={{ flex: 1, height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--bg-primary, #ffffff)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-primary)' }}
+              style={{ flex: 1, height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--bg-primary, var(--bg-secondary))', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-primary)' }}
             >
               {viewMode === 'full' ? <List size={18} /> : <LayoutGrid size={18} />}
               <span>{viewMode === 'full' ? 'Modo Planilha' : 'Modo Cards'}</span>
@@ -1157,7 +1157,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               title="Recarregar dados"
               onClick={fetchSurgeries}
               disabled={loading}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'var(--bg-primary, #ffffff)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'var(--bg-primary, var(--bg-secondary))', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer' }}
             >
               <RefreshCw className={loading ? 'animate-spin' : ''} size={18} />
               <span style={{ fontWeight: 500 }}>Recarregar</span>
@@ -1166,7 +1166,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
             <button 
               title="Imprimir"
               onClick={handlePrint}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'var(--bg-primary, #ffffff)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'var(--bg-primary, var(--bg-secondary))', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer' }}
             >
               <Printer size={18} />
               <span style={{ fontWeight: 500 }}>Imprimir</span>
@@ -1205,7 +1205,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 <button 
                   title="Baixar Modelo de Importação"
                   onClick={handleDownloadTemplate}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'var(--bg-primary, #ffffff)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: 'var(--bg-primary, var(--bg-secondary))', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'pointer' }}
                 >
                   <Upload size={18} />
                   <span style={{ fontWeight: 500 }}>Modelo XLSX</span>
@@ -1215,7 +1215,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                   title="Importar Planilha"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isImporting}
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#0f766e', border: 'none', borderRadius: '8px', color: '#ffffff', cursor: isImporting ? 'wait' : 'pointer' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#0f766e', border: 'none', borderRadius: '8px', color: 'var(--bg-secondary)', cursor: isImporting ? 'wait' : 'pointer' }}
                 >
                   {isImporting ? <Clock className="animate-spin" size={18} /> : <FileText size={18} />}
                   <span style={{ fontWeight: 500 }}>{isImporting ? 'Importando...' : 'Importar planilha'}</span>
@@ -1227,7 +1227,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               title="Compartilhar no WhatsApp"
               onClick={handleShareWhatsApp}
               disabled={isExporting}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#16a34a', border: 'none', borderRadius: '8px', color: '#ffffff', opacity: isExporting ? 0.7 : 1, cursor: isExporting ? 'not-allowed' : 'pointer' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 16px', background: '#16a34a', border: 'none', borderRadius: '8px', color: 'var(--bg-secondary)', opacity: isExporting ? 0.7 : 1, cursor: isExporting ? 'not-allowed' : 'pointer' }}
             >
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
@@ -1726,8 +1726,8 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
           padding: '16px'
         }}>
           <div style={{
-            backgroundColor: 'var(--bg-primary, #ffffff)',
-            color: 'var(--text-primary, #0f172a)',
+            backgroundColor: 'var(--bg-primary, var(--bg-secondary))',
+            color: 'var(--text-primary, var(--text-primary))',
             borderRadius: '16px',
             maxWidth: '460px',
             width: '100%',
@@ -1737,19 +1737,19 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
             flexDirection: 'column',
             gap: '16px'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color, #e2e8f0)', paddingBottom: '12px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color, var(--border-glass))', paddingBottom: '12px' }}>
               <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: '700', color: '#16a34a', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <MessageCircle size={22} /> Compartilhar no WhatsApp
               </h3>
               <button 
                 onClick={() => setShareModalData(null)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b', padding: '4px' }}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px' }}
               >
                 <X size={20} />
               </button>
             </div>
 
-            <p style={{ margin: 0, fontSize: '0.9rem', color: '#475569', lineHeight: '1.4' }}>
+            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.4' }}>
               <strong>{shareModalData.patient}</strong> possui <strong>{shareModalData.files.length} anexo(s)</strong>. Selecione a opção desejada:
             </p>
 
@@ -1765,7 +1765,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                   gap: '12px',
                   padding: '14px 16px',
                   backgroundColor: '#25D366',
-                  color: '#ffffff',
+                  color: 'var(--bg-secondary)',
                   border: 'none',
                   borderRadius: '10px',
                   fontWeight: '600',
@@ -1814,7 +1814,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                     gap: '12px',
                     padding: '14px 16px',
                     backgroundColor: '#0284c7',
-                    color: '#ffffff',
+                    color: 'var(--bg-secondary)',
                     border: 'none',
                     borderRadius: '10px',
                     fontWeight: '600',
@@ -1864,7 +1864,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                     gap: '12px',
                     padding: '14px 16px',
                     backgroundColor: '#ea580c',
-                    color: '#ffffff',
+                    color: 'var(--bg-secondary)',
                     border: 'none',
                     borderRadius: '10px',
                     fontWeight: '600',
@@ -1903,9 +1903,9 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                   alignItems: 'center',
                   gap: '12px',
                   padding: '12px 16px',
-                  backgroundColor: 'var(--bg-secondary, #f1f5f9)',
+                  backgroundColor: 'var(--bg-secondary, var(--bg-glass))',
                   color: 'var(--text-primary, #334155)',
-                  border: '1px solid var(--border-color, #cbd5e1)',
+                  border: '1px solid var(--border-color, var(--border-glass))',
                   borderRadius: '10px',
                   fontWeight: '500',
                   fontSize: '0.85rem',
@@ -1915,7 +1915,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 <Share2 size={20} style={{ flexShrink: 0 }} />
                 <div style={{ textAlign: 'left' }}>
                   <div>Enviar Texto + Anexos Juntos</div>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
                     Tentativa direta simultânea<br/>
                     <span style={{ color: '#ea580c', fontWeight: 'bold' }}>⚠️ Nota: Não funciona no WhatsApp Android (limitação do próprio WhatsApp, use os botões separados acima)</span>
                   </div>
