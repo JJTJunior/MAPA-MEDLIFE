@@ -1083,14 +1083,14 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               <div className="agenda-stats">{totalCount} cirurgias - {Object.keys(groupedSurgeries).length} dias</div>
             </div>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <button className="btn-secondary" onClick={() => setViewMode('full')}>
-                <List size={18} /> Modo Tabela
-              </button>
               {onBack && (
                 <button className="btn-secondary" onClick={onBack}>
                   <ArrowLeft size={18} /> Voltar
                 </button>
               )}
+              <button className="btn-secondary" onClick={() => setViewMode('full')}>
+                <List size={18} /> Modo Tabela
+              </button>
               {onOpenTV && (
                 <button className="btn-secondary" style={{ background: '#0f172a', color: '#f8fafc', border: '1px solid #0f172a' }} onClick={onOpenTV}>
                   <Eye size={18} /> Painel TV
