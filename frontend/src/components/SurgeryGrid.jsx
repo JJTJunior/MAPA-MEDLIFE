@@ -1105,15 +1105,28 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
           </div>
 
           <div className="agenda-filters-card">
-            <div className="agenda-filter-topbar">
+            <div 
+              className="agenda-filter-topbar" 
+              style={{ 
+                cursor: 'pointer', 
+                userSelect: 'none',
+                borderBottom: showFilters ? '1px solid #f1f5f9' : 'none',
+                paddingBottom: showFilters ? '16px' : '0',
+                marginBottom: showFilters ? '24px' : '0'
+              }} 
+              onClick={() => setShowFilters(!showFilters)}
+            >
               <div className="agenda-filter-title">
                 <div className="agenda-filter-icon"><Filter size={20} /></div>
                 <div>
-                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Filtros e Ações</h3>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    Filtros e Ações
+                    <ChevronRight size={18} style={{ color: '#64748b', transition: 'transform 0.3s', transform: showFilters ? 'rotate(90deg)' : 'rotate(0deg)' }} />
+                  </h3>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Refine a agenda por equipe, período e status</p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }} onClick={e => e.stopPropagation()}>
                 <div className="agenda-input-wrapper">
                   <Search size={16} />
                   <input type="text" className="agenda-search-input" placeholder="Buscar paciente..." value={patientFilter} onChange={(e) => setPatientFilter(e.target.value.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))} />
@@ -1122,7 +1135,9 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               </div>
             </div>
 
-            <div className="agenda-filter-row">
+            {showFilters && (
+              <div style={{ animation: 'fadeIn 0.3s' }}>
+                <div className="agenda-filter-row">
               <div style={{ flex: 1, width: '100%' }}>
                 <div className="agenda-filter-section-title">EQUIPE & LOCAL</div>
                 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
@@ -1268,6 +1283,8 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 <MessageCircle size={16} /> Compartilhar via WhatsApp
               </button>
             </div>
+            </div>
+            )}
           </div>
 
           <div className="agenda-surgeries-container">
