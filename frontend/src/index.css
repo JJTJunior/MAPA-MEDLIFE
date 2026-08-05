@@ -910,6 +910,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   padding: 10px 20px;
   background: transparent;
   border: 1px solid var(--border-glass);
