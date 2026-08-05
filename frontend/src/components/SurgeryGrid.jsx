@@ -1050,6 +1050,19 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               Voltar
             </button>
           )}
+          <button 
+            className="btn-secondary" 
+            title="Alternar Visualização"
+            onClick={() => setViewMode(prev => {
+              if (prev === 'full') return 'compact';
+              if (prev === 'compact') return 'cards';
+              return 'full';
+            })}
+            style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, border: '1px solid var(--border-glass)', transition: 'all 0.2s', background: 'var(--bg-primary, #ffffff)', color: 'var(--text-primary)' }}
+          >
+            {viewMode === 'full' ? <List size={18} /> : viewMode === 'compact' ? <LayoutGrid size={18} /> : <List size={18} />}
+            {viewMode === 'full' ? 'Modo Planilha' : viewMode === 'compact' ? 'Modo Cartões' : 'Modo Tabela'}
+          </button>
           {onOpenTV && (
             <button className="btn-secondary" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, background: '#0f172a', color: '#f8fafc', border: '1px solid #0f172a', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', transition: 'all 0.2s' }} onClick={onOpenTV} title="Abrir Modo TV">
               <Eye size={18} />
@@ -1257,19 +1270,6 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               <span style={{ color: 'var(--text-secondary)' }}>Sem data definida</span>
             </label>
 
-            <button 
-              className="btn-secondary" 
-              title="Alternar Visualização"
-              onClick={() => setViewMode(prev => {
-                if (prev === 'full') return 'compact';
-                if (prev === 'compact') return 'cards';
-                return 'full';
-              })}
-              style={{ flex: 1, height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--bg-primary, #ffffff)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'var(--text-primary)' }}
-            >
-              {viewMode === 'full' ? <List size={18} /> : viewMode === 'compact' ? <LayoutGrid size={18} /> : <List size={18} />}
-              <span>{viewMode === 'full' ? 'Modo Planilha (Filtros)' : viewMode === 'compact' ? 'Modo Cartões' : 'Modo Tabela Padrão'}</span>
-            </button>
           </div>
         </div>
 
