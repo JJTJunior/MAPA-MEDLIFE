@@ -1973,6 +1973,31 @@ function SurgeryModalInner({ isOpen, onClose, surgery, user, onSaveSuccess }) {
                 Baixar
               </a>
 
+              {(() => {
+                const currentUser = user?.name || user?.username || 'Usuário';
+                const isCreator = parsed.userName === currentUser;
+                const isAdmin = user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'TI';
+                
+                if (isCreator || isAdmin) {
+                  return (
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        setSelectedImage(null); 
+                        setPendingDeleteAttachment({ 
+                          item: currentItemStr, 
+                          isComanda: formData.comanda_urls && formData.comanda_urls.includes(currentItemStr) 
+                        }); 
+                      }}
+                      style={{ padding: '10px 24px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                    >
+                      Excluir
+                    </button>
+                  );
+                }
+                return null;
+              })()}
+
               {hasMultiple && (
                 <button 
                   onClick={(e) => { e.stopPropagation(); setSelectedImage(prev => ({ ...prev, currentIndex: (prev.currentIndex + 1) % prev.items.length })); }}

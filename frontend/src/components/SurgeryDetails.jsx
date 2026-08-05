@@ -1523,7 +1523,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
-                        {canDelete && showDeleteIcons && (
+                        {canDelete && (
                           <button 
                             type="button" 
                             onClick={(e) => {
@@ -1557,42 +1557,18 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                           </button>
                         )}
                       </div>
-                      {canDelete && showDeleteIcons ? (
-                        <input
-                          type="text"
-                          key={`${idx}`}
-                          value={name || ''}
-                          onChange={(e) => {
-                            const newName = e.target.value;
-                            const updatedUrls = [...(localSurgery.medical_request_urls || [])];
-                            updatedUrls[idx] = newName ? `${url}|||${newName}` : url;
-                            setLocalSurgery(prev => ({ ...prev, medical_request_urls: updatedUrls }));
-                          }}
-                          placeholder="Identificação..."
-                          style={{
-                            width: '120px',
-                            fontSize: '0.75rem',
-                            padding: '4px 6px',
-                            border: '1px solid var(--border-color, var(--border-glass))',
-                            borderRadius: '6px',
-                            textAlign: 'center',
-                            marginTop: '4px'
-                          }}
-                        />
-                      ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
-                          {name && (
-                            <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
-                              {name}
-                            </span>
-                          )}
-                          {userName && (
-                            <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
-                              por {userName}
-                            </span>
-                          )}
-                        </div>
-                      )}
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
+                        {name && (
+                          <span style={{ fontSize: '0.85rem', fontWeight: '500', color: 'var(--text-primary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                            {name}
+                          </span>
+                        )}
+                        {userName && (
+                          <span style={{ fontSize: '0.65rem', fontWeight: '600', color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '200px', wordBreak: 'break-word' }}>
+                            por {userName}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -1601,72 +1577,8 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
             })()}
           </div>
 
-          {/* Action Buttons Row */}
+            {/* Action Buttons Row */}
           <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
-            {(isEditable && isFieldEditable('edit_attachments_1_button')) && (
-              <>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowDeleteIcons(true);
-                  }}
-                  style={{
-                    backgroundColor: 'var(--bg-secondary)',
-                    color: '#334155',
-                    border: '1px solid var(--border-glass)',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <Edit size={15} /> Editar anexos
-                </button>
-                <button
-                  type="button"
-                  onClick={async (e) => {
-                    e.stopPropagation();
-                    setShowDeleteIcons(false);
-                    try {
-                      const firstUrl = localSurgery.medical_request_urls?.[0];
-                      const attUrl = firstUrl ? (firstUrl.includes('|||') ? firstUrl.split('|||')[0] : firstUrl) : null;
-                      await supabase.from('surgeries').update({
-                        medical_request_urls: localSurgery.medical_request_urls,
-                        attachment_url: attUrl
-                      }).eq('id', localSurgery.id);
-                    } catch (err) {
-                      console.error(err);
-                    }
-                  }}
-                  style={{
-                    backgroundColor: 'var(--bg-secondary)',
-                    color: '#334155',
-                    border: '1px solid var(--border-glass)',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    fontSize: '0.85rem',
-                    fontWeight: '500',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                    transition: 'all 0.2s'
-                  }}
-                >
-                  <Save size={15} /> Salvar anexos
-                </button>
-              </>
-            )}
             {(isEditable && isFieldEditable('attachment_url')) && (
               <div id="details-attachment-menu-container" style={{ position: 'relative', display: 'inline-block' }}>
                 <button
@@ -3178,6 +3090,31 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
               >
                 Baixar
               </a>
+
+              {(() => {
+                const currentUser = user?.name || user?.username || 'Usuário';
+                const isCreator = parsed.userName === currentUser;
+                const isAdmin = user?.role === 'Admin' || user?.role === 'Gerente' || user?.role === 'TI';
+                const canDelete = isEditable && (isAdmin || isCreator);
+                if (canDelete) {
+                  return (
+                    <button 
+                      onClick={(e) => { 
+                        e.stopPropagation(); 
+                        setSelectedImage(null); 
+                        setPendingDeleteAttachment({ 
+                          item: currentItemStr, 
+                          isComanda: localSurgery.comanda_urls && localSurgery.comanda_urls.includes(currentItemStr) 
+                        }); 
+                      }}
+                      style={{ padding: '10px 24px', backgroundColor: '#ef4444', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}
+                    >
+                      Excluir
+                    </button>
+                  );
+                }
+                return null;
+              })()}
 
               {hasMultiple && (
                 <button 
