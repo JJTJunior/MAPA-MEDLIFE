@@ -1359,10 +1359,10 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                             </div>
                             <div style={{ display: 'flex', gap: '16px', marginTop: '4px', paddingTop: '8px', borderTop: '1px dashed #e2e8f0' }}>
                               <div className="agenda-info-item" style={{ flex: 1 }} title="Vendedor">
-                                <User size={14} style={{ color: '#8b5cf6' }}/> <span style={{ fontSize: '0.75rem' }}>{surgery.salesperson || '-'}</span>
+                                <User size={14} style={{ color: '#8b5cf6' }}/> <span style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}>{surgery.salesperson || '-'}</span>
                               </div>
                               <div className="agenda-info-item" style={{ flex: 1 }} title="Instrumentadores">
-                                <Smartphone size={14} style={{ color: '#f59e0b' }}/> <span style={{ fontSize: '0.75rem' }}>{[surgery.instrumentalist_1, surgery.instrumentalist_2, surgery.instrumentalist_3].filter(Boolean).join(', ') || '-'}</span>
+                                <Smartphone size={14} style={{ color: '#f59e0b' }}/> <span style={{ fontSize: '0.75rem', textTransform: 'uppercase' }}>{[surgery.instrumentalist1, surgery.instrumentalist2].filter(Boolean).join(' e ') || '-'}</span>
                               </div>
                             </div>
                           </div>
