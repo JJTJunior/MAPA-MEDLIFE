@@ -122,11 +122,11 @@ const DriverPanel = ({ user }) => {
   useEffect(() => {
     const channel = supabase
       .channel('driver_surgeries_changes')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'surgeries' }, (payload) => {
-        setSurgeries(prev => prev.map(s => s.id === payload.new.id ? { ...s, ...payload.new } : s));
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'surgeries' }, () => {
+        fetchSurgeries(false);
       })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'surgeries' }, () => {
-        fetchSurgeries();
+        fetchSurgeries(false);
       })
       .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'surgeries' }, (payload) => {
         setSurgeries(prev => prev.filter(s => s.id !== payload.old.id));
@@ -136,7 +136,7 @@ const DriverPanel = ({ user }) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [dateFilter, customDate]);
 
   const getLocalDateRange = (filter) => {
     const now = new Date();
@@ -171,8 +171,8 @@ const DriverPanel = ({ user }) => {
     return { start, end };
   };
 
-  const fetchSurgeries = async () => {
-    setLoading(true);
+  const fetchSurgeries = async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       let query = supabase
         .from('surgeries')
@@ -203,7 +203,7 @@ const DriverPanel = ({ user }) => {
     } catch (err) {
       console.error('Error fetching surgeries:', err);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   };
 
