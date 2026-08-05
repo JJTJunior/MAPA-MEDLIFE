@@ -14,7 +14,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [isExporting, setIsExporting] = useState(false);
-  const [viewMode, setViewMode] = useState('full'); // 'full' ou 'compact'
+  const [viewMode, setViewMode] = useState('agenda'); // 'full' ou 'agenda'
   const [showFilters, setShowFilters] = useState(false);
   const [shareModalData, setShareModalData] = useState(null);
   const pageSize = viewMode === 'compact' ? 200 : 15;
@@ -1039,9 +1039,334 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
     </th>
   );
 
+  const getDayOfWeek = (dateString) => {
+    if (!dateString || dateString === 'Sem Data') return '';
+    const date = new Date(dateString + 'T12:00:00'); 
+    const days = ['Domingo', 'Segunda-Feira', 'Terça-Feira', 'Quarta-Feira', 'Quinta-Feira', 'Sexta-Feira', 'Sábado'];
+    return days[date.getDay()];
+  };
+
+  const formatDateShort = (dateString) => {
+    if (!dateString || dateString === 'Sem Data') return '';
+    const date = new Date(dateString + 'T12:00:00');
+    const months = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+    return `${String(date.getDate()).padStart(2, '0')} de ${months[date.getMonth()]}`;
+  };
+
+  const groupedSurgeries = React.useMemo(() => {
+    const groups = surgeries.reduce((acc, surgery) => {
+      const dateStr = surgery.date || 'Sem Data';
+      if (!acc[dateStr]) acc[dateStr] = [];
+      acc[dateStr].push(surgery);
+      return acc;
+    }, {});
+    
+    // Sort keys logically (Sem Data at the end)
+    return Object.keys(groups).sort((a, b) => {
+      if (a === 'Sem Data') return 1;
+      if (b === 'Sem Data') return -1;
+      return a.localeCompare(b);
+    }).reduce((acc, key) => {
+      acc[key] = groups[key];
+      return acc;
+    }, {});
+  }, [surgeries]);
+
   return (
-    <div>
-      <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '15px' }}>
+    <div className={viewMode === 'agenda' ? 'agenda-container' : ''}>
+      {viewMode === 'agenda' && (
+        <>
+          <div className="agenda-page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <h4 className="agenda-subtitle">CENTRAL CIRÚRGICA</h4>
+              <h1 className="agenda-title">Agenda de Cirurgias</h1>
+              <div className="agenda-stats">{totalCount} cirurgias - {Object.keys(groupedSurgeries).length} dias</div>
+            </div>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+              <button className="btn-secondary" onClick={() => setViewMode('full')}>
+                <List size={18} /> Modo Tabela
+              </button>
+              {onBack && (
+                <button className="btn-secondary" onClick={onBack}>
+                  <ArrowLeft size={18} /> Voltar
+                </button>
+              )}
+              {onOpenTV && (
+                <button className="btn-secondary" style={{ background: '#0f172a', color: '#f8fafc', border: '1px solid #0f172a' }} onClick={onOpenTV}>
+                  <Eye size={18} /> Painel TV
+                </button>
+              )}
+              {canCreate && (
+                <button className="btn-primary" style={{ background: '#10b981', color: 'white', border: 'none' }} onClick={onCreateClick}>
+                  <Plus size={18} /> Agendar Cirurgia
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="agenda-filters-card">
+            <div className="agenda-filter-topbar">
+              <div className="agenda-filter-title">
+                <div className="agenda-filter-icon"><Filter size={20} /></div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#1e293b' }}>Filtros e Ações</h3>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Refine a agenda por equipe, período e status</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+                <div className="agenda-input-wrapper">
+                  <Search size={16} />
+                  <input type="text" className="agenda-search-input" placeholder="Buscar paciente..." value={patientFilter} onChange={(e) => setPatientFilter(e.target.value.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))} />
+                </div>
+                <div className="agenda-badge-count">{totalCount} registros</div>
+              </div>
+            </div>
+
+            <div className="agenda-filter-row">
+              <div style={{ flex: 1, width: '100%' }}>
+                <div className="agenda-filter-section-title">EQUIPE & LOCAL</div>
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">MÉDICO</label>
+                    <div className="agenda-input-wrapper">
+                      <User size={16} />
+                      <select className="agenda-select" value={doctorFilter} onChange={e => setDoctorFilter(e.target.value)}>
+                        <option value="">Todos</option>
+                        {doctorOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">HOSPITAL</label>
+                    <div className="agenda-input-wrapper">
+                      <Building2 size={16} />
+                      <select className="agenda-select" value={hospitalFilter} onChange={e => setHospitalFilter(e.target.value)}>
+                        <option value="">Todos</option>
+                        {hospitalOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">CONVÊNIO</label>
+                    <div className="agenda-input-wrapper">
+                      <CreditCard size={16} />
+                      <select className="agenda-select" value={insuranceFilter} onChange={e => setInsuranceFilter(e.target.value)}>
+                        <option value="">Todos</option>
+                        {insuranceOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">VENDEDOR</label>
+                    <div className="agenda-input-wrapper">
+                      <User size={16} />
+                      <select className="agenda-select" value={salespersonFilter} onChange={e => setSalespersonFilter(e.target.value)}>
+                        <option value="">Todos</option>
+                        {salespersonOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">INSTRUMENTADOR</label>
+                    <div className="agenda-input-wrapper">
+                      <Smartphone size={16} />
+                      <select className="agenda-select" value={instrumentalist1Filter} onChange={e => setInstrumentalist1Filter(e.target.value)}>
+                        <option value="">Todos</option>
+                        {instrumentalist1Options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="agenda-filter-row">
+              <div style={{ flex: 1, minWidth: '300px' }}>
+                <div className="agenda-filter-section-title">CLASSIFICAÇÃO</div>
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">TIPO DE CIRURGIA</label>
+                    <div className="agenda-input-wrapper">
+                      <Activity size={16} />
+                      <select className="agenda-select" value={surgeryTypeFilter} onChange={e => setSurgeryTypeFilter(e.target.value)}>
+                        <option value="">Todos</option>
+                        {surgeryTypeOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">STATUS</label>
+                    <div className="agenda-input-wrapper">
+                      <Check size={16} />
+                      <select className="agenda-select" value={selectedStatus} onChange={e => setSelectedStatus(e.target.value)}>
+                        <option value="">Todos</option>
+                        {statusList.map((s, idx) => <option key={idx} value={s.name}>{s.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="agenda-input-group">
+                    <label className="agenda-input-label">CARÁTER</label>
+                    <div className="agenda-input-wrapper">
+                      <Tag size={16} />
+                      <select className="agenda-select" value={caraterFilter} onChange={e => setCaraterFilter(e.target.value)}>
+                        <option value="">Todos</option>
+                        {caraterOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div style={{ flex: 1, minWidth: '300px' }}>
+                <div className="agenda-filter-section-title">PERÍODO</div>
+                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                  <div className="agenda-input-group" style={{ opacity: noDateOnly ? 0.5 : 1, pointerEvents: noDateOnly ? 'none' : 'auto' }}>
+                    <label className="agenda-input-label">DE</label>
+                    <div className="agenda-input-wrapper">
+                      <Calendar size={16} />
+                      <input type="date" className="agenda-select" value={startDateFilter} onChange={e => setStartDateFilter(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="agenda-input-group" style={{ opacity: noDateOnly ? 0.5 : 1, pointerEvents: noDateOnly ? 'none' : 'auto' }}>
+                    <label className="agenda-input-label">ATÉ</label>
+                    <div className="agenda-input-wrapper">
+                      <Calendar size={16} />
+                      <input type="date" className="agenda-select" value={endDateFilter} onChange={e => setEndDateFilter(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="agenda-input-group" style={{ display: 'flex', alignItems: 'center', height: '42px', paddingLeft: '8px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: '#64748b' }}>
+                      <input type="checkbox" checked={noDateOnly} onChange={e => setNoDateOnly(e.target.checked)} style={{ width: '16px', height: '16px', accentColor: '#8b5cf6' }} />
+                      SEM DATA DEFINIDA
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="agenda-actions-bar">
+              <div className="agenda-actions-left">
+                <button className="agenda-btn" onClick={fetchSurgeries} disabled={loading}>
+                  <RefreshCw size={16} className={loading ? "spin" : ""} /> Recarregar
+                </button>
+                <button className="agenda-btn" onClick={() => window.print()}>
+                  <Printer size={16} /> Imprimir
+                </button>
+                <button className="agenda-btn agenda-btn-excel" onClick={exportToExcel}>
+                  <FileSpreadsheet size={16} /> Excel
+                </button>
+                <button className="agenda-btn agenda-btn-pdf" onClick={exportToPDF}>
+                  <FileText size={16} /> PDF
+                </button>
+                <button className="agenda-btn" onClick={() => {}}>
+                  <FileText size={16} /> Modelo
+                </button>
+                <button className="agenda-btn" onClick={() => setIsImporting(true)}>
+                  <Download size={16} /> Importar
+                </button>
+              </div>
+              <button className="agenda-btn agenda-btn-whatsapp" onClick={() => {}}>
+                <MessageCircle size={16} /> Compartilhar via WhatsApp
+              </button>
+            </div>
+          </div>
+
+          <div className="agenda-surgeries-container">
+            {Object.keys(groupedSurgeries).length === 0 && !loading && (
+              <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Nenhuma cirurgia encontrada com os filtros atuais.</div>
+            )}
+            
+            {Object.entries(groupedSurgeries).map(([dateStr, daySurgeries]) => {
+              const dayName = getDayOfWeek(dateStr);
+              const dateFormatted = formatDateShort(dateStr);
+              return (
+                <div key={dateStr}>
+                  <div className="agenda-date-divider">
+                    <h3 className="agenda-date-title">
+                      {dayName} <span className="agenda-date-subtitle">{dateFormatted}</span>
+                      <span className="agenda-date-badge">{daySurgeries.length}</span>
+                    </h3>
+                  </div>
+                  
+                  <div className="agenda-card-grid">
+                    {daySurgeries.map(surgery => {
+                      const isPending = surgery.status === 'PENDENTE';
+                      const isScheduled = surgery.status === 'AGENDADA';
+                      const isConfirmed = surgery.status === 'CONFIRMADA';
+                      const isCanceled = surgery.status === 'CANCELADA';
+                      
+                      let statusClass = '';
+                      if (isPending) statusClass = 'agenda-status-pendente';
+                      else if (isScheduled) statusClass = 'agenda-status-agendada';
+                      else if (isConfirmed) statusClass = 'agenda-status-confirmada';
+                      else if (isCanceled) statusClass = 'agenda-status-cancelada';
+                      
+                      return (
+                        <div key={surgery.id} className="agenda-card" onClick={() => onViewClick && onViewClick(surgery)} style={{ cursor: 'pointer' }}>
+                          <div className="agenda-card-header">
+                            <span className={`agenda-status-badge ${statusClass}`}>{surgery.status}</span>
+                            <span className="agenda-time">{surgery.time || '--:--'}</span>
+                          </div>
+                          
+                          <div className="agenda-patient-name">{surgery.patient}</div>
+                          
+                          <div className="agenda-info-grid">
+                            <div className="agenda-info-item"><Building2 size={14}/> {surgery.hospital || '-'}</div>
+                            <div className="agenda-info-item"><CreditCard size={14}/> {surgery.insurance || '-'}</div>
+                            <div className="agenda-info-item"><User size={14}/> {surgery.doctor || '-'}</div>
+                            <div className="agenda-info-item"><Activity size={14}/> 
+                              <span style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                {surgery.surgery_type || 'Geral'} 
+                                {surgery.carater && (
+                                  <span className={surgery.carater === 'URGÊNCIA' || surgery.carater === 'URGENCIA' ? 'agenda-carater-urgencia' : 'agenda-carater-eletiva'}>
+                                    - {surgery.carater}
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="agenda-card-footer">
+                            <span className={`agenda-pill ${surgery.opme_checked ? 'active' : 'inactive'}`}>OPME</span>
+                            <span className={`agenda-pill ${surgery.cme_checked ? 'active' : 'inactive'}`}>CME</span>
+                            <span className={`agenda-pill ${surgery.bloco_checked ? 'active' : 'inactive'}`}>BLOCO</span>
+                            <span className={`agenda-pill ${surgery.pos_checked ? 'active' : 'inactive'}`}>Pós</span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+          
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: '#fff', padding: '8px 16px', borderRadius: '20px', border: '1px solid #e2e8f0', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+              <button 
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))} 
+                disabled={currentPage === 1}
+                style={{ padding: '6px', borderRadius: '50%', border: 'none', background: currentPage === 1 ? 'transparent' : '#f1f5f9', color: currentPage === 1 ? '#cbd5e1' : '#475569', cursor: currentPage === 1 ? 'default' : 'pointer' }}
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#475569' }}>
+                Página {currentPage} de {Math.ceil(totalCount / pageSize) || 1}
+              </span>
+              <button 
+                onClick={() => setCurrentPage(p => Math.min(Math.ceil(totalCount / pageSize) || 1, p + 1))} 
+                disabled={currentPage >= Math.ceil(totalCount / pageSize) || totalCount === 0}
+                style={{ padding: '6px', borderRadius: '50%', border: 'none', background: currentPage >= Math.ceil(totalCount / pageSize) || totalCount === 0 ? 'transparent' : '#f1f5f9', color: currentPage >= Math.ceil(totalCount / pageSize) || totalCount === 0 ? '#cbd5e1' : '#475569', cursor: currentPage >= Math.ceil(totalCount / pageSize) || totalCount === 0 ? 'default' : 'pointer' }}
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {viewMode === 'full' && (
+        <div className="table-mode-container">
+          <div className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '15px' }}>
         <h1 className="dashboard-title" style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700, color: 'var(--text-primary)' }}>Mapa Cirúrgico</h1>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
           {onBack && (
@@ -1053,11 +1378,11 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
           <button 
             className="btn-secondary" 
             title="Alternar Visualização"
-            onClick={() => setViewMode(prev => prev === 'full' ? 'cards' : 'full')}
+            onClick={() => setViewMode('agenda')}
             style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, border: '1px solid var(--border-glass)', transition: 'all 0.2s', background: 'var(--bg-primary, #ffffff)', color: 'var(--text-primary)' }}
           >
-            {viewMode === 'full' ? <LayoutGrid size={18} /> : <List size={18} />}
-            {viewMode === 'full' ? 'Modo Cartões' : 'Modo Tabela'}
+            <LayoutGrid size={18} />
+            Modo Agenda
           </button>
           {onOpenTV && (
             <button className="btn-secondary" style={{ width: 'auto', display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '10px', fontWeight: 600, background: '#0f172a', color: '#f8fafc', border: '1px solid #0f172a', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', transition: 'all 0.2s' }} onClick={onOpenTV} title="Abrir Modo TV">
@@ -2150,6 +2475,8 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               </button>
             </div>
           </div>
+        </div>
+      )}
         </div>
       )}
     </div>

@@ -1706,3 +1706,410 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 2px;
   color: var(--text-muted);
 }
+
+/* =========================================
+   NOVA INTERFACE - AGENDA DE CIRURGIAS
+========================================= */
+
+.agenda-container {
+  padding: 10px 20px 40px;
+  background-color: #f8f9fc;
+  min-height: 100vh;
+}
+
+.agenda-page-header {
+  margin-bottom: 24px;
+}
+
+.agenda-subtitle {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #8b5cf6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 4px 0;
+}
+
+.agenda-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+
+.agenda-stats {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* FILTROS */
+.agenda-filters-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.agenda-filter-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 16px;
+}
+
+.agenda-filter-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.agenda-filter-icon {
+  background: #ecfdf5;
+  color: #10b981;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.agenda-search-input {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px 8px 36px;
+  font-size: 0.9rem;
+  width: 250px;
+  color: #475569;
+}
+
+.agenda-badge-count {
+  background: #f1f5f9;
+  color: #64748b;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.agenda-filter-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.agenda-filter-section-title::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #8b5cf6;
+}
+
+.agenda-filter-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.agenda-input-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.agenda-input-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.agenda-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.agenda-input-wrapper svg {
+  position: absolute;
+  left: 12px;
+  color: #94a3b8;
+}
+
+.agenda-select {
+  width: 100%;
+  appearance: none;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px 10px 36px;
+  font-size: 0.85rem;
+  color: #334155;
+  background-color: #ffffff;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.agenda-select:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.agenda-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.agenda-actions-left {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.agenda-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.agenda-btn:hover {
+  background: #f8fafc;
+}
+
+.agenda-btn-whatsapp {
+  background: #10b981;
+  color: white;
+  border: none;
+}
+
+.agenda-btn-whatsapp:hover {
+  background: #059669;
+}
+
+.agenda-btn-pdf {
+  color: #ef4444;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.agenda-btn-excel {
+  color: #10b981;
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+}
+
+/* GRUPOS DE DATA */
+.agenda-date-divider {
+  display: flex;
+  align-items: center;
+  margin-top: 32px;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.agenda-date-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e2e8f0;
+}
+
+.agenda-date-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agenda-date-subtitle {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.agenda-date-badge {
+  background: #ede9fe;
+  color: #8b5cf6;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+/* CARTOES */
+.agenda-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.agenda-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.agenda-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.agenda-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.agenda-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.agenda-status-badge::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.agenda-status-pendente { background: #fef9c3; color: #ca8a04; }
+.agenda-status-pendente::before { background: #eab308; }
+
+.agenda-status-agendada { background: #e0e7ff; color: #4f46e5; }
+.agenda-status-agendada::before { background: #6366f1; }
+
+.agenda-status-confirmada { background: #d1fae5; color: #059669; }
+.agenda-status-confirmada::before { background: #10b981; }
+
+.agenda-status-cancelada { background: #ffe4e6; color: #e11d48; }
+.agenda-status-cancelada::before { background: #f43f5e; }
+
+.agenda-time {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #334155;
+}
+
+.agenda-patient-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 16px;
+}
+
+.agenda-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.agenda-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.agenda-info-item svg {
+  color: #94a3b8;
+  margin-top: 2px;
+  min-width: 14px;
+}
+
+.agenda-carater-urgencia {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.agenda-carater-eletiva {
+  color: #10b981;
+  font-weight: 700;
+}
+
+.agenda-card-footer {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.agenda-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.agenda-pill::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.agenda-pill.active {
+  background: #ecfdf5;
+  color: #059669;
+}
+.agenda-pill.active::before {
+  background: #10b981;
+}
+
+.agenda-pill.inactive {
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+.agenda-pill.inactive::before {
+  background: #cbd5e1;
+}
