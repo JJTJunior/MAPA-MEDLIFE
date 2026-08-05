@@ -2042,7 +2042,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .agenda-info-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   font-size: 0.8rem;
   color: #475569;
@@ -2051,7 +2051,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .agenda-info-item svg {
   color: #94a3b8;
-  margin-top: 2px;
   min-width: 14px;
 }
 
