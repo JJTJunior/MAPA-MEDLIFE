@@ -1523,38 +1523,6 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
-                        {canDelete && (
-                          <button 
-                            type="button" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              e.preventDefault();
-                              setPendingDeleteAttachment({ item, isComanda: false });
-                            }}
-                            style={{
-                              position: 'absolute',
-                              top: '4px',
-                              right: '4px',
-                              background: 'rgba(239, 68, 68, 0.9)',
-                              color: '#fff',
-                              border: 'none',
-                              borderRadius: '50%',
-                              width: '22px',
-                              height: '22px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              cursor: 'pointer',
-                              fontSize: '13px',
-                              lineHeight: '1',
-                              fontWeight: 'bold',
-                              boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-                              zIndex: 10
-                            }}
-                            title="Remover anexo"
-                          >
-                            ×
-                          </button>
                         )}
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
