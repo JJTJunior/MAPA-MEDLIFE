@@ -1258,10 +1258,10 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                   <FileText size={16} /> PDF
                 </button>
                 <button className="agenda-btn" onClick={() => {}}>
-                  <FileText size={16} /> Modelo
+                  <FileText size={16} /> Modelo XLSX
                 </button>
                 <button className="agenda-btn" onClick={() => setIsImporting(true)}>
-                  <Download size={16} /> Importar
+                  <Download size={16} /> Importar Planilha
                 </button>
               </div>
               <button className="agenda-btn agenda-btn-whatsapp" onClick={() => {}}>
