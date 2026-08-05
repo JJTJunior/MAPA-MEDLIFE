@@ -1523,7 +1523,7 @@ export default function SurgeryDetails({ surgery, onBack, onEdit, onUpdate, user
                             />
                           </div>
                         )}
-                        )}
+
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px' }}>
                         {name && (
