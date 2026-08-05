@@ -641,6 +641,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-secondary);
   border-bottom: 1px solid var(--border-glass);
   background: rgba(255, 255, 255, 0.02);
+  white-space: nowrap;
 }
 
 .data-table td {
@@ -649,6 +650,7 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid var(--border-glass);
   color: var(--text-primary);
   vertical-align: middle;
+  white-space: nowrap;
 }
 
 /* Color Coding based on Status */
@@ -737,6 +739,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.75rem;
   font-weight: 500;
   border: 1px solid var(--border-glass);
+  white-space: nowrap;
 }
 
 .checkbox-pill.active {
