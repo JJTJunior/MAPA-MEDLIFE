@@ -1097,7 +1097,7 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 </button>
               )}
               {canCreate && (
-                <button className="btn-primary" style={{ background: '#10b981', color: 'white', border: 'none' }} onClick={onCreateClick}>
+                <button className="btn-primary" style={{ background: '#10b981', color: 'white', border: 'none', width: 'auto', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={onCreateClick}>
                   <Plus size={18} /> Agendar Cirurgia
                 </button>
               )}
