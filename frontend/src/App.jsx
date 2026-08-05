@@ -199,12 +199,19 @@ export default function App() {
         else initialTab = 'settings';
       }
       
-      // Ajusta o activeTab atual caso o usuário não tenha permissão para vê-lo
+      // Force initialTab if the user is logging in freshly (or user changed)
       setActiveTab(prev => {
+        // Se estava no dashboard mas não tem permissão, vai para a inicial
         if (prev === 'dashboard' && !hasDashboard) return initialTab;
         if (prev === 'surgeries' && !hasMap) return initialTab;
         if (prev === 'driver' && !hasDriver) return initialTab;
         if (prev === 'scrub_nurse' && !hasNurse) return initialTab;
+        
+        // Se mudou de usuário, forçamos a aba inicial para evitar que o usuário caia em abas aleatórias da sessão anterior
+        if (!user || user.id !== session.user.id) {
+          return initialTab;
+        }
+        
         return prev;
       });
 
