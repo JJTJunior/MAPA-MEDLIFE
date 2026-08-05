@@ -1139,56 +1139,62 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
               <div style={{ animation: 'fadeIn 0.3s' }}>
                 <div className="agenda-filter-row">
               <div style={{ flex: 1, width: '100%' }}>
-                <div className="agenda-filter-section-title">EQUIPE & LOCAL</div>
-                <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                  <div className="agenda-input-group">
-                    <label className="agenda-input-label">MÉDICO</label>
-                    <div className="agenda-input-wrapper">
-                      <User size={16} />
-                      <select className="agenda-select" value={doctorFilter} onChange={e => setDoctorFilter(e.target.value)}>
-                        <option value="">Todos</option>
-                        {doctorOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
+                <div className="agenda-filter-section-title">
+                  <span style={{ color: '#10b981', fontSize: '1.2rem', lineHeight: 0, marginRight: '6px' }}>•</span> EQUIPE & LOCAL
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                    <div className="agenda-input-group">
+                      <label className="agenda-input-label">MÉDICO</label>
+                      <div className="agenda-input-wrapper">
+                        <User size={16} />
+                        <select className="agenda-select" value={doctorFilter} onChange={e => setDoctorFilter(e.target.value)}>
+                          <option value="">Todos</option>
+                          {doctorOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="agenda-input-group">
+                      <label className="agenda-input-label">HOSPITAL</label>
+                      <div className="agenda-input-wrapper">
+                        <Building2 size={16} />
+                        <select className="agenda-select" value={hospitalFilter} onChange={e => setHospitalFilter(e.target.value)}>
+                          <option value="">Todos</option>
+                          {hospitalOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="agenda-input-group">
+                      <label className="agenda-input-label">CONVÊNIO</label>
+                      <div className="agenda-input-wrapper">
+                        <CreditCard size={16} />
+                        <select className="agenda-select" value={insuranceFilter} onChange={e => setInsuranceFilter(e.target.value)}>
+                          <option value="">Todos</option>
+                          {insuranceOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="agenda-input-group">
+                      <label className="agenda-input-label">VENDEDOR</label>
+                      <div className="agenda-input-wrapper">
+                        <User size={16} />
+                        <select className="agenda-select" value={salespersonFilter} onChange={e => setSalespersonFilter(e.target.value)}>
+                          <option value="">Todos</option>
+                          {salespersonOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </div>
                     </div>
                   </div>
-                  <div className="agenda-input-group">
-                    <label className="agenda-input-label">HOSPITAL</label>
-                    <div className="agenda-input-wrapper">
-                      <Building2 size={16} />
-                      <select className="agenda-select" value={hospitalFilter} onChange={e => setHospitalFilter(e.target.value)}>
-                        <option value="">Todos</option>
-                        {hospitalOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="agenda-input-group">
-                    <label className="agenda-input-label">CONVÊNIO</label>
-                    <div className="agenda-input-wrapper">
-                      <CreditCard size={16} />
-                      <select className="agenda-select" value={insuranceFilter} onChange={e => setInsuranceFilter(e.target.value)}>
-                        <option value="">Todos</option>
-                        {insuranceOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="agenda-input-group">
-                    <label className="agenda-input-label">VENDEDOR</label>
-                    <div className="agenda-input-wrapper">
-                      <User size={16} />
-                      <select className="agenda-select" value={salespersonFilter} onChange={e => setSalespersonFilter(e.target.value)}>
-                        <option value="">Todos</option>
-                        {salespersonOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="agenda-input-group">
-                    <label className="agenda-input-label">INSTRUMENTADOR</label>
-                    <div className="agenda-input-wrapper">
-                      <Smartphone size={16} />
-                      <select className="agenda-select" value={instrumentalist1Filter} onChange={e => setInstrumentalist1Filter(e.target.value)}>
-                        <option value="">Todos</option>
-                        {instrumentalist1Options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                      </select>
+                  <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                    <div className="agenda-input-group">
+                      <label className="agenda-input-label">INSTRUMENTADOR</label>
+                      <div className="agenda-input-wrapper">
+                        <Smartphone size={16} />
+                        <select className="agenda-select" value={instrumentalist1Filter} onChange={e => setInstrumentalist1Filter(e.target.value)}>
+                          <option value="">Todos</option>
+                          {instrumentalist1Options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1197,7 +1203,9 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
 
             <div className="agenda-filter-row">
               <div style={{ flex: 1, minWidth: '300px' }}>
-                <div className="agenda-filter-section-title">CLASSIFICAÇÃO</div>
+                <div className="agenda-filter-section-title">
+                  <span style={{ color: '#8b5cf6', fontSize: '1.2rem', lineHeight: 0, marginRight: '6px' }}>•</span> CLASSIFICAÇÃO
+                </div>
                 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                   <div className="agenda-input-group">
                     <label className="agenda-input-label">TIPO DE CIRURGIA</label>
@@ -1232,7 +1240,9 @@ export default function SurgeryGrid({ user, initialFilters, onEditClick, onViewC
                 </div>
               </div>
               <div style={{ flex: 1, minWidth: '300px' }}>
-                <div className="agenda-filter-section-title">PERÍODO</div>
+                <div className="agenda-filter-section-title">
+                  <span style={{ color: '#f59e0b', fontSize: '1.2rem', lineHeight: 0, marginRight: '6px' }}>•</span> PERÍODO
+                </div>
                 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
                   <div className="agenda-input-group" style={{ opacity: noDateOnly ? 0.5 : 1, pointerEvents: noDateOnly ? 'none' : 'auto' }}>
                     <label className="agenda-input-label">DE</label>
